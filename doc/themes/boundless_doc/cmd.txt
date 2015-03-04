@@ -1,0 +1,2 @@
+sphinx-build -b html -D master_doc=index -D project=FOOBAR -c /path/to/conf.py /path/to/rst/sources /path/to/html/output
+sphinx-build -b html -D master_doc=contents -D project=FOOBAR -c /path/to/conf.py /path/to/rst/sources /path/to/html/output

@@ -1,0 +1,9 @@
+httplib2==0.8
+python-dateutil==2.2
+
+-e git+https://github.com/boundlessgeo/gsconfig.git#egg=gsconfig
+-e git+https://github.com/boundlessgeo/gsimporter.git#egg=gsimporter
+
+# test requirements
+
+

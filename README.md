@@ -1,1 +1,0 @@
-# qgis-geoserver-plugin

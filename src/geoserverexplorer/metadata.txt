@@ -1,0 +1,11 @@
+[general]
+name=GeoServer Explorer
+description=An interface to easily manage and configure GeoServer instances
+version=1.0
+qgisMinimumVersion=2.0
+author=Victor Olaya
+email=volaya@boundlessgeo.com
+homepage=
+icon=images/geoserver.png
+class_name=GeoServerExplorerPlugin
+experimental = False

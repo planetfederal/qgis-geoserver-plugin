@@ -1,0 +1,253 @@
+h1 {
+	font-size: 32px !important;
+}
+
+h2 {
+	border-bottom: #dadada solid 3px !important;
+	font-size: 21px !important;
+	font-weight: 600 !important;
+	padding-top: 10px !important;
+	padding-bottom: 5px !important;
+}
+
+
+p {
+	font-size: 14px !important;
+	margin-bottom: 30px !important;
+}
+
+dt {
+	font-family: "proxima-nova", sans-serif !important;
+	font-size: 18px !important;
+}
+
+#masthead{
+	background-color:#ffffff !important;
+}
+
+#wrapper{
+	background-color: #f2f2f2 !important;
+}
+
+#content{
+	background-color: #f2f2f2 !important;
+}
+
+#footer {
+	background: #1f3c49 !important;
+	border-top: none !important;
+	border-bottom: none !important;
+	clear: both;
+	width: 100%;
+	padding: 0 !important;
+
+	a {
+	&:hover {
+	color: #7db5d2 !important;
+	text-decoration: underline !important;
+	}
+	}
+	ul {
+		margin-left: -20px !important;
+	}
+}
+
+ul#menu-solutions.menu {
+margin-left: -20px !important;
+}
+
+ul#menu-resources.menu {
+margin-left: -20px !important;
+}
+
+ul#menu-about-menu.menu {
+margin-left: -20px !important;
+}
+
+
+ul#menu-solutions.menu a:hover {
+	color: #7db5d2 !important;
+	text-decoration: underline !important;
+}
+
+ul#menu-resources.menu a:hover {
+	color: #7db5d2 !important;
+	text-decoration: underline !important;
+}
+
+ul#menu-about-menu.menu a:hover {
+	color: #7db5d2 !important;
+	text-decoration: underline !important;
+}
+
+.footer-sub-menu a {
+	padding-right: 20px !important;
+}
+
+.footer-sub-menu a:hover {
+	color: #8e8f97 !important;
+	text-decoration: underline !important;
+}
+
+#pageheading {
+	display:none !important;
+}
+
+#breadcrumbs {
+	border-bottom: none !important;
+	margin-top: 5px;
+	color: #3D7199 !important;
+}
+
+#breadcrumbs a:link{
+	color: #3D7199 !important;
+}
+
+#toc.section ul li ul{
+	margin-top:10px !important;
+	list-style: disc !important;
+}
+
+a.headerlink {
+color: #0f0f0f;
+margin-left: 0.3em;
+text-decoration: none;
+visibility: hidden;
+}
+
+
+
+h1:hover a.headerlink,
+h2:hover a.headerlink,
+h3:hover a.headerlink,
+h4:hover a.headerlink,
+h5:hover a.headerlink,
+h6:hover a.headerlink,
+dt:hover a.headerlink {
+visibility: visible;
+}
+
+h3,ol {
+margin-top: 1.0em;
+margin-bottom: 0.7em;
+}
+
+ul,ol {
+margin-top: 1.0em;
+margin-bottom: 1.0em;
+list-style-type: none !important;
+}
+
+
+li {
+margin-bottom: 0em;
+margin-top: 0em;
+}
+
+
+a.headerlink:hover {
+}
+
+#copyright {
+  clear:both;
+  font-color:grey;
+  margin-top:8px;
+  text-align:center;
+  width:100%;
+  font-size:80%;
+}
+
+#rightbar_main, #rightbar_bar {
+  font-size: 110%;
+}
+
+pre {
+  background-color: #fff4f4;
+  border: 1px solid #d0c7c0;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-family: Source Code Pro, monospace;
+  margin-bottom: 1em;
+}
+
+.figure {
+  margin-bottom: 1em;
+}
+
+.figure img {
+width: auto;
+border: 1px solid #888;
+-webkit-box-shadow: 0.33em 0.33em 0.17em #888, 0.33em 0.33em 1em rgba(0,0,0,0.3);
+-o-box-shadow: 0.33em 0.33em 0.17em #888, 0.33em 0.33em 1em rgba(0,0,0,0.3);
+-moz-box-shadow: 0.33em 0.33em 0.17em #888, 0.33em 0.33em 1em rgba(0,0,0,0.3);
+box-shadow: 0.33em 0.33em 0.17em #888, 0.33em 0.33em 1em rgba(0,0,0,0.3);
+max-width: 100%;
+margin: 0.5em 0 1em;
+}
+
+.figure img {
+  width: expression(this.width > 580 ? 580: default);
+}
+
+.section img {
+width: auto;
+border: 1px solid #888;
+-webkit-box-shadow: 0.33em 0.33em 0.17em #888, 0.33em 0.33em 1em rgba(0,0,0,0.3);
+-o-box-shadow: 0.33em 0.33em 0.17em #888, 0.33em 0.33em 1em rgba(0,0,0,0.3);
+-moz-box-shadow: 0.33em 0.33em 0.17em #888, 0.33em 0.33em 1em rgba(0,0,0,0.3);
+box-shadow: 0.33em 0.33em 0.17em #888, 0.33em 0.33em 1em rgba(0,0,0,0.3);
+max-width: 100%;
+margin: 0.5em 0 1em;
+}
+
+.section {
+ img {
+  width: expression(this.width > 580 ? 580: default);
+  }
+
+
+}
+
+.admonition-title {
+  font-weight: bold;
+  color: #486300;
+}
+
+.admonition {
+  margin-bottom: 1em;
+  border: 1px solid #ccc;
+  background-color: #eee;
+  padding-top: 7px;
+  padding-bottom: 0px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.warning {
+  background-color: #ffe0e0;
+}
+
+.warning .admonition-title {
+  color: #dd0000;
+}
+
+.caption {
+  text-align: center;
+}
+
+#toc ul li {
+padding: 0;
+margin-right: 0;
+}
+
+blockquote {
+  margin-left: 2.0em;
+  margin-bottom: 1.0em;
+}
+
+/* Over-ride undesirable effect leaking in from opengeo style sheet */
+#content ul li:before {
+  content: none;
+}
