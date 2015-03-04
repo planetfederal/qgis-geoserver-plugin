@@ -1067,10 +1067,12 @@ class GsStyleItem(GsTreeItem):
             styles.append(default)
         layer.default_style = self.element
         layer.styles = styles
-        explorer.run(self.parentCatalog().save,
+        def _saveAndRefresh():
+            self.parentCatalog().save(layer)
+            layer.refresh()
+        explorer.run(_saveAndRefresh,
                 "Set style '" + self.element.name + "' as default style for layer '" + layer.name + "'",
-                tree.findAllItems(self.parent().element),
-                layer)
+                [self.parent()])
 
 
 class GsWorkspaceItem(GsTreeItem):
