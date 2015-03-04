@@ -53,6 +53,11 @@ class TreeItem(QtGui.QTreeWidgetItem):
             <html>
             <head>
             <style type="text/css">
+                h1 { color: #555555}
+                a { text-decoration: none; color: #3498db; font-weight: bold; }
+                a.edit { color: #9f9f9f; float: right; font-weight: normal; }
+                p { color: #666666; }
+                b { color: #333333; }
                 .section { margin-top: 25px; }
                 table.header th { background-color: #dddddd; }
                 table.header td { background-color: #f5f5f5; }
@@ -82,7 +87,7 @@ class TreeItem(QtGui.QTreeWidgetItem):
                 tree, explorer, items)
         actsenabled = [act for act in actions if act.isEnabled()]
         if actsenabled:
-            html += "<p><b>Actions:</b></p><ul>"
+            html += "<p><h3><b>Available actions</b></h3></p><ul>"
             for action in actsenabled:
                 html += '<li><a href="' + action.text() + '">' + action.text() + '</a></li>\n'
             html += '</ul>'
