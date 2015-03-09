@@ -5,9 +5,9 @@ from geoserverexplorer.geoserver import pem
 
 class DefineCatalogDialog(QtGui.QDialog):
 
-    def __init__(self, explorer, parent = None):
+    def __init__(self, catalogs, parent = None):
         super(DefineCatalogDialog, self).__init__(parent)
-        self.explorer = explorer
+        self.catalogs = catalogs
         self.ok = False
         self.initGui()
 
@@ -150,7 +150,7 @@ class DefineCatalogDialog(QtGui.QDialog):
         self.name = unicode(self.nameBox.text())
         name = self.name
         i = 2
-        while name in self.explorer.catalogs().keys():
+        while name in self.catalogs.keys():
             name = self.name + "_" + str(i)
             i += 1
         self.name = name
@@ -159,7 +159,7 @@ class DefineCatalogDialog(QtGui.QDialog):
         settings.setValue('/GeoServer/LastCatalogUrl', self.urlBox.text())
         saveCatalogs = bool(settings.value("/GeoServer/Settings/GeoServer/SaveCatalogs", True, bool))
         if saveCatalogs:
-            settings.beginGroup("/GeoServer/GeoServer/" + self.name)
+            settings.beginGroup("/GeoServer/Catalogs/" + self.name)
             settings.setValue("url", self.url);
             if self.authid is not None:
                 settings.setValue("authid", self.authid)

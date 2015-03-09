@@ -57,7 +57,7 @@ def addDraggedLayerToGroup(explorer, layer, groupItem):
                  [groupItem],
                  group)
 
-def addDraggedUrisToWorkspace(uris, catalog, workspace, explorer, tree):
+def addDraggedUrisToWorkspace(uris, catalog, workspace, tree):
     if uris:
         if len(uris) > 1:
             explorer.setProgressMaximum(len(uris))
@@ -83,8 +83,8 @@ def addDraggedUrisToWorkspace(uris, catalog, workspace, explorer, tree):
             else:
                 if not publishDraggedLayer(explorer, layer, workspace):
                     return []
-            explorer.setProgress(i + 1)
-        explorer.resetActivity()
+            setProgress(i + 1)
+        resetActivity()
         return [tree.findAllItems(catalog)[0]]
     else:
         return []

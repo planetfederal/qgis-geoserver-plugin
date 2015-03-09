@@ -4,8 +4,6 @@ from geoserverexplorer.qgis import layers as qgislayers
 from geoserverexplorer.gui.gsnameutils import GSNameWidget, xmlNameFixUp, \
     xmlNameRegexMsg, xmlNameRegex
 
-from functools import partial
-
 class PublishLayersDialog(QtGui.QDialog):
 
     def __init__(self, catalog, parent = None):

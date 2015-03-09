@@ -249,7 +249,7 @@ class GsCatalogsItem(GsTreeItem):
         return [createCatalogAction]
 
     def addGeoServerCatalog(self, explorer):
-        dlg = DefineCatalogDialog(explorer)
+        dlg = DefineCatalogDialog(self._catalogs)
         dlg.exec_()
         if dlg.ok:
             try:

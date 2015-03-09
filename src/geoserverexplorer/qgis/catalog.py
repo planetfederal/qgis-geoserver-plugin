@@ -160,7 +160,7 @@ class CatalogWrapper(object):
         return data
 
 
-    def _publishExisting(self, layer, workspace, overwrite, name):
+    def _publishPostgisLayer(self, layer, workspace, overwrite, name):
         uri = QgsDataSourceURI(layer.dataProvider().dataSourceUri())
         user = uri.username()
         passwd = uri.password()
@@ -258,7 +258,7 @@ class CatalogWrapper(object):
         provider = layer.dataProvider()
         try:
             if provider.name() == 'postgres':
-                self._publishExisting(layer, workspace, overwrite, name)
+                self._publishPostgisLayer(layer, workspace, overwrite, name)
             elif restApi:
                 self._uploadRest(layer, workspace, overwrite, name)
             else:
