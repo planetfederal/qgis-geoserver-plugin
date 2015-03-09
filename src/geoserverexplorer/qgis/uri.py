@@ -7,8 +7,7 @@ def layerUri(layer):
     resource = layer.resource
     catalog = layer.catalog
     def addAuth(_params):
-        authid = catalog.authid
-        if authid is not None:
+        if hasattr(catalog, 'authid') and catalog.authid is not None:
             _params['authid'] = catalog.authid
         else:
             _params['password'] = catalog.password
