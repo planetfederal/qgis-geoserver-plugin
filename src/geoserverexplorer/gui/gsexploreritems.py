@@ -234,7 +234,7 @@ class GsCatalogsItem(GsTreeItem):
         settings = QtCore.QSettings()
         saveCatalogs = bool(settings.value("/GeoServer/Settings/GeoServer/SaveCatalogs", False, bool))
         if saveCatalogs:
-            settings.beginGroup("/GeoServer/GeoServer")
+            settings.beginGroup("/GeoServer/Catalogs")
             for name in settings.childGroups():
                 geoserverItem = GsCatalogItem(None, name)
                 self.addChild(geoserverItem)
@@ -449,7 +449,7 @@ class GsCatalogItem(GsTreeItem):
         catalogIsNone = self.catalog is None
         if catalogIsNone:
             settings = QtCore.QSettings()
-            settings.beginGroup("/GeoServer/GeoServer")
+            settings.beginGroup("/GeoServer/Catalogs")
             settings.beginGroup(self.name)
             url = unicode(settings.value("url"))
             username = settings.value("username")
@@ -487,7 +487,6 @@ class GsCatalogItem(GsTreeItem):
             QtGui.QApplication.processEvents()
             self._populate()
         except Exception, e:
-            traceback.print_exc()
             if catalogIsNone:
                 self.catalog = None
             raise e
@@ -523,12 +522,22 @@ class GsCatalogItem(GsTreeItem):
         self.parent()._catalogs[self.text(0)] = self.catalog
 
     def _publishLayers(self, tree, explorer):
-        if checkLayers():
+        if checkLayers() and self.checkWorkspaces():
             publishLayers(tree, explorer, self.element)
 
     def _publishProject(self, tree, explorer):
-        if checkLayers():
+        if checkLayers() and self.checkWorkspaces():
             publishProject(tree, explorer, self.element)
+
+    def checkWorkspaces(self):
+        ws = self.getDefaultWorkspace()
+        if ws is None:
+            QtGui.QMessageBox.warning(config.iface.mainWindow(), 'No workspaces',
+            "You must have at least one workspace in your catalog\n"
+            "to perform this operation.",
+            QtGui.QMessageBox.Ok)
+            return False
+        return True
 
     def contextMenuActions(self, tree, explorer):
         icon = QtGui.QIcon(os.path.dirname(__file__) + "/../images/delete.gif")
@@ -556,10 +565,10 @@ class GsCatalogItem(GsTreeItem):
 
     def removeCatalog(self, tree, explorer):
         name = self.text(0)
-        if name in explorer.catalogs():
-            del explorer.catalogs()[name]
+        if name in self.parent()._catalogs:
+            del self.parent()._catalogs[name]
         settings = QtCore.QSettings()
-        settings.beginGroup("/GeoServer/GeoServer/" + name)
+        settings.beginGroup("/GeoServer/Catalogs/" + name)
         settings.remove("");
         settings.endGroup();
         parent = self.parent()
@@ -581,7 +590,7 @@ class GsCatalogItem(GsTreeItem):
     def linkClicked(self, tree, explorer, url):
         if not self.isConnected:
             if explorer.run(self.populate, "Populate GeoServer item", []):
-                explorer.catalogs()[self.text(0)] = self.catalog
+                self.parent()._catalogs[self.text(0)] = self.catalog
 
     def acceptDroppedUris(self, tree, explorer, uris):
         if not self.isConnected:
