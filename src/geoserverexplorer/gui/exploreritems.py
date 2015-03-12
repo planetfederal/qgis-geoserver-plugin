@@ -106,8 +106,8 @@ class TreeItem(QtGui.QTreeWidgetItem):
                 return
 
     def _checkAllSelectionTypes(self, item, tree):
-        allTypes = tree.getSelectionTypes()
-        if allTypes and len(allTypes) != 1:
+        allTypes, allParentTypes = tree.getSelectionTypes()
+        if (allTypes and len(allTypes) != 1) or (allParentTypes and len(allParentTypes) != 1):
             return False, "Incompatible item types"
         items = tree.selectedItems()
         if len(items) > 1 and tree.currentItem() in items:

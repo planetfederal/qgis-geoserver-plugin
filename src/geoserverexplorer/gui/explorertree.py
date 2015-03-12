@@ -48,7 +48,9 @@ class ExplorerTreeWidget(QtGui.QTreeWidget):
 
     def getSelectionTypes(self):
         items = self.selectedItems()
-        return set([type(item) for item in items])
+        types = set([type(item) for item in items])
+        parentTypes = set([type(item.parent()) for item in items])
+        return types, parentTypes
 
     def treeItemClicked(self, item, column):
         # handle situation where actions act on current clicked item, but single
@@ -97,8 +99,8 @@ class ExplorerTreeWidget(QtGui.QTreeWidget):
             item.refreshContent(self.explorer)
 
     def showTreePopupMenu(self,point):
-        allTypes = self.getSelectionTypes()
-        if len(allTypes) != 1:
+        allTypes, allParentTypes = self.getSelectionTypes()
+        if len(allTypes) != 1 or len(allParentTypes) != 1:
             return
         items = self.selectedItems()
         if len(items) > 1:

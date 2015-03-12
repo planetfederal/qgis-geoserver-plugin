@@ -1,4 +1,5 @@
 import os
+from collections import defaultdict
 from qgis.core import *
 from qgis.gui import *
 from PyQt4 import QtGui,QtCore
@@ -142,6 +143,26 @@ class GsTreeItem(TreeItem):
             #we now want to delete. It is deleted already anyway, so we should not raise any exception
             #TODO: this might swallow other type of exceptions. Should implement a more fine-grained error handling
             try:
+                if isinstance(element, Style):
+                    layersToUpdate = []
+                    layers = element.catalog.get_layers()
+                    for layer in layers:
+                        styles = layer.styles
+                        if not styles:
+                            continue
+                        if layer.default_style.name == element.name:
+                            layersToUpdate.append(layer)
+                        else:
+                            for style in styles:
+                                if style.name == element.name:
+                                    layersToUpdate.append(layer)
+                                    break
+                    for layer in layersToUpdate:
+                        styles = layer.styles
+                        styles = [style for style in styles if style.name != element.name]
+                        layer.styles = styles
+                        element.catalog.save(layer)
+                        toUpdate.add(tree.findAllItems(layer)[0])
                 element.catalog.delete(element, recurse = recurse, purge = True)
             except:
                 pass
@@ -208,10 +229,13 @@ class GsTreeItem(TreeItem):
             elif isinstance(element, Style):
                 layers = element.catalog.get_layers()
                 for layer in layers:
+                    styles = layer.styles
+                    if styles:
+                        continue
                     if layer.default_style.name == element.name:
                         dependent.append(layer)
                     else:
-                        for style in layer.styles:
+                        for style in styles:
                             if style.name == element.name:
                                 dependent.append(layer)
                                 break
@@ -1014,10 +1038,20 @@ class GsStyleItem(GsTreeItem):
         return []
 
     def multipleSelectionContextMenuActions(self, tree, explorer, selected):
-        icon = QtGui.QIcon(os.path.dirname(__file__) + "/../images/delete.gif")
-        deleteSelectedAction = QtGui.QAction(icon, "Delete", explorer)
-        deleteSelectedAction.triggered.connect(lambda: self.deleteElements(selected, tree, explorer))
-        return [deleteSelectedAction]
+        if isinstance(selected[0].parent(), GsLayerItem):
+            default = any([s.isDefault for s in selected])
+            if not default:
+                icon = QtGui.QIcon(os.path.dirname(__file__) + "/../images/delete.gif")
+                deleteSelectedAction = QtGui.QAction(icon, "Remove from layer", explorer)
+                deleteSelectedAction.triggered.connect(lambda: self.removeStylesFromLayer(selected, tree, explorer))
+                return [deleteSelectedAction]
+            else:
+                return []
+        else:
+            icon = QtGui.QIcon(os.path.dirname(__file__) + "/../images/delete.gif")
+            deleteSelectedAction = QtGui.QAction(icon, "Delete", explorer)
+            deleteSelectedAction.triggered.connect(lambda: self.deleteElements(selected, tree, explorer))
+            return [deleteSelectedAction]
 
     def editStyle(self, tree, explorer, gslayer = None):
         settings = QtCore.QSettings()
@@ -1066,6 +1100,21 @@ class GsStyleItem(GsTreeItem):
                 "Remove style '" + self.element.name + "' from layer '" + layer.name,
                 tree.findAllItems(self.parent().element),
                 layer)
+
+    def removeStylesFromLayer(self, selected, tree, explorer):
+        catalog = self.parentCatalog()
+        layerStyles = defaultdict(list)
+        for item in selected:
+            layerStyles[item.parent()].append(item.element.name)
+        for layerItem, styles in layerStyles.iteritems():
+            layer = layerItem.element
+            currentStyles = layer.styles
+            currentStyles = [style for style in styles if style not in styles]
+            layer.styles = currentStyles
+            explorer.run(catalog.save,
+                    "Remove style '" + self.element.name + "' from layer '" + layer.name,
+                    [layerItem],
+                    layer)
 
     def setAsDefaultStyle(self, tree, explorer):
         layer = self.parent().element
