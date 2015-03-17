@@ -15,6 +15,7 @@ class GeoServerExplorer(QtGui.QDockWidget):
 
     def __init__(self, parent = None):
         super(GeoServerExplorer, self).__init__(parent)
+        self.setObjectName('GeoServerExplorer')
         self.initGui()
 
     def initGui(self):

@@ -27,6 +27,7 @@ from geoserverexplorer import config
 from geoserverexplorer.qgis.utils import *
 from geoserverexplorer.qgis.sldadapter import adaptGsToQgs, getGeomTypeFromSld,\
     getGsCompatibleSld
+from opengeo.gui.confirm import *
 from geoserverexplorer.geoserver.util import getLayerFromStyle
 from geoserverexplorer.gui.confirm import confirmDelete
 from geoserverexplorer.geoserver.pki import PKICatalog
@@ -99,14 +100,8 @@ class GsTreeItem(TreeItem):
         progress = 0
         dependent = self.getDependentElements(elements, tree)
         if dependent:
-            msg = "The following elements depend on the elements to delete\nand will be deleted as well:\n\n"
-            names = set(["-" + e.name + "(" + e.__class__.__name__ + ")" for e in dependent])
-            msg += " \n\n".join(names)
-            msg += "\n\nDo you really want to delete all these elements?"
-            reply = QtGui.QMessageBox.question(None, "Delete confirmation",
-                                               msg, QtGui.QMessageBox.Yes |
-                                               QtGui.QMessageBox.No, QtGui.QMessageBox.No)
-            if reply == QtGui.QMessageBox.No:
+            depdlg = DeleteDependentsDialog(dependent)
+            if not depdlg.exec_():
                 return
             toDelete = set()
             for e in dependent:
@@ -213,7 +208,7 @@ class GsTreeItem(TreeItem):
                 for idx in xrange(gwcItem.childCount()):
                     gwcLayerItem = gwcItem.child(idx)
                     gwcLayer = gwcLayerItem.element
-                    print gwcLayer.name, element.name
+                    # print gwcLayer.name, element.name
                     if gwcLayer.name.split(":")[-1] == element.name:
                         possibleGwcLayers.append(gwcLayer)
                 if len(possibleGwcLayers) == 1:

@@ -177,7 +177,8 @@ class CatalogWrapper(object):
                 raise UserCanceledOperation()
 
         storename = self.getConnectionNameFromLayer(layer)
-        if not isNameValid(storename, [], 0, xmlNameRegex()):
+        storenames = workspace.get_stores()
+        if storename in storenames or not isNameValid(storename, [], 0, xmlNameRegex()):
             storename = getGSStoreName(
                 name=storename,
                 namemsg='Sample is generated from PostgreSQL connection name.',
@@ -380,14 +381,14 @@ class CatalogWrapper(object):
         if isinstance(layer, basestring):
             layer = layers.resolveLayer(layer)
 
-        name = name if name is not None else layer.name()
+        name = xmlNameFixUp(name) if name is not None \
+            else xmlNameFixUp(layer.name())
 
         gslayer = self.catalog.get_layer(name)
         if gslayer is not None and not overwrite:
             return
 
         title = name
-        name = name.replace(" ", "_")
 
         sld = self.publishStyle(layer, overwrite, name)
 

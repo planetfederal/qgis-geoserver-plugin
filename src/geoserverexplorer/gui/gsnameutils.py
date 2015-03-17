@@ -16,14 +16,29 @@ from geoserverexplorer.gui.contextualhelp import InfoIcon
 
 # noinspection PyPep8Naming
 def xmlNameFixUp(name):
-    return name.lower().replace(' ', '_')
+    # TODO: handle bad unicode characters, too
+    n = name.replace(u' ', u'_')  # doesn't hurt to always do this
+    if not xmlNameIsValid(n) and not n.startswith(u'_'):
+        rx = QtCore.QRegExp(r'^(?=XML|\d|\W).*', QtCore.Qt.CaseInsensitive)
+        if rx.exactMatch(n):
+            n = u"_{0}".format(n)
+    return n
 
 
 # noinspection PyPep8Naming
 def xmlNameRegex():
-    # return r'^(?!XML)[a-z][\w0-9-\.]'
-    # return r'^(?!XML|\d|\W)\S+'
-    return r'^(?!XML|\d|\W)[a-z]\S*'
+    return r'^(?!XML|\d)[_a-z]\S*'
+
+
+# noinspection PyPep8Naming
+def xmlNameEmptyRegex():
+    return r'^(?!XML|\d)[_a-z]?(?!\W)\S*$'
+
+
+# noinspection PyPep8Naming
+def xmlNameIsValid(name, regex=None):
+    rx = QtCore.QRegExp(regex or xmlNameRegex(), QtCore.Qt.CaseInsensitive)
+    return rx.exactMatch(name)
 
 
 # noinspection PyPep8Naming
@@ -56,6 +71,8 @@ class GSNameWidget(QtGui.QWidget):
         self.unique = self.hasnames and unique
         self.overwriting = False
         self.maxlength = maxlength if maxlength >= 0 else 0  # no negatives
+        if nameregex == xmlNameEmptyRegex():
+            self.allowempty = True
         self.valid = True  # False will not trigger signal for setEnabled slots
         self.initGui()
         self.validateName()
@@ -113,7 +130,19 @@ class GSNameWidget(QtGui.QWidget):
         return self.overwriting
 
     @QtCore.pyqtSlot(str)
+    def showInvalidToolTip(self, txt):
+        bxpos = self.nameBox.pos()
+        QtCore.QTimer.singleShot(250, lambda:
+        QtGui.QToolTip.showText(
+            self.mapToGlobal(
+                QtCore.QPoint(bxpos.x(),
+                              bxpos.y() + self.nameBox.height()/2)),
+            txt,
+            self.nameBox) if self.nameBox else None)
+
+    @QtCore.pyqtSlot(str)
     def setName(self, txt):
+        self.name = txt
         self.nameBox.lineEdit().setText(txt)
 
     @QtCore.pyqtSlot(list)
@@ -134,11 +163,18 @@ class GSNameWidget(QtGui.QWidget):
     def setNameRegex(self, regex, regexmsg):
         self.nameregex = regex
         self.nameregexmsg = regexmsg
+        if regex == xmlNameEmptyRegex():
+            self.allowempty = True
         self.validateName()
 
     @QtCore.pyqtSlot(int)
     def setMaxLength(self, num):
         self.maxlength = num
+        self.validateName()
+
+    @QtCore.pyqtSlot(bool)
+    def setAllowEmpty(self, empty):
+        self.allowempty = empty
         self.validateName()
 
     @QtCore.pyqtSlot(bool)
@@ -153,8 +189,21 @@ class GSNameWidget(QtGui.QWidget):
         curvalid = self.valid
         curoverwriting = self.overwriting
 
-        valid = isNameValid(name, self.names, self.maxlength, self.nameregex)
-        overwriting = False
+        invalidtxt = "Name can not be empty"
+        valid = True if self.allowempty else len(name) > 0
+
+        # check if character limit reached
+        if valid and self.maxlength > 0:
+            invalidtxt = "Name length can not be > {0}".format(self.maxlength)
+            valid = len(name) <= self.maxlength
+
+        # validate regex, if defined
+        if valid and self.nameregex:
+            rx = QtCore.QRegExp(self.nameregex, QtCore.Qt.CaseInsensitive)
+            invalidtxt = "Name doesn't match expression {0}"\
+                .format(self.nameregex)
+            valid = rx.exactMatch(name)
+
         if valid:
             if self.unique:  # crosscheck for unique name
                 valid = name not in self.names

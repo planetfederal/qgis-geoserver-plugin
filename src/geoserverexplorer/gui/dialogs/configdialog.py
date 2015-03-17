@@ -13,8 +13,11 @@ class ConfigDialog(QtGui.QDialog):
             self.searchBox.setPlaceholderText(self.tr("Search..."))
         self.searchBox.textChanged.connect(self.filterTree)
         self.fillTree()
+        self.tree.expandAll()
 
     def setupUi(self):
+        self.setMinimumWidth(500)
+        self.setMinimumHeight(400)
         self.resize(640, 450)
         self.verticalLayout = QtGui.QVBoxLayout(self)
         self.verticalLayout.setSpacing(2)
