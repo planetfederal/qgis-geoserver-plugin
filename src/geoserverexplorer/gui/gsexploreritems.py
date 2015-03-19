@@ -27,7 +27,7 @@ from geoserverexplorer import config
 from geoserverexplorer.qgis.utils import *
 from geoserverexplorer.qgis.sldadapter import adaptGsToQgs, getGeomTypeFromSld,\
     getGsCompatibleSld
-from opengeo.gui.confirm import *
+from geoserverexplorer.gui.confirm import *
 from geoserverexplorer.geoserver.util import getLayerFromStyle
 from geoserverexplorer.gui.confirm import confirmDelete
 from geoserverexplorer.geoserver.pki import PKICatalog
