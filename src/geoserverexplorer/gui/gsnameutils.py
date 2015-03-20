@@ -56,11 +56,12 @@ def xmlNameRegexMsg():
 class GSNameWidget(QtGui.QWidget):
 
     nameValidityChanged = QtCore.pyqtSignal(bool)  # pragma: no cover
+    invalidTextChanged = QtCore.pyqtSignal(str)  # pragma: no cover
     overwritingChanged = QtCore.pyqtSignal(bool)  # pragma: no cover
 
     def __init__(self, name='', namemsg='', nameregex='', nameregexmsg='',
                  names=None, unique=False,
-                 maxlength=0, parent=None):
+                 maxlength=0, allowempty=False, parent=None):
         super(GSNameWidget, self).__init__(parent)
         self.name = name
         self.namemsg = namemsg
@@ -71,12 +72,13 @@ class GSNameWidget(QtGui.QWidget):
         self.unique = self.hasnames and unique
         self.overwriting = False
         self.maxlength = maxlength if maxlength >= 0 else 0  # no negatives
+        self.allowempty = allowempty
         if nameregex == xmlNameEmptyRegex():
             self.allowempty = True
         self.valid = True  # False will not trigger signal for setEnabled slots
         self.initGui()
         self.validateName()
-
+        
     def initGui(self):
         layout = QtGui.QHBoxLayout()
         layout.setMargin(0)
@@ -95,6 +97,9 @@ class GSNameWidget(QtGui.QWidget):
         self.nameBox.lineEdit().setText(self.name)
         self.nameBox.lineEdit().textChanged.connect(self.validateName)
         self.nameValidityChanged.connect(self.highlightName)
+        self.invalidTextChanged.connect(self.showInvalidToolTip)
+        phtxt = "Optional" if self.allowempty else "Required"
+        self.nameBox.lineEdit().setPlaceholderText(phtxt)
         layout.addWidget(self.nameBox)
 
         tip = 'Define a{0}{1} name'.format(' valid' if self.nameregex else '',
@@ -149,11 +154,15 @@ class GSNameWidget(QtGui.QWidget):
     def setNames(self, names):
         curname = self.nameBox.currentText()
         self.names = names
+
+        self.blockSignals(True)
         self.nameBox.clear()
         if self.name and self.name not in self.names:
             self.nameBox.addItem(self.name)
         if len(names) > 0:
             self.nameBox.addItems(names)
+        self.blockSignals(False)
+
         if curname != self.nameBox.currentText():
             self.setName(curname)  # validates
         else:
@@ -187,7 +196,6 @@ class GSNameWidget(QtGui.QWidget):
         if name is None:
             name = self.nameBox.lineEdit().text()
         curvalid = self.valid
-        curoverwriting = self.overwriting
 
         invalidtxt = "Name can not be empty"
         valid = True if self.allowempty else len(name) > 0
@@ -205,12 +213,12 @@ class GSNameWidget(QtGui.QWidget):
             valid = rx.exactMatch(name)
 
         if valid:
+            overwriting = False
             if self.unique:  # crosscheck for unique name
+                invalidtxt = "Name is not unique"
                 valid = name not in self.names
             else:  # crosscheck for overwrite
                 overwriting = name in self.names
-
-        if curoverwriting != overwriting:
             self.overwriting = overwriting
             self.overwritingChanged.emit(overwriting)
 
@@ -218,10 +226,44 @@ class GSNameWidget(QtGui.QWidget):
             self.valid = valid
             self.nameValidityChanged.emit(valid)
 
+        self.nameBox.setToolTip(invalidtxt if not valid else '')
+        if not valid:
+            self.invalidTextChanged.emit(invalidtxt)
+
     @QtCore.pyqtSlot()
     def highlightName(self):
         self.nameBox.lineEdit().setStyleSheet(
             '' if self.valid else 'QLineEdit {color: rgb(200, 0, 0)}')
+
+
+if __name__ == '__main__':
+    # noinspection PyPep8Naming
+    class BounceObj(QtCore.QObject):
+
+        @QtCore.pyqtSlot(bool)
+        def valididtyChanged(self, valid):
+            print "valididty changed: {0}".format(valid)
+
+        @QtCore.pyqtSlot(bool)
+        def overwritingChanged(self, overwrite):
+            print "overwriting changed: {0}".format(overwrite)
+
+    bobj = BounceObj()
+    gdlg = GSNameWidget(
+        namemsg='Sample is generated from PostgreSQL connection name',
+        name=xmlNameFixUp('My PG connection'),
+        nameregex=xmlNameRegex(),
+        nameregexmsg=xmlNameRegexMsg(),
+        names=['name_one', 'name_two'],
+        unique=False,
+        maxlength=10)
+    gdlg.nameValidityChanged.connect(bobj.valididtyChanged)
+    gdlg.overwritingChanged.connect(bobj.overwritingChanged)
+    gdlg.show()
+    gdlg.raise_()
+    gdlg.activateWindow()
+    sys.exit(APP.exec_())
+
 
 def isNameValid(name, names, maxlength=0, nameregex=''):
         # no zero char names allowed

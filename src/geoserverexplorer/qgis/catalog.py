@@ -13,8 +13,7 @@ from gsimporter.client import Client
 from geoserverexplorer.geoserver.pki import PKICatalog, PKIClient
 from geoserverexplorer.gui.dialogs.gsnamedialog import getGSStoreName
 from geoserverexplorer.qgis.utils import UserCanceledOperation
-from geoserverexplorer.gui.gsnameutils import isNameValid, xmlNameRegex
-
+from geoserverexplorer.gui.gsnameutils import *
 try:
     from processing.modeler.ModelerAlgorithm import ModelerAlgorithm
     from processing.script.ScriptAlgorithm import ScriptAlgorithm

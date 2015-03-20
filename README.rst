@@ -1,7 +1,7 @@
 GeoServer Explorer QGIS Plugin
 *******************************
 
-A plugin to configure and manage the OpenGeo Suite from QGIS.
+A plugin to configure and manage GeoServer from QGIS.
 
 To install, run the following in a terminal (you will need to have `paver <http://paver.github.io/paver/>`_ installed):
 
