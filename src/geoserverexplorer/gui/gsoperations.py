@@ -91,15 +91,23 @@ def addDraggedUrisToWorkspace(uris, catalog, workspace, tree):
 
 def addDraggedStyleToLayer(tree, explorer, styleItem, layerItem):
     catalog = layerItem.element.catalog
+    catItem = tree.findFirstItem(catalog)
     style = styleItem.element
     layer = layerItem.element
-    styles = layer.styles
-    styles.append(style)
-    layer.styles = styles
+    if layer.default_style is None:
+        # if default style is missing, make dragged style the layer's default
+        # without a default style, some GeoServer operations may fail
+        layer.default_style = style
+    else:
+        # add to layer's additional styles
+        styles = layer.styles
+        styles.append(style)
+        layer.styles = styles  
     explorer.run(catalog.save,
              "Add style '" + style.name + "' to layer '" + layer.name + "'",
-             [layerItem],
+             [catItem],
              layer)
+
 
 def publishProject(tree, explorer, catalog):
     layers = qgislayers.getAllLayers()
