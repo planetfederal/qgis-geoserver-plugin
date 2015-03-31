@@ -12,18 +12,22 @@ import zipfile
 
 options(
     plugin = Bunch(
-        name = 'opengeo',
-        ext_libs = path('src/opengeo/ext-libs'),
-        ext_src = path('src/opengeo/ext-src'),
-        source_dir = path('src/opengeo'),
+        name = 'geoserverexplorer',
+        ext_libs = path('src/geoserverexplorer/ext-libs'),
+        ext_src = path('src/geoserverexplorer/ext-src'),
+        source_dir = path('src/geoserverexplorer'),
         package_dir = path('.'),
         excludes = [
+            '.DS_Store',  # on Mac
             'test-output',
             'test',
-            'coverage*.*',
-            'nose*.*',            
+            'ext-src',
+            'coverage*',
+            'nose*',
             '*.pyc'
-        ]
+        ],
+        # skip certain files inadvertently found by exclude pattern globbing
+        skip_exclude = ['coverage.xsd']
     ),
 
     # Default Server Params (can be overridden)
@@ -114,23 +118,25 @@ def package(options):
 def make_zip(zip, options):
 
     excludes = set(options.plugin.excludes)
+    skips = options.plugin.skip_exclude
 
     src_dir = options.plugin.source_dir
     exclude = lambda p: any([fnmatch.fnmatch(p, e) for e in excludes])
-    def filter_excludes(files):
-        if not files: return []
+    def filter_excludes(root, items):
+        if not items: return []
         # to prevent descending into dirs, modify the list in place
-        for f in files:
-            if exclude(f):
-                debug('excluding %s' % f)
-                files.remove(f)
-        return files
+        for item in list(items):  # copy list or iteration values change
+            itempath = path(os.path.relpath(root, 'src')) / item
+            if exclude(item) and item not in skips:
+                debug('excluding %s' % itempath)
+                items.remove(item)
+        return items
 
     for root, dirs, files in os.walk(src_dir):
-        for f in filter_excludes(files):
+        for f in filter_excludes(root, files):
             relpath = os.path.relpath(root, 'src')
             zip.write(path(root) / f, path(relpath) / f)
-        filter_excludes(dirs)
+        filter_excludes(root, dirs)
 
 
 @task
@@ -173,5 +179,3 @@ def upload(options):
         error("%s : %s", err.errcode, err.errmsg)
         if err.errcode == 403:
             error("Invalid name and password?")
-
-    
