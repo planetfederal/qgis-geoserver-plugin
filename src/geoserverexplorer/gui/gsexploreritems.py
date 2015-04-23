@@ -35,6 +35,7 @@ from _ssl import SSLError
 from geoserverexplorer.geoserver import pem
 from geoserverexplorer.gui.gsoperations import *
 from geoserverexplorer.geoserver.retry import RetryCatalog
+from geoserverexplorer.gui.gsoperations import addDraggedStyleToLayer
 
 class GsTreeItem(TreeItem):
 
