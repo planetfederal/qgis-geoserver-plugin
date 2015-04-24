@@ -8,7 +8,19 @@ def layerUri(layer):
     catalog = layer.catalog
     def addAuth(_params):
         if hasattr(catalog, 'authid') and catalog.authid is not None:
-            _params['authid'] = catalog.authid
+            hasauthcfg = False
+            try:
+                configpki = QgsAuthConfigPkiPaths()
+                if not hasattr(configpki, "issuerAsPem"):
+                    # issuerAsPem() removed at same time as authcfg introduced
+                    #   in core PKI implementation
+                    hasauthcfg = True
+            except:
+                pass
+            if hasauthcfg and QGis.QGIS_VERSION_INT >= 20801:
+                _params['authcfg'] = catalog.authid
+            else:
+                _params['authid'] = catalog.authid
         else:
             _params['password'] = catalog.password
             _params['username'] = catalog.username

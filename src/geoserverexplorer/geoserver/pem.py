@@ -23,13 +23,21 @@ def getPemPkiPaths(authid, authtype):
             keyfile = _saveTempPem(configpki.keyAsPem(False)[0])
         else:
             keyfile = _getAsPem(configpki.keyId(), configpki.keyAsPem(True)[0])
-        cafile = _getAsPem(configpki.issuerId(), configpki.issuerAsPem())
+        if hasattr(configpki, "issuerAsPem"):
+            # call signature for < QGIS 2.8.1
+            cafile = _getAsPem(configpki.issuerId(), configpki.issuerAsPem())
+        else:
+            cafile = _getAsPem(configpki.caCertsId(), configpki.caCertsAsPem())
     else:
         configpki = QgsAuthConfigPkiPkcs12()
         QgsAuthManager.instance().loadAuthenticationConfig(authid, configpki, True)
         keyfile = _saveTempPem(configpki.keyAsPem(False)[0])
         certfile = _saveTempPem(configpki.certAsPem())
-        cafile = _saveTempPem(configpki.issuerAsPem())
+        if hasattr(configpki, "issuerAsPem"):
+            # call signature for < QGIS 2.8.1
+            cafile = _saveTempPem(configpki.issuerAsPem())
+        else:
+            cafile = _saveTempPem(configpki.caCertsAsPem())
 
     return certfile, keyfile, cafile
 
