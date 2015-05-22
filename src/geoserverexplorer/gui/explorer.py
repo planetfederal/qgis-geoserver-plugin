@@ -108,7 +108,10 @@ class GeoServerExplorer(QtGui.QDockWidget):
         except Exception, e:
             s = e.message
             if not isinstance(s, unicode):
-                s = unicode(e.message, errors = "ignore").encode("utf-8")
+                try:
+                    s = unicode(e.message, errors = "ignore").encode("utf-8")
+                except TypeError:  # handle ssl.SSLError type error from 2.7.9+
+                    s = unicode(e).encode("utf-8")
             self.setError(s + "\n\n<pre>" + traceback.format_exc() + "</pre>")
             noerror = False
         finally:
