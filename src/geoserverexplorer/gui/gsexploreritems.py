@@ -485,7 +485,7 @@ class GsCatalogItem(GsTreeItem):
                     password = configbasic.password()
                     username = configbasic.username()
                     self.catalog = RetryCatalog(url, username, password)
-                elif authtype in [QgsAuthType.PkiPaths, QgsAuthType.PkiPkcs12, QgsAuthType.IdentityCert]:
+                elif authtype in [QgsAuthType.PkiPaths, QgsAuthType.PkiPkcs12]:
                     certfile, keyfile, cafile = pem.getPemPkiPaths(authid, authtype)
                     self.catalog = PKICatalog(url, keyfile, certfile, cafile)
                 else:
