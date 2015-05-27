@@ -14,6 +14,12 @@ def certFolder():
         _certFolder = tempfile.mkdtemp()
     return _certFolder
 
+def nonBasicAuthTypes():
+    if QGis.QGIS_VERSION_INT < 20802:
+        return [QgsAuthType.PkiPaths, QgsAuthType.PkiPkcs12]
+    else:
+        return [QgsAuthType.PkiPaths, QgsAuthType.PkiPkcs12, QgsAuthType.IdentityCert]
+
 def getPemPkiPaths(authid, authtype):
     if authtype == QgsAuthType.PkiPaths:
         configpki = QgsAuthConfigPkiPaths()
@@ -23,21 +29,25 @@ def getPemPkiPaths(authid, authtype):
             keyfile = _saveTempPem(configpki.keyAsPem(False)[0])
         else:
             keyfile = _getAsPem(configpki.keyId(), configpki.keyAsPem(True)[0])
-        if hasattr(configpki, "issuerAsPem"):
-            # call signature for < QGIS 2.8.1
-            cafile = _getAsPem(configpki.issuerId(), configpki.issuerAsPem())
-        else:
+        if QGis.QGIS_VERSION_INT < 20802:
             cafile = _getAsPem(configpki.caCertsId(), configpki.caCertsAsPem())
-    else:
+    elif authtype == QgsAuthType.PkiPkcs12:
         configpki = QgsAuthConfigPkiPkcs12()
         QgsAuthManager.instance().loadAuthenticationConfig(authid, configpki, True)
         keyfile = _saveTempPem(configpki.keyAsPem(False)[0])
         certfile = _saveTempPem(configpki.certAsPem())
-        if hasattr(configpki, "issuerAsPem"):
-            # call signature for < QGIS 2.8.1
-            cafile = _saveTempPem(configpki.issuerAsPem())
-        else:
+        if QGis.QGIS_VERSION_INT < 20802:
             cafile = _saveTempPem(configpki.caCertsAsPem())
+    elif QGis.QGIS_VERSION_INT >= 20802 and authtype == QgsAuthType.IdentityCert:
+        configpki = QgsAuthConfigIdentityCert()
+        QgsAuthManager.instance().loadAuthenticationConfig(authid, configpki, True)
+        keyfile = _saveTempPem(configpki.keyAsPem(False)[0])
+        certfile = _saveTempPem(configpki.certAsPem())
+    else:
+        certfile, keyfile, cafile = '', '', ''
+
+    if QGis.QGIS_VERSION_INT >= 20802:
+        cafile = _saveTempPem(QgsAuthManager.instance().getTrustedCaCertsPemText())
 
     return certfile, keyfile, cafile
 
