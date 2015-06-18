@@ -30,6 +30,7 @@ RASTER_SLD_TEMPLATE = ('<?xml version="1.0" encoding="UTF-8"?>'
                     '</sld:StyledLayerDescriptor>')
 
 def adaptQgsToGs(sld, layer):
+
     sld = sld.replace("se:SvgParameter","CssParameter")
     sld = sld.replace("1.1.","1.0.")
     sld = sld.replace("\t","")
@@ -51,6 +52,17 @@ def adaptQgsToGs(sld, layer):
     for size in sizes:
         newsize="<sld:Size>%f</sld:Size>" % (float(size[10:-11]) * SIZE_FACTOR)
         sld = sld.replace(size, newsize)
+    #//replace "native" SLD symbols
+    wknReplacements = {"regular_star":"star",
+                       "cross2": "x",
+                       "equilateral_triangle": "triangle",
+                       "rectangle": "square",
+                       "filled_arrowhead": "ttf://Webdings#0x34",
+                       "line": "shape://vertline",
+                       "arrow": "ttf:Webdings#0x7F18"}
+    for key,value in wknReplacements.iteritems():
+        sld = sld.replace("<sld:WellKnownName>%s</sld:WellKnownName>" % key,
+                      "<sld:WellKnownName>%s</sld:WellKnownName>" % value)
     return sld
 
 def getLabelingAsSld(layer):
