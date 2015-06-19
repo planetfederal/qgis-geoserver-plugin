@@ -177,7 +177,7 @@ class GeoServerExplorer(QtGui.QDockWidget):
             item.widget().close()
         if widget is None:
             widget = QtGui.QTextBrowser()
-            widget.setHtml(u'<div style="background-color:#C7DBFC;"><h1>No description available</h1></div><ul>')
+            widget.setHtml(u'<div style="background-color:#ffffcc;"><h1>Select an item above for contextual description</h1></div><ul>')
 
         self.descriptionLayout.addWidget(widget)
 
