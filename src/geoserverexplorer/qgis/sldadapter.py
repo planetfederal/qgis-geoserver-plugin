@@ -91,10 +91,12 @@ def getLabelingAsSld(layer):
         s += '<Fill><CssParameter name="fill">' + rgb + "</CssParameter></Fill>"
         s += "<Font>"
         s += '<CssParameter name="font-family">' + layer.customProperty("labeling/fontFamily") +'</CssParameter>'
-        s += '<CssParameter name="font-size">' + str(layer.customProperty("labeling/fontSize")) +'</CssParameter>'
-        if bool(layer.customProperty("labeling/fontItalic")):
+        s += ('<CssParameter name="font-size">' +
+                str(float(layer.customProperty("labeling/fontSize")) * SIZE_FACTOR)
+                +'</CssParameter>')
+        if layer.customProperty("labeling/fontItalic") == "true":
             s += '<CssParameter name="font-style">italic</CssParameter>'
-        if bool(layer.customProperty("labeling/fontBold")):
+        if layer.customProperty("labeling/fontBold") == "true":
             s += '<CssParameter name="font-weight">bold</CssParameter>'
         s += "</Font>"
         s += "<LabelPlacement>"
@@ -103,11 +105,22 @@ def getLabelingAsSld(layer):
                 "<AnchorPointX>0.5</AnchorPointX>"
                 "<AnchorPointY>0.5</AnchorPointY>"
                 "</AnchorPoint>")
+        if layer.customProperty("labeling/bufferDraw") == "true":
+            r = int(layer.customProperty("labeling/bufferColorR"))
+            g = int(layer.customProperty("labeling/bufferColorG"))
+            b = int(layer.customProperty("labeling/bufferColorB"))
+            rgb = '#%02x%02x%02x' % (r, g, b)
+            haloSize = str(layer.customProperty("labeling/bufferColorB"))
+            opacity = str(float(layer.customProperty("labeling/bufferColorA")) / 255.0)
+            s += "<Halo><Radius>%s</Radius><Fill>" % haloSize
+            s +=  '<CssParameter name="fill">%s</CssParameter>' % rgb
+            s += '<CssParameter name="fill-opacity">%s</CssParameter></Fill></Halo>' % opacity
+
         s += "<Displacement>"
-        s += "<DisplacementX>" + str(layer.customProperty("labeling/xOffset")) + "0</DisplacementX>"
-        s += "<DisplacementY>" + str(layer.customProperty("labeling/yOffset")) + "0</DisplacementY>"
+        s += "<DisplacementX>" + str(layer.customProperty("labeling/xOffset")) + "</DisplacementX>"
+        s += "<DisplacementY>" + str(layer.customProperty("labeling/yOffset")) + "</DisplacementY>"
         s += "</Displacement>"
-        s += "<Rotation>" + str(layer.customProperty("labeling/angleOffset")) + "</Rotation>"
+        s += "<Rotation>-" + str(layer.customProperty("labeling/angleOffset")) + "</Rotation>"
         s += "</PointPlacement></LabelPlacement>"
         s +="</TextSymbolizer>"
         return s
