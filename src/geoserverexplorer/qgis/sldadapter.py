@@ -65,7 +65,8 @@ def adaptQgsToGs(sld, layer):
                        "rectangle": "square",
                        "filled_arrowhead": "ttf://Webdings#0x34",
                        "line": "shape://vertline",
-                       "arrow": "ttf:Webdings#0x7F18"}
+                       "arrow": "ttf:Webdings#0x7F18",
+                       "diamond": "ttf://Wingdings#0x75"}
     if layer.geometryType() == QGis.Polygon:
         wknReplacements = {"horline":"shape://horline",
                        "vertline":"shape://vertline",
