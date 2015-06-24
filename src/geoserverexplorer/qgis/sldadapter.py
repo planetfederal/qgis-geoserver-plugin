@@ -53,13 +53,22 @@ def adaptQgsToGs(sld, layer):
         newsize="<sld:Size>%f</sld:Size>" % (float(size[10:-11]) * SIZE_FACTOR)
         sld = sld.replace(size, newsize)
     #//replace "native" SLD symbols
-    wknReplacements = {"regular_star":"star",
+    wknReplacements = {}
+    if layer.geometryType() == QGis.Point:
+        wknReplacements = {"regular_star":"star",
                        "cross2": "x",
                        "equilateral_triangle": "triangle",
                        "rectangle": "square",
                        "filled_arrowhead": "ttf://Webdings#0x34",
                        "line": "shape://vertline",
                        "arrow": "ttf:Webdings#0x7F18"}
+    if layer.geometryType() == QGis.Polygon:
+        wknReplacements = {"horline":"shape://horline",
+                       "vertline":"shape://vertline",
+                       "cross":"shape://plus",
+                       "slash":"shape://slash",
+                       "backslash":"shape://backslash",
+                       "x": "shape://times"}
     for key,value in wknReplacements.iteritems():
         sld = sld.replace("<sld:WellKnownName>%s</sld:WellKnownName>" % key,
                       "<sld:WellKnownName>%s</sld:WellKnownName>" % value)
