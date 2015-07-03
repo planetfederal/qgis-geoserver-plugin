@@ -13,7 +13,7 @@ from gsimporter.client import Client
 from geoserverexplorer.geoserver.pki import PKICatalog, PKIClient
 from geoserverexplorer.gui.dialogs.gsnamedialog import getGSStoreName
 from geoserverexplorer.qgis.utils import UserCanceledOperation
-from geoserverexplorer.gui.gsnameutils import *
+from geoserverexplorer.gui.gsnameutils import xmlNameFixUp, xmlNameIsValid
 try:
     from processing.modeler.ModelerAlgorithm import ModelerAlgorithm
     from processing.script.ScriptAlgorithm import ScriptAlgorithm
@@ -130,12 +130,26 @@ class CatalogWrapper(object):
 
         if isinstance(layer, basestring):
             layer = layers.resolveLayer(layer)
-        sld = getGsCompatibleSld(layer)
+        sld, icons = getGsCompatibleSld(layer)
         if sld is not None:
             name = name if name is not None else layer.name()
             name = name.replace(" ", "_")
+            self.uploadIcons(icons)
             self.catalog.create_style(name, sld, overwrite)
         return sld
+
+
+    def uploadIcons(self, icons):
+        url = self.catalog.gs_base_url + "app/api/icons"
+        for icon in icons:
+            files = {'file': (icon[1], icon[2])}
+            r = requests.post(url, files=files, auth=(self.catalog.username, self.catalog.password))
+            try:
+                r.raise_for_status()
+            except Exception, e:
+                raise Exception ("Error uploading SVG icon to GeoServer:\n" + str(e))
+            break
+
 
     def getDataFromLayer(self, layer):
         '''
