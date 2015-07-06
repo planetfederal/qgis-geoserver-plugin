@@ -11,9 +11,11 @@ from geoserverexplorer.qgis.sldadapter import adaptGsToQgs,\
 from geoserverexplorer.qgis import uri as uri_utils
 from gsimporter.client import Client
 from geoserverexplorer.geoserver.pki import PKICatalog, PKIClient
-from geoserverexplorer.gui.dialogs.gsnamedialog import getGSStoreName
-from geoserverexplorer.qgis.utils import UserCanceledOperation
+from geoserverexplorer.geoserver.util import groupsWithLayer, removeLayerFromGroups, \
+    addLayerToGroups
 from geoserverexplorer.gui.gsnameutils import xmlNameFixUp, xmlNameIsValid
+import requests
+
 try:
     from processing.modeler.ModelerAlgorithm import ModelerAlgorithm
     from processing.script.ScriptAlgorithm import ScriptAlgorithm

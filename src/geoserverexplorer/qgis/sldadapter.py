@@ -143,28 +143,41 @@ def getLabelingAsSld(layer):
             s += '<CssParameter name="font-weight">bold</CssParameter>'
         s += "</Font>"
         s += "<LabelPlacement>"
-        s += ("<PointPlacement>"
+        if layer.geometryType() == QGis.Point:
+            s += ("<PointPlacement>"
                 "<AnchorPoint>"
                 "<AnchorPointX>0.5</AnchorPointX>"
                 "<AnchorPointY>0.5</AnchorPointY>"
                 "</AnchorPoint>")
+            s += "<Displacement>"
+            s += "<DisplacementX>" + str(layer.customProperty("labeling/xOffset")) + "</DisplacementX>"
+            s += "<DisplacementY>" + str(layer.customProperty("labeling/yOffset")) + "</DisplacementY>"
+            s += "</Displacement>"
+            s += "<Rotation>-" + str(layer.customProperty("labeling/angleOffset")) + "</Rotation>"
+            s += "</PointPlacement>"
+        elif layer.geometryType() == QGis.Line:
+            mode = layer.customProperty("labeling/placement")
+            print mode
+            if mode != 4:
+                follow = '<VendorOption name="followLine">true</VendorOption>' if mode == 3 else ''
+                s += '''<LinePlacement>
+                        <PerpendicularOffset>
+                           %s
+                        </PerpendicularOffset>
+                      </LinePlacement>
+                      %s''' %  (str(layer.customProperty("labeling/dist")), follow)
+        s += "</LabelPlacement>"
+
         if layer.customProperty("labeling/bufferDraw") == "true":
             r = int(layer.customProperty("labeling/bufferColorR"))
             g = int(layer.customProperty("labeling/bufferColorG"))
             b = int(layer.customProperty("labeling/bufferColorB"))
             rgb = '#%02x%02x%02x' % (r, g, b)
-            haloSize = str(layer.customProperty("labeling/bufferColorB"))
+            haloSize = str(layer.customProperty("labeling/bufferSize"))
             opacity = str(float(layer.customProperty("labeling/bufferColorA")) / 255.0)
             s += "<Halo><Radius>%s</Radius><Fill>" % haloSize
             s +=  '<CssParameter name="fill">%s</CssParameter>' % rgb
             s += '<CssParameter name="fill-opacity">%s</CssParameter></Fill></Halo>' % opacity
-
-        s += "<Displacement>"
-        s += "<DisplacementX>" + str(layer.customProperty("labeling/xOffset")) + "</DisplacementX>"
-        s += "<DisplacementY>" + str(layer.customProperty("labeling/yOffset")) + "</DisplacementY>"
-        s += "</Displacement>"
-        s += "<Rotation>-" + str(layer.customProperty("labeling/angleOffset")) + "</Rotation>"
-        s += "</PointPlacement></LabelPlacement>"
         s +="</TextSymbolizer>"
         return s
     except:
