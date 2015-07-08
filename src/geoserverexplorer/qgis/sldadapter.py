@@ -79,11 +79,17 @@ def adaptQgsToGs(sld, layer):
                       "<sld:WellKnownName>%s</sld:WellKnownName>" % value)
 
 
+    icons = []
     renderer = layer.rendererV2()
     if isinstance(renderer, QgsSingleSymbolRendererV2):
         icons = getReadyToUploadSvgIcons(renderer.symbol())
-    else:
-        icons = []
+    elif isinstance(renderer, QgsCategorizedSymbolRendererV2):
+        for cat in renderer.categories():
+            icons.extend(getReadyToUploadSvgIcons(cat.symbol()))
+    elif isinstance(renderer, QgsGraduatedSymbolRendererV2):
+        for ran in renderer.ranges():
+            icons.extend(getReadyToUploadSvgIcons(ran.symbol()))
+
 
     for icon in icons:
         for path in QgsApplication.svgPaths():
@@ -120,6 +126,8 @@ def getReadyToUploadSvgIcons(symbol):
             filename, ext = os.path.splitext(basename)
             propsHash = hash(frozenset(props.items()))
             icons.append ([sl.svgFilePath(), "%s_%s%s" % (filename, propsHash, ext), svg])
+        elif isinstance(sl, QgsMarkerLineSymbolLayerV2):
+            return getReadyToUploadSvgIcons(sl.subSymbol())
     return icons
 
 def getLabelingAsSld(layer):
