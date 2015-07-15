@@ -165,7 +165,6 @@ def getLabelingAsSld(layer):
             s += "</PointPlacement>"
         elif layer.geometryType() == QGis.Line:
             mode = layer.customProperty("labeling/placement")
-            print mode
             if mode != 4:
                 follow = '<VendorOption name="followLine">true</VendorOption>' if mode == 3 else ''
                 s += '''<LinePlacement>
