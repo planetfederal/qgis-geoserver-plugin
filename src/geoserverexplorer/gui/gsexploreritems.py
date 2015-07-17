@@ -569,6 +569,11 @@ class GsCatalogItem(GsTreeItem):
             cleanAction = QtGui.QAction(icon, "Clean (remove unused elements)", explorer)
             cleanAction.triggered.connect(lambda: self.cleanCatalog(explorer))
             actions.append(cleanAction)
+        else:
+            icon = QtGui.QIcon(os.path.dirname(__file__) + "/../images/edit.png")
+            editAction = QtGui.QAction(icon, "Edit...", explorer)
+            editAction.triggered.connect(lambda: self.editCatalog(explorer))
+            actions.append(editAction)
             icon = QtGui.QIcon(os.path.dirname(__file__) + "/../images/publish-to-geoserver.png")
             publishLayerAction = QtGui.QAction(icon, "Publish layers to this catalog", explorer)
             publishLayerAction.triggered.connect(lambda: self._publishLayers(tree, explorer))
@@ -578,6 +583,22 @@ class GsCatalogItem(GsTreeItem):
             actions.append(publishProjectAction)
 
         return actions
+
+    def editCatalog(self, explorer):
+        dlg = DefineCatalogDialog(explorer, None, self.element, self.name, self.geonode)
+        dlg.exec_()
+        if dlg.ok:
+            if dlg.certfile is not None:
+                self.catalog = PKICatalog(dlg.url, dlg.keyfile, dlg.certfile, dlg.cafile)
+            else:
+                self.catalog = RetryCatalog(dlg.url, dlg.username, dlg.password)
+            self.catalog.authid = dlg.authid
+            self.geonode = Geonode(dlg.geonodeUrl)
+            self.name = dlg.name
+            self.isConnected = False
+            self.setIcon(0, QtGui.QIcon(os.path.dirname(__file__) + "/../images/geoserver_gray.png"))
+            self.refreshContent(explorer)
+
 
     def cleanCatalog(self, explorer):
         cat = CatalogWrapper(self.catalog)

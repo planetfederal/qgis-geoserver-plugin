@@ -2,17 +2,44 @@ from PyQt4 import QtGui, QtCore
 from qgis.gui import *
 from qgis.core import *
 from geoserverexplorer.geoserver import pem
+from opengeo.geoserver.pki import PKICatalog
+from PyQt4.QtCore import QSettings
 
 class DefineCatalogDialog(QtGui.QDialog):
 
-    def __init__(self, catalogs, parent = None):
+    def __init__(self, explorer, parent = None, catalog = None, name = None, geonode = None):
         super(DefineCatalogDialog, self).__init__(parent)
         self.catalogs = catalogs
         self.ok = False
+        self.catalog = catalog
+        self.name = name
+        self.geonode = geonode
         self.initGui()
 
 
     def initGui(self):
+
+        if self.name is not None:
+            if self.catalog is None:
+                settings = QSettings()
+                settings.beginGroup("/OpenGeo/GeoServer")
+                settings.beginGroup(self.name)
+                url = unicode(settings.value("url"))
+                username = settings.value("username")
+                geonodeUrl = settings.value("geonode")
+            else:
+                username = self.catalog.username
+                url = self.catalog.service_url
+                geonodeUrl = self.geonode.url
+
+        else:
+            username = ""
+            geonodeUrl = geonodeUrl = settings.value('/OpenGeo/LastGeoNodeUrl', 'http://localhost:8000/')
+            url = settings.value('/OpenGeo/LastCatalogUrl', 'http://localhost:8080/geoserver')
+
+        if url.endswith("/rest"):
+            url = url[:-5]
+
         self.setWindowTitle('Catalog definition')
 
         verticalLayout = QtGui.QVBoxLayout()
@@ -24,7 +51,7 @@ class DefineCatalogDialog(QtGui.QDialog):
         nameLabel.setMinimumWidth(150)
         self.nameBox = QtGui.QLineEdit()
         settings = QtCore.QSettings()
-        name = settings.value('/GeoServer/LastCatalogName', 'Default GeoServer catalog')
+        name = self.name or settings.value('/GeoServer/LastCatalogName', 'Default GeoServer catalog')
         self.nameBox.setText(name)
 
         self.nameBox.setMinimumWidth(250)
@@ -67,6 +94,7 @@ class DefineCatalogDialog(QtGui.QDialog):
         self.usernameBox = QtGui.QLineEdit()
         self.usernameBox.setText('admin')
         self.usernameBox.setMinimumWidth(250)
+        self.usernameBox.setText(username)
         horizontalLayout.addWidget(usernameLabel)
         horizontalLayout.addWidget(self.usernameBox)
         tabBasicAuthLayout.addLayout(horizontalLayout)
@@ -78,7 +106,6 @@ class DefineCatalogDialog(QtGui.QDialog):
         passwordLabel.setMinimumWidth(150)
         self.passwordBox = QtGui.QLineEdit()
         self.passwordBox.setEchoMode(QtGui.QLineEdit.Password)
-        self.passwordBox.setText('geoserver')
         self.passwordBox.setMinimumWidth(250)
         horizontalLayout.addWidget(passwordLabel)
         horizontalLayout.addWidget(self.passwordBox)
@@ -102,6 +129,35 @@ class DefineCatalogDialog(QtGui.QDialog):
 
         verticalLayout.addWidget(self.authBox)
 
+        if self.catalog is not None:
+            if isinstance(self.catalog, PKICatalog):
+                self.tabWidget.setCurrentIndex(1)
+                #TODO
+            else:
+                self.tabWidget.setCurrentIndex(0)
+                self.passwordBox.setText(self.catalog.password)
+                self.usernameBox.setText(self.catalog.username)
+
+        verticalLayout2 = QtGui.QVBoxLayout()
+        horizontalLayout = QtGui.QHBoxLayout()
+        horizontalLayout.setSpacing(30)
+        horizontalLayout.setMargin(0)
+        urlLabel = QtGui.QLabel('URL')
+        urlLabel.setMinimumWidth(150)
+        self.urlGeonodeBox = QtGui.QLineEdit()
+        if isinstance(geonodeUrl, QtCore.QPyNullVariant):
+            geonodeUrl = ""
+        self.urlGeonodeBox.setText(geonodeUrl)
+        self.urlGeonodeBox.setMinimumWidth(250)
+        horizontalLayout.addWidget(urlLabel)
+        horizontalLayout.addWidget(self.urlGeonodeBox)
+        verticalLayout2.addLayout(horizontalLayout)
+
+        self.geonodeBox = QtGui.QGroupBox()
+        self.geonodeBox.setTitle("GeoNode Connection parameters (Optional)")
+        self.geonodeBox.setLayout(verticalLayout2)
+
+        layout.addWidget(self.geonodeBox)
         self.spacer = QtGui.QSpacerItem(20,20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         layout.addItem(self.spacer)
 
