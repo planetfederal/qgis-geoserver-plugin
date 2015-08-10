@@ -27,7 +27,7 @@ class DefineCatalogDialog(QtGui.QDialog):
                 url = unicode(settings.value("url"))
                 username = settings.value("username")
                 geonodeUrl = settings.value("geonode")
-            else:
+            elif not isinstance(self.catalog, PKICatalog):
                 username = self.catalog.username
                 url = self.catalog.service_url
                 geonodeUrl = self.geonode.url
