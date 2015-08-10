@@ -33,6 +33,7 @@ class DefineCatalogDialog(QtGui.QDialog):
                 geonodeUrl = self.geonode.url
 
         else:
+            settings = QSettings()
             username = ""
             geonodeUrl = geonodeUrl = settings.value('/OpenGeo/LastGeoNodeUrl', 'http://localhost:8000/')
             url = settings.value('/OpenGeo/LastCatalogUrl', 'http://localhost:8080/geoserver')
