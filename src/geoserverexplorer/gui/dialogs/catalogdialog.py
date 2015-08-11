@@ -19,15 +19,25 @@ class DefineCatalogDialog(QtGui.QDialog):
 
     def initGui(self):
 
+        authid = None
         if self.name is not None:
             if self.catalog is None:
                 settings = QSettings()
-                settings.beginGroup("/OpenGeo/GeoServer")
-                settings.beginGroup(self.name)
+                settings.beginGroup("/OpenGeo/GeoServer/" + self.name)
                 url = unicode(settings.value("url"))
                 username = settings.value("username")
+                authid = settings.value("authid")
                 geonodeUrl = settings.value("geonode")
-            elif not isinstance(self.catalog, PKICatalog):
+                settings.endGroup()
+            elif isinstance(self.catalog, PKICatalog):
+                settings = QSettings()
+                settings.beginGroup("/OpenGeo/GeoServer/" + self.name)
+                username = ""
+                authid = settings.value("authid")
+                url = self.catalog.service_url
+                geonodeUrl = self.geonode.url
+                settings.endGroup()
+            else:
                 username = self.catalog.username
                 url = self.catalog.service_url
                 geonodeUrl = self.geonode.url
@@ -116,6 +126,8 @@ class DefineCatalogDialog(QtGui.QDialog):
 
         try:
             self.certWidget = QgsAuthConfigSelect( keypasssupported = False)
+            if authid is not None:
+                self.certWidget.setConfigId(authid)
             self.tabWidget.addTab(self.certWidget, "Configurations")
         except NameError:
             #for QGIS without PKI support
@@ -133,11 +145,12 @@ class DefineCatalogDialog(QtGui.QDialog):
         if self.catalog is not None:
             if isinstance(self.catalog, PKICatalog):
                 self.tabWidget.setCurrentIndex(1)
-                #TODO
             else:
                 self.tabWidget.setCurrentIndex(0)
                 self.passwordBox.setText(self.catalog.password)
                 self.usernameBox.setText(self.catalog.username)
+        elif authid is not None:
+            self.tabWidget.setCurrentIndex(1)
 
         verticalLayout2 = QtGui.QVBoxLayout()
         horizontalLayout = QtGui.QHBoxLayout()
