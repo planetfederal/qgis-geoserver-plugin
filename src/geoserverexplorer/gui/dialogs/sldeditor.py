@@ -17,12 +17,13 @@ class SldEditorDialog(QtGui.QDialog):
         self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowSystemMenuHint |
                                                 QtCore.Qt.WindowMinMaxButtonsHint)
         self.setWindowTitle('Edit SLD style')
-
-        layout = QtGui.QVBoxLayout()
-        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
-        sld = xml.dom.minidom.parseString(self.style.sld_body)
-        self.editor = SldEditorWidget(sld.toprettyxml())
-        layout.addWidget(self.editor)
+        
+        layout = QtGui.QVBoxLayout()                                
+        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)         
+        sld = "\n".join([line for line in 
+            xml.dom.minidom.parseString(self.style.sld_body).toprettyxml().splitlines() if line.strip()])      
+        self.editor = SldEditorWidget(sld)        
+        layout.addWidget(self.editor)       
         layout.addWidget(buttonBox)
         self.setLayout(layout)
 
