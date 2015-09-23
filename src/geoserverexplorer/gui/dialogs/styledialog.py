@@ -106,7 +106,7 @@ class AddStyleToLayerDialog(QtGui.QDialog):
         self.layer = layer
         styles = layer.styles
         self.layerstyles = [style.name for style in styles]
-        self.layerdefaultstyle = layer.default_style.name
+        self.layerdefaultstyle = layer.default_style.name \
             if layer.default_style is not None else ''
         self.style = None
         self.default = None

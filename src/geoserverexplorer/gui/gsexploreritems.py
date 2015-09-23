@@ -1032,7 +1032,7 @@ class GsStyleItem(GsTreeItem):
         if isinstance(item, GsStyleItem):
             if isinstance(self.parent(), GsLayerItem):
                 destinationItem = self.parent()
-                addDraggedStyleToLayer(tree, explorer, item, destinationItem):                
+                addDraggedStyleToLayer(tree, explorer, item, destinationItem) 
         return []
 
     def multipleSelectionContextMenuActions(self, tree, explorer, selected):
