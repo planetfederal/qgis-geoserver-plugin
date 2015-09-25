@@ -94,7 +94,7 @@ def addDraggedStyleToLayer(tree, explorer, styleItem, layerItem):
     catItem = tree.findFirstItem(catalog)
     style = styleItem.element
     layer = layerItem.element
-    if layer.default_style is None:
+    if not hasattr(layer, "default_style") or layer.default_style is None:
         # if default style is missing, make dragged style the layer's default
         # without a default style, some GeoServer operations may fail
         layer.default_style = style
@@ -102,7 +102,7 @@ def addDraggedStyleToLayer(tree, explorer, styleItem, layerItem):
         # add to layer's additional styles
         styles = layer.styles
         styles.append(style)
-        layer.styles = styles  
+        layer.styles = styles
     explorer.run(catalog.save,
              "Add style '" + style.name + "' to layer '" + layer.name + "'",
              [catItem],
