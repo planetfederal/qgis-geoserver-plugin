@@ -178,30 +178,30 @@ class CatalogWrapper(object):
         return data
 
 
-    def _publishPostgisLayer(self, layer, workspace, overwrite, name):
+    def _publishPostgisLayer(self, layer, workspace, overwrite, name, storename=None):
         uri = QgsDataSourceURI(layer.dataProvider().dataSourceUri())
-        user = uri.username()
-        passwd = uri.password()
-        # GeoServer's PG connector apparently requires a username.
-        # Username is not required to be defined for a QGIS PG layer (e.g. user can
-        # rely upon PG's default). Username and/or password might be saved in QGIS,
-        # though the user has to choose the option to have them saved
-        if not user or (user and not passwd):
-            connInfo = uri.connectionInfo()
-            (success, user, passwd ) = QgsCredentials.instance().get(connInfo, None, None)
-            if success:
-                QgsCredentials.instance().put(connInfo, user, passwd)
-            else:
-                raise UserCanceledOperation()
 
-        storename = self.getConnectionNameFromLayer(layer)
-        storenames = workspace.get_stores()
-        if storename in storenames or not isNameValid(storename, [], 0, xmlNameRegex()):
-            storename = getGSStoreName(
-                name=storename,
-                namemsg='Sample is generated from PostgreSQL connection name.',
-                names=[],
-                unique=False)
+        # check for table.name conflict in existing layer names where the
+        # table.name is not the same as the user-chosen layer name,
+        # i.e. unintended overwrite
+        resource = self.catalog.get_resource(uri.table())
+        if resource is not None and uri.table() != name:
+            raise Exception("QGIS PostGIS layer has table name conflict with "
+                            "existing GeoServer layer name: {0}\n"
+                            "You may need to rename GeoServer layer name."
+                            .format(uri.table()))
+
+        conname = self.getConnectionNameFromLayer(layer)
+        storename = xmlNameFixUp(storename or conname)
+
+        if not xmlNameIsValid(storename):
+            raise Exception("Database connection name is invalid XML and can "
+                            "not be auto-fixed: {0} -> {1}"
+                            .format(conname, storename))
+
+        if not uri.username():
+            raise Exception("GeoServer requires database connection's username "
+                            "to be defined")
 
         store = createPGFeatureStore(self.catalog,
                                      storename,
@@ -211,10 +211,53 @@ class CatalogWrapper(object):
                                      database = uri.database(),
                                      schema = uri.schema(),
                                      port = uri.port(),
-                                     user = user,
-                                     passwd = passwd)
+                                     user = uri.username(),
+                                     passwd = uri.password())
         if store is not None:
-            self.catalog.publish_featuretype(name, store, layer.crs().authid())
+            rscname = name if uri.table() != name else uri.table()
+            grpswlyr = []
+            if overwrite:
+                # TODO: How do we honor *unchecked* user setting of
+                #   "Delete resource when deleting layer" here?
+                #   Is it an issue, if overwrite is expected?
+
+                # We will soon have two layers with slightly different names,
+                # a temp based upon table.name, the other possibly existing
+                # layer with the same custom name, which may belong to group(s).
+                # If so, remove existing layer from any layer group, before
+                # continuing on with layer delete and renaming of new feature
+                # type layer to custom name, then add new resultant layer back
+                # to any layer groups the existing layer belonged to. Phew!
+
+                flyr = self.catalog.get_layer(rscname)
+                if flyr is not None:
+                    grpswlyr = groupsWithLayer(self.catalog, flyr)
+                    if grpswlyr:
+                        removeLayerFromGroups(self.catalog, flyr, grpswlyr)
+                    self.catalog.delete(flyr)
+                # TODO: What about when the layer name is the same, but the
+                #   underlying db connection/store has changed? Not an issue?
+                #   The layer is deleted, which is correct, but the original
+                #   db store and feature type will not be changed. A conflict?
+                frsc = store.get_resources(name=rscname)
+                if frsc is not None:
+                    self.catalog.delete(frsc)
+
+            # for dbs the name has to be the table name, initially
+            ftype = self.catalog.publish_featuretype(uri.table(), store,
+                                                     layer.crs().authid())
+
+            # once table-based feature type created, switch name to user-chosen
+            if ftype.name != rscname:
+                ftype.dirty["name"] = rscname
+            self.catalog.save(ftype)
+
+            # now re-add to any previously assigned-to layer groups
+            if overwrite and grpswlyr:
+                ftype = self.catalog.get_resource(rscname)
+                if ftype:
+                    addLayerToGroups(self.catalog, ftype, grpswlyr,
+                                     workspace=workspace)
 
 
     def _uploadRest(self, layer, workspace, overwrite, name):
