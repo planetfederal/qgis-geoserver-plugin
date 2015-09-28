@@ -1,0 +1,97 @@
+GEOSERVER
+
+CATALOG
+-Connect to catalog
+-Connect to catalog with wrong url or credentials: should show "could not connect to catalog" message in message bar
+-Check connections are persisted if corresponding option is enabled
+-Connect to previous workspace that is not enabled (icon is grayed-out)
+Check that clicking on the catalog item displays catalog info in the description panel
+-Remove catalog:
+	-Check it removes it from the tree
+	-Check that, when reopening the explorer, it is not in the list of previous catalogs
+	-Check that, once deleted, the description panel is not available and the buttons corresponding to the dialog are not present in the toolbar
+-Dragging a layer from the QGIS browser into a catalog item should add the resource to the workspace and create a layer that publishes it
+
+WORKSPACE
+-Create new workspace
+-Create new worskpace with existing name: should show error message in message bar
+-Create new worskpace with wrong/missing uri: should show error message in message bar
+-Set workspace as default.
+-Check that "set as default workspace" is disabled for the current default workspace
+-Delete non-empty workspace:
+	- Delete empty with all its datastores not used by any layer. It should be deleted without warning
+	- Delete empty with at least a datastore used by a layer. It should show warning and clicking on ok should delete the workspace and the dependent layers
+-Delete empty workspace
+-Delete datastore that is used in a layer.
+	-It should show a confirmation dialog saying that the layer will also be deleted.
+	-Accept and check that both elements are deleted
+-Clean (remove unused stores) workspace:
+	-Import a layer. It will create a store and a layer
+	-Delete the layer, making sure that the option to delete the underlying resource is not enabled. That will leave an unused resource
+	-Run the "Clean (remove unused elements)" option. That should delete the resource
+-Dragging a layer from the QGIS browser into a workspace item should add the resource to the workspace and create a layer that publishes it
+
+LAYER
+-Add style to layer
+-Add style to layer indicating that it should be considered as the default style
+-Make style default
+-Add style to layer dragging style item
+-Remove style from layer
+-Check that default style cannot be removed from layer (option should be disabled)
+-Delete layer
+	-with "delete style" option enabled, check that the style is deleted if and only if no other layer uses that layer
+	-with "delete resource" layer, check that it also deletes the resource
+-Modify layer info using the description panel
+	-modify abstract
+	-modify title
+	-modify SRS
+-Add layer to QGIS project
+	- Both for raster and vector layers
+	- Both using the context menu action and dragging and dropping on the QGIS canvas
+-Dragging a layer from the QGIS browser into a layer item should add the resource to the default workspace and create a layer that publishes it
+-Dragging into the "GeoServer Layers" item should do the same.
+
+GROUPS
+-Create group by selecting several layers, right-clicking and using "create group"
+	-check that it shows error on message bar if name is empty
+-Create group by using the "new group" option in the groups item
+	-check that it shows error on message bar if name is empty
+	-check that it shows error on message bar if no layer is selected (empty group)
+	-check that no group is created if clicked on "cancel"
+	-check that "(de)select option works fine"
+	-check that when the dialog is opened layers have their default style selected
+-Delete group.
+-Delete layer that is used in a group.
+	-It should show a confirmation dialog saying that the group will also be deleted.
+	-Accept and check that both elements are deleted
+-Edit group:
+	-check that previous layers are in the group definition
+	-check that group layers have the corresponding style and that style is saved when closing
+	-check that non-group layers have their default style selected
+	-check that group is modified when closing
+	-check that group is not modified if clicking "cancel"
+-Remove layer from group
+-Check that layer cannot be removed from group when only the group only contains one layer (cannot create empty group)
+-Change rendering order (up/down/to top/to bottom)
+-Edit group by dragging a layer item on group item
+-Edit group by dragging a layer item on a layer item under a group item (should add it to the parent group of the layer item)
+
+
+STYLES
+-Import style from style
+	-check that no style is imported if clicking cancel on dialog
+	-check that it uses QGIS layer name when name box is left empty
+	-check that it uses entered name when name box is not empty
+-Import style by dragging a QGIS style item
+-Clean (remove unused styles):
+	-Import a layer. It will create a style and a layer
+	-Delete the layer, making sure that the option to delete the layer style is not enabled. That will leave an unused style
+	-Run the "Clean (remove unused styles)" option. That should delete the style
+-Consolidate styles
+	-Import several layers with the same style
+	-Run "consolidate styles". It should leave only the first of those styles, delete the other ones, and use that first one in the layers that used the remaining ones
+-Edit style: Set the "prompt for CRS" option in the Options.../CRS group. When editing a stlye, it should not ask for the CRS but go directly to the styling dialog
+-Edit SLD
+-Delete style.
+	-If style is used by layer, it should ask for confirmation and warn that the layer will also be deleted. Check that all layers using the style are deleted
+
