@@ -7,16 +7,21 @@ from geoserverexplorer.gui.explorer import GeoServerExplorer
 from geoserverexplorer.gui.dialogs.configdialog import ConfigDialog
 from geoserverexplorer.geoserver import pem
 from PyQt4 import QtGui, QtCore
+from processing.core.Processing import Processing
+from processingprovider.geoserverprovider import GeoServerProvider
 
 class GeoServerExplorerPlugin:
 
     def __init__(self, iface):
         self.iface = iface
         config.iface = iface
+        self.provider = GeoServerProvider()
 
     def unload(self):
         pem.removePkiTempFiles(self.explorer.catalogs())
         self.explorer.deleteLater()
+
+        Processing.removeProvider(self.provider)
 
     def initGui(self):
         icon = QtGui.QIcon(os.path.dirname(__file__) + "/images/geoserver.png")
@@ -42,12 +47,14 @@ class GeoServerExplorerPlugin:
         self.helpAction.triggered.connect(self.showHelp)
         self.iface.addPluginToWebMenu(u"GeoServer", self.helpAction)
 
+        Processing.addProvider(self.provider)
+
     def _explorerVisibilityChanged(self, visible):
         settings = QtCore.QSettings()
         settings.setValue("/GeoServer/Settings/General/ExplorerVisible", visible)
 
     def showHelp(self):
-        HELP_URL = "http://qgis.boundlessgeo.com/static/docs/index.html"
+        HELP_URL = "https://github.com/boundlessgeo/qgis-geoserver-plugin/blob/master/doc/source/intro.rst"
         webbrowser.open(HELP_URL)
 
     def openExplorer(self):
