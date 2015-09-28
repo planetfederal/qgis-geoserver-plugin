@@ -30,7 +30,8 @@ RASTER_SLD_TEMPLATE = ('<?xml version="1.0" encoding="UTF-8"?>'
                     '</sld:StyledLayerDescriptor>')
 
 def adaptQgsToGs(sld, layer):
-
+    if layer.type() != QgsMapLayer.VectorLayer:
+        return sld, []
     sld = sld.replace("se:SvgParameter","CssParameter")
     sld = sld.replace("1.1.","1.0.")
     sld = sld.replace("\t","")

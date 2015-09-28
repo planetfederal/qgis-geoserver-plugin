@@ -78,7 +78,7 @@ class GSNameWidget(QtGui.QWidget):
         self.valid = True  # False will not trigger signal for setEnabled slots
         self.initGui()
         self.validateName()
-        
+
     def initGui(self):
         layout = QtGui.QHBoxLayout()
         layout.setMargin(0)

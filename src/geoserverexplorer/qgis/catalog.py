@@ -19,14 +19,14 @@ import requests
 try:
     from processing.modeler.ModelerAlgorithm import ModelerAlgorithm
     from processing.script.ScriptAlgorithm import ScriptAlgorithm
-    from processing.core.parameters import ParameterRaster, ParameterVector
-    from processing.core.outputs import OutputVector, OutputRaster
-    from processing.gui.AlgorithmExecutor import runalg
+    from processing.core.parameters import *
+    from processing.core.outputs import *
+    from processing.gui import AlgorithmExecutor
     from processing.gui.SilentProgress import SilentProgress
     from processing.tools.dataobjects import getObjectFromUri as load
-    from processing.modeler.Providers import Providers
+    from processing.modeler.ModelerUtils import ModelerUtils
     processingOk = True
-except:
+except Exception, e:
     processingOk = False
 
 def createGeoServerCatalog(service_url = "http://localhost:8080/geoserver/rest",
@@ -133,6 +133,7 @@ class CatalogWrapper(object):
         if isinstance(layer, basestring):
             layer = layers.resolveLayer(layer)
         sld, icons = getGsCompatibleSld(layer)
+        print sld
         if sld is not None:
             name = name if name is not None else layer.name()
             name = name.replace(" ", "_")

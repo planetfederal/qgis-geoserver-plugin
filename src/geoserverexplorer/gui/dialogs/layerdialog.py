@@ -7,7 +7,7 @@ from geoserverexplorer.gui.gsnameutils import GSNameWidget, xmlNameFixUp, \
 class PublishLayersDialog(QtGui.QDialog):
 
     def __init__(self, catalog, parent = None):
-        super(PublishLayersDialog, self).__init__(parent)
+        super(QtGui.QDialog, self).__init__(parent)
         self.catalog = catalog
         self.layers = qgislayers.getAllLayers()
         self.columns = []

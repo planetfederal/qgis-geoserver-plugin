@@ -9,6 +9,7 @@ class DefineCatalogDialog(QtGui.QDialog):
 
     def __init__(self, explorer, parent = None, catalog = None, name = None):
         super(DefineCatalogDialog, self).__init__(parent)
+        self.explorer = explorer
         self.ok = False
         self.catalog = catalog
         self.name = name
