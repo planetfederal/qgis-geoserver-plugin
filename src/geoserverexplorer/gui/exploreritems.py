@@ -124,7 +124,6 @@ class TreeItem(QtGui.QTreeWidgetItem):
         return []
 
     def acceptDroppedItems(self, tree, explorer, items):
-        print items
         if len(items) > 1:
             explorer.setProgressMaximum(len(items))
         toUpdate = []

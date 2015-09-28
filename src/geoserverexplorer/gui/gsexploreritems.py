@@ -209,7 +209,6 @@ class GsTreeItem(TreeItem):
                 for idx in xrange(gwcItem.childCount()):
                     gwcLayerItem = gwcItem.child(idx)
                     gwcLayer = gwcLayerItem.element
-                    # print gwcLayer.name, element.name
                     if gwcLayer.name.split(":")[-1] == element.name:
                         possibleGwcLayers.append(gwcLayer)
                 if len(possibleGwcLayers) == 1:
