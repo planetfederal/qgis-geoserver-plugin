@@ -585,7 +585,7 @@ class GsCatalogItem(GsTreeItem):
         return actions
 
     def editCatalog(self, explorer):
-        dlg = DefineCatalogDialog(explorer, None, self.element, self.name, self.geonode)
+        dlg = DefineCatalogDialog(explorer, None, self.element, self.name)
         dlg.exec_()
         if dlg.ok:
             if dlg.certfile is not None:
@@ -593,7 +593,6 @@ class GsCatalogItem(GsTreeItem):
             else:
                 self.catalog = RetryCatalog(dlg.url, dlg.username, dlg.password)
             self.catalog.authid = dlg.authid
-            self.geonode = Geonode(dlg.geonodeUrl)
             if self.name != dlg.name:
                 if self.name in explorer.catalogs():
                     del explorer.catalogs()[self.name]
@@ -1064,7 +1063,7 @@ class GsStyleItem(GsTreeItem):
         if isinstance(item, GsStyleItem):
             if isinstance(self.parent(), GsLayerItem):
                 destinationItem = self.parent()
-                addDraggedStyleToLayer(tree, explorer, item, destinationItem) 
+                addDraggedStyleToLayer(tree, explorer, item, destinationItem)
         return []
 
     def multipleSelectionContextMenuActions(self, tree, explorer, selected):

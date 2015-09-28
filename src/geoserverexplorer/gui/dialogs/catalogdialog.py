@@ -2,18 +2,16 @@ from PyQt4 import QtGui, QtCore
 from qgis.gui import *
 from qgis.core import *
 from geoserverexplorer.geoserver import pem
-from opengeo.geoserver.pki import PKICatalog
+from geoserverexplorer.geoserver.pki import PKICatalog
 from PyQt4.QtCore import QSettings
 
 class DefineCatalogDialog(QtGui.QDialog):
 
-    def __init__(self, explorer, parent = None, catalog = None, name = None, geonode = None):
+    def __init__(self, explorer, parent = None, catalog = None, name = None):
         super(DefineCatalogDialog, self).__init__(parent)
-        self.catalogs = catalogs
         self.ok = False
         self.catalog = catalog
         self.name = name
-        self.geonode = geonode
         self.initGui()
 
 
@@ -27,7 +25,6 @@ class DefineCatalogDialog(QtGui.QDialog):
                 url = unicode(settings.value("url"))
                 username = settings.value("username")
                 authid = settings.value("authid")
-                geonodeUrl = settings.value("geonode")
                 settings.endGroup()
             elif isinstance(self.catalog, PKICatalog):
                 settings = QSettings()
@@ -35,17 +32,14 @@ class DefineCatalogDialog(QtGui.QDialog):
                 username = ""
                 authid = settings.value("authid")
                 url = self.catalog.service_url
-                geonodeUrl = self.geonode.url
                 settings.endGroup()
             else:
                 username = self.catalog.username
                 url = self.catalog.service_url
-                geonodeUrl = self.geonode.url
 
         else:
             settings = QSettings()
             username = ""
-            geonodeUrl = geonodeUrl = settings.value('/OpenGeo/LastGeoNodeUrl', 'http://localhost:8000/')
             url = settings.value('/OpenGeo/LastCatalogUrl', 'http://localhost:8080/geoserver')
 
         if url.endswith("/rest"):
@@ -158,20 +152,9 @@ class DefineCatalogDialog(QtGui.QDialog):
         horizontalLayout.setMargin(0)
         urlLabel = QtGui.QLabel('URL')
         urlLabel.setMinimumWidth(150)
-        self.urlGeonodeBox = QtGui.QLineEdit()
-        if isinstance(geonodeUrl, QtCore.QPyNullVariant):
-            geonodeUrl = ""
-        self.urlGeonodeBox.setText(geonodeUrl)
-        self.urlGeonodeBox.setMinimumWidth(250)
         horizontalLayout.addWidget(urlLabel)
-        horizontalLayout.addWidget(self.urlGeonodeBox)
         verticalLayout2.addLayout(horizontalLayout)
 
-        self.geonodeBox = QtGui.QGroupBox()
-        self.geonodeBox.setTitle("GeoNode Connection parameters (Optional)")
-        self.geonodeBox.setLayout(verticalLayout2)
-
-        layout.addWidget(self.geonodeBox)
         self.spacer = QtGui.QSpacerItem(20,20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         layout.addItem(self.spacer)
 
