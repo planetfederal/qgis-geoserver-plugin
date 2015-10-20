@@ -20,7 +20,9 @@ class GeoServerExplorerPlugin:
     def unload(self):
         pem.removePkiTempFiles(self.explorer.catalogs())
         self.explorer.deleteLater()
-
+        self.iface.removePluginWebMenu(u"GeoServer", self.explorerAction)
+        self.iface.removePluginWebMenu(u"GeoServer", self.configAction)
+        self.iface.removePluginWebMenu(u"GeoServer", self.helpAction)
         Processing.removeProvider(self.provider)
 
     def initGui(self):
