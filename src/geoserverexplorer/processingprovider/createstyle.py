@@ -1,9 +1,7 @@
 
 from qgis.core import *
 from geoserveralgorithm import GeoServerAlgorithm
-from processing.parameters.ParameterString import ParameterString
-from processing.parameters.ParameterFile import ParameterFile
-from processing.parameters.ParameterBoolean import ParameterBoolean
+from processing.core.parameters import *
 
 
 class CreateStyle(GeoServerAlgorithm):
