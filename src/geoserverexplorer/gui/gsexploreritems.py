@@ -584,7 +584,7 @@ class GsCatalogItem(GsTreeItem):
         return actions
 
     def editCatalog(self, explorer):
-        dlg = DefineCatalogDialog(explorer, None, self.element, self.name)
+        dlg = DefineCatalogDialog(explorer.catalogs(), None, self.element, self.name)
         dlg.exec_()
         if dlg.ok:
             if dlg.certfile is not None:

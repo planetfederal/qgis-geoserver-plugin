@@ -7,9 +7,9 @@ from PyQt4.QtCore import QSettings
 
 class DefineCatalogDialog(QtGui.QDialog):
 
-    def __init__(self, explorer, parent = None, catalog = None, name = None):
+    def __init__(self, catalogs, parent = None, catalog = None, name = None):
         super(DefineCatalogDialog, self).__init__(parent)
-        self.explorer = explorer
+        self.catalogs = catalogs
         self.ok = False
         self.catalog = catalog
         self.name = name
@@ -207,7 +207,7 @@ class DefineCatalogDialog(QtGui.QDialog):
         if self.name is None or (self.name is not None and nametxt != self.name):
             newname = nametxt
             i = 2
-            while newname in self.explorer.catalogs().keys():
+            while newname in self.catalogs.keys():
                 newname = nametxt + "_" + str(i)
                 i += 1
             self.name = newname
