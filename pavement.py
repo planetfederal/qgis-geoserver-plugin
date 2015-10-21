@@ -64,14 +64,12 @@ def setup(options):
     runtime, test = read_requirements()
     os.environ['PYTHONPATH']=ext_libs.abspath()
     for req in runtime + test:
-        if req.startswith('-e'):
-            if not develop:
-                # use pip to just process the URL and fetch it in to place
-                sh('pip install --no-install --src=%s %s' % (ext_src, req))
-            # now change the req to be the location installed to
-            # and easy_install will do the rest
+        if "#egg" in req:
             urlspec, req = req.split('#egg=')
-            req = ext_src / req
+            localpath = ext_src / req
+            if not develop:
+                sh('git clone  %s %s' % (urlspec, localpath))
+            req = localpath
         sh('easy_install -a -d %(ext_libs)s %(dep)s' % {
             'ext_libs' : ext_libs.abspath(),
             'dep' : req
