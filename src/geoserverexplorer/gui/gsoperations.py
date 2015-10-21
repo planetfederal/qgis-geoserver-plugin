@@ -91,7 +91,6 @@ def addDraggedUrisToWorkspace(uris, catalog, workspace, tree):
 
 def addDraggedStyleToLayer(tree, explorer, styleItem, layerItem):
     catalog = layerItem.element.catalog
-    catItem = tree.findFirstItem(catalog)
     style = styleItem.element
     layer = layerItem.element
     if not hasattr(layer, "default_style") or layer.default_style is None:
@@ -105,7 +104,7 @@ def addDraggedStyleToLayer(tree, explorer, styleItem, layerItem):
         layer.styles = styles
     explorer.run(catalog.save,
              "Add style '" + style.name + "' to layer '" + layer.name + "'",
-             [catItem],
+             [layerItem],
              layer)
 
 
