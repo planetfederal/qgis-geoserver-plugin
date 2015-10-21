@@ -5,6 +5,7 @@ from qgis.core import *
 from PyQt4 import QtCore, QtGui
 from geoserverexplorer.qgis import layers as qgislayers
 from geoserverexplorer import config
+from geoserverexplorer.qgis import uri as uri_utils
 
 class UserCanceledOperation(Warning):
     pass
@@ -51,5 +52,6 @@ def mkdir(newdir):
 
 def isWindows():
     return os.name == 'nt'
+
 
 

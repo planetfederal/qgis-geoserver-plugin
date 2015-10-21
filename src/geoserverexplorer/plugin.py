@@ -9,6 +9,8 @@ from geoserverexplorer.geoserver import pem
 from PyQt4 import QtGui, QtCore
 from processing.core.Processing import Processing
 from processingprovider.geoserverprovider import GeoServerProvider
+from geoserverexplorer.qgis.sldadapter import adaptGsToQgs
+from geoserverexplorer.qgis import layerwatcher
 
 class GeoServerExplorerPlugin:
 
@@ -24,6 +26,7 @@ class GeoServerExplorerPlugin:
         self.iface.removePluginWebMenu(u"GeoServer", self.configAction)
         self.iface.removePluginWebMenu(u"GeoServer", self.helpAction)
         Processing.removeProvider(self.provider)
+        layerwatcher.disconnectLayerWasAdded()
 
     def initGui(self):
         icon = QtGui.QIcon(os.path.dirname(__file__) + "/images/geoserver.png")
@@ -50,6 +53,9 @@ class GeoServerExplorerPlugin:
         self.iface.addPluginToWebMenu(u"GeoServer", self.helpAction)
 
         Processing.addProvider(self.provider)
+
+        layerwatcher.connectLayerWasAdded(self.explorer)
+
 
     def _explorerVisibilityChanged(self, visible):
         settings = QtCore.QSettings()
