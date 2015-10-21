@@ -196,6 +196,10 @@ def adaptGsToQgs(sld):
     for size in sizes:
         newsize="<sld:Size>%f</sld:Size>" % (float(size[10:-11]) / SIZE_FACTOR)
         sld = sld.replace(size, newsize)
+    widths = re.findall('<CssParameter name="stroke-width">.*?</CssParameter>', sld)
+    for w in widths:
+        newwidth='<CssParameter name="stroke-width">%f</CssParameter>' % (float(w[34:-15]) / SIZE_FACTOR)
+        sld = sld.replace(w, newwidth)
     return sld
 
 def getGsCompatibleSld(layer):
