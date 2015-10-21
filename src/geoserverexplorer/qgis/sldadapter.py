@@ -192,6 +192,10 @@ def getLabelingAsSld(layer):
         return ""
 
 def adaptGsToQgs(sld):
+    sizes = re.findall("<sld:Size>.*?</sld:Size>", sld)
+    for size in sizes:
+        newsize="<sld:Size>%f</sld:Size>" % (float(size[10:-11]) / SIZE_FACTOR)
+        sld = sld.replace(size, newsize)
     return sld
 
 def getGsCompatibleSld(layer):
