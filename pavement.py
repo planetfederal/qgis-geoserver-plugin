@@ -68,7 +68,13 @@ def setup(options):
             urlspec, req = req.split('#egg=')
             localpath = ext_src / req
             if not develop:
-                sh('git clone  %s %s' % (urlspec, localpath))
+                if os.path.exists(localpath):
+                    cwd = os.getcwd()
+                    os.chdir(localpath)        
+                    sh("git pull")
+                    os.chdir(cwd)
+                else:
+                    sh('git clone  %s %s' % (urlspec, localpath))
             req = localpath
         sh('easy_install -a -d %(ext_libs)s %(dep)s' % {
             'ext_libs' : ext_libs.abspath(),
