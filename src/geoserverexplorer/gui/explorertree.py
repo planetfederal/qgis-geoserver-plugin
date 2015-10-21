@@ -22,8 +22,6 @@ class ExplorerTreeWidget(QtGui.QTreeWidget):
         self.setAutoScroll(True)
         self.setAcceptDrops(True)
         self.setDropIndicatorShown(True)
-        self.catalogs = {}
-        self.qgisItem = None
         self.lastClicked = None
 
         self.itemSelectionChanged.connect(
