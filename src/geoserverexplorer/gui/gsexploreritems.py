@@ -279,8 +279,10 @@ class GsCatalogsItem(GsTreeItem):
                     cat = RetryCatalog(dlg.url, dlg.username, dlg.password)
                 cat.authid = dlg.authid
                 v = cat.gsversion()
-                supported = (v.startswith("2.3") or v.startswith("2.4")
-                            or v.startswith("2.5") or v.startswith("2.6"))
+                try:
+                    supported = float(v[:3]) > 2.99
+                except:
+                    supported = False
                 if not supported:
                     QtGui.QApplication.restoreOverrideCursor()
                     ret = QtGui.QMessageBox.warning(explorer, "GeoServer catalog definition",
