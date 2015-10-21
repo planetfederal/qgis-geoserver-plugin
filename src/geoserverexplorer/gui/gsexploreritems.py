@@ -501,8 +501,12 @@ class GsCatalogItem(GsTreeItem):
         try:
             dlg = QtGui.QProgressDialog("Retrieving catalog information", None, 0, 0  , config.iface.mainWindow())
             dlg.setWindowModality(QtCore.Qt.WindowModal);
-            dlg.setMinimumDuration(1)
-            dlg.showNormal()
+            dlg.setMinimumDuration(1000)
+            dlg.setMaximum(100)
+            dlg.setValue(0)
+            dlg.setMaximum(0)
+            dlg.setCancelButton(None)
+            #dlg.showNormal()
             QtGui.QApplication.processEvents()
             self._populate()
         except Exception, e:
@@ -511,7 +515,7 @@ class GsCatalogItem(GsTreeItem):
             raise e
         finally:
             self.element = self.catalog
-            dlg.hide()
+            dlg.reset()
 
     def _populate(self):
         self.isConnected = False
