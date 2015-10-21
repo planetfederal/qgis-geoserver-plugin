@@ -13,7 +13,6 @@ class PublishLayersDialog(QtGui.QDialog):
         self.columns = []
         self.nameBoxes = []
         self.topublish = None
-        self.publish = "Publish"
         self.lyr = "Layer"
         self.wrksp = "Workspace"
         self.ow = "Overwrite"
@@ -27,7 +26,7 @@ class PublishLayersDialog(QtGui.QDialog):
         self.setWindowTitle('Publish layers')
         self.table = QtGui.QTableWidget(None)
 
-        self.columns = [self.lyr, self.publish, self.wrksp, self.ow, self.name]
+        self.columns = [self.lyr, self.wrksp, self.ow, self.name]
 
         self.table.setColumnCount(len(self.columns))
         self.table.verticalHeader().setVisible(False)
@@ -65,13 +64,10 @@ class PublishLayersDialog(QtGui.QDialog):
         catlayers = [lyr.name for lyr in self.catalog.get_layers()]
         for idx, layer in enumerate(self.layers):
 
-            publishBox = QtGui.QCheckBox()
-            publishBox.setEnabled(True)
-            publishBox.setToolTip("Publish this layer")
-            self.table.setCellWidget(idx, self.getColumn(self.publish), publishBox)
             lyritem = QtGui.QTableWidgetItem(layer.name())
             lyritem.setToolTip(layer.name())
-            lyritem.setFlags(QtCore.Qt.ItemIsEnabled)
+            lyritem.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsUserCheckable)
+            lyritem.setCheckState(QtCore.Qt.Unchecked)
             self.table.setItem(idx, self.getColumn(self.lyr), lyritem)
 
             nameBox = GSNameWidget(
@@ -121,14 +117,20 @@ class PublishLayersDialog(QtGui.QDialog):
     def okPressed(self):
         self.topublish = []
         for idx, layer in enumerate(self.layers):
-            publishBox = self.table.cellWidget(idx, self.getColumn(self.publish))
-            if publishBox.isChecked():
+            print idx, self.getColumn(self.lyr)
+            lyrItem = self.table.item(idx, self.getColumn(self.lyr))
+            if lyrItem.checkState() == QtCore.Qt.Checked:
                 nameBox = self.table.cellWidget(idx, self.getColumn(self.name))
                 layername = nameBox.definedName()
                 workspaceBox = self.table.cellWidget(idx, self.getColumn(self.wrksp))
                 workspaces = self.catalog.get_workspaces()
                 workspace = workspaces[workspaceBox.currentIndex()]
                 self.topublish.append((layer, workspace, layername))
+        if not bool(self.topublish):
+            ret = QtGui.QMessageBox.warning(self, "No layers selected", "You haven't selected any layer to be published\n"
+                                      "Are you sure you want to proceed?", QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+            if not ret:
+                return
         self.close()
 
     def cancelPressed(self):
