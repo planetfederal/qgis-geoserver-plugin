@@ -57,6 +57,11 @@ class PublishProjectDialog(QtGui.QDialog):
         layout.addWidget(self.destGroupBox)
         layout.addWidget(self.groupGroupBox)
 
+        self.overwriteBox = QtGui.QCheckBox()
+        self.overwriteBox.setChecked(False)
+        self.overwriteBox.setText("Overwrite without asking")
+        layout.addWidget(self.overwriteBox)
+
         self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Close)
         layout.addWidget(self.buttonBox)
 
@@ -70,6 +75,7 @@ class PublishProjectDialog(QtGui.QDialog):
 
     def okPressed(self):
         self.workspace = self.workspaces[self.workspaceBox.currentIndex()]
+        self.overwrite = self.overwriteBox.isChecked()
         self.groupName = self.groupNameBox.text()
         if self.groupName.strip() == "":
             self.groupName = None

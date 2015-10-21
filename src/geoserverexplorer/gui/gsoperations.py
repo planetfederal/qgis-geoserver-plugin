@@ -117,6 +117,7 @@ def publishProject(tree, explorer, catalog):
         return
     workspace = dlg.workspace
     groupName = dlg.groupName
+    overwrite = dlg.overwrite
     explorer.setProgressMaximum(len(layers), "Publish layers")
     progress = 0
     cat = CatalogWrapper(catalog)
@@ -125,7 +126,7 @@ def publishProject(tree, explorer, catalog):
         explorer.run(publishLayer,
                      None,
                      [],
-                     cat, layer, workspace)
+                     cat, layer, workspace, overwrite)
         progress += 1
         explorer.setProgress(progress)
     explorer.resetActivity()

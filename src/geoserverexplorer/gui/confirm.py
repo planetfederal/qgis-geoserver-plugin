@@ -5,10 +5,10 @@ from PyQt4 import QtGui, QtCore
 from geoserverexplorer.gui.dialogs.gsnamedialog import getGSLayerName
 from geoserverexplorer.gui.gsnameutils import isNameValid, xmlNameRegex
 
-def publishLayer(catalog, layer, workspace=None):
+def publishLayer(catalog, layer, workspace=None, overwrite=False):
     name = layer.name()
     gslayers = [lyr.name for lyr in catalog.catalog.get_layers()]
-    if name in gslayers or not isNameValid(name, gslayers, 0, xmlNameRegex()):
+    if (name in gslayers and not overwrite) or not isNameValid(name, gslayers, 0, xmlNameRegex()):
         name = getGSLayerName(name=name, names=gslayers, unique=False)
     catalog.publishLayer(layer, workspace, True, name)
 
