@@ -1103,12 +1103,12 @@ class GsStyleItem(GsTreeItem):
         with open(sldfile, 'w') as f:
             f.write(sld)
         geomtype = getGeomTypeFromSld(sld)
-        uri = geomtype
+        uri = geomtype + "?crs=epsg:4326&"
         if gslayer is not None:
             fields = gslayer.resource.attributes
             fieldsdesc = ['field=%s:double' % f for f in fields if "geom" not in f]
             fieldsstring = '&'.join(fieldsdesc)
-            uri += "?" + fieldsstring
+            uri += fieldsstring
         layer = QgsVectorLayer(uri, "tmp", "memory")
         layer.loadSldStyle(sldfile)
         oldSld = getGsCompatibleSld(layer)
