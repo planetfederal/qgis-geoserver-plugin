@@ -170,6 +170,7 @@ class GsTreeItem(TreeItem):
             explorer.refreshContent()
         explorer.resetActivity()
         explorer.setDescriptionWidget()
+        explorer.setToolbarActions([])
 
     def uniqueStyles(self, layer):
         '''returns the styles used by a layer that are not used by any other layer'''
