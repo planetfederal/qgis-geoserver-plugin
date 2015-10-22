@@ -186,12 +186,11 @@ You can also drag elements from outside of the GeoServer Explorer itself. For in
 
 If the dragged files are not opened in the current QGIS project, no style will be uploaded along with them when publishing to a GeoServer catalog.
 
-Also, elements from the explorer can be dropped onto the QGIS canvas. GeoServer layers can be dropped onto the QGIS canvas to add them to the project. The corresponding WFS/WCS layer will be created as in the case of using the *Add to QGIS project* menu option, already described. Notice that, however, the style of the layer will not be used in this case, and the layer that will be added to the QGIS project will have a default style assigned to it.
-
-Dragging and dropping a PostGIS table will cause a new layer to be added to the QGIS project, based on that table.
+Also, elements from the explorer can be dropped onto the QGIS canvas. GeoServer layers can be dropped onto the QGIS canvas to add them to the project. The corresponding WFS/WCS layer will be created as in the case of using the *Add to QGIS project* menu option, already described. 
 
 
 
 
 
 
+	
