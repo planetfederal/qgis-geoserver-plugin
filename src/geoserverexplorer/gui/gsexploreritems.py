@@ -280,7 +280,7 @@ class GsCatalogsItem(GsTreeItem):
                 cat.authid = dlg.authid
                 v = cat.gsversion()
                 try:
-                    supported = float(v[:3]) > 2.99
+                    supported = float(v[:3]) > 2.299
                 except:
                     supported = False
                 if not supported:
