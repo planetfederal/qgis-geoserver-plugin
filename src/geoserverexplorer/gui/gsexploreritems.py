@@ -478,20 +478,36 @@ class GsCatalogItem(GsTreeItem):
             authid = settings.value("authid")
             QtGui.QApplication.restoreOverrideCursor()
             if authid is not None:
-                authtype = QgsAuthManager.instance().configProviderType(authid);
-                if authtype == QgsAuthType.None or authtype == QgsAuthType.Unknown:
-                    raise Exception("Cannot restore catalog. Invalid or missing auth information")
-                if authtype == QgsAuthType.Basic:
-                    configbasic = QgsAuthConfigBasic()
-                    QgsAuthManager.instance().loadAuthenticationConfig(authid, configbasic, True)
-                    password = configbasic.password()
-                    username = configbasic.username()
-                    self.catalog = RetryCatalog(url, username, password)
-                elif authtype in pem.nonBasicAuthTypes():
-                    certfile, keyfile, cafile = pem.getPemPkiPaths(authid, authtype)
-                    self.catalog = PKICatalog(url, keyfile, certfile, cafile)
+                if QGis.QGIS_VERSION_INT < 21200:
+                    authtype = QgsAuthManager.instance().configProviderType(authid)
+                    if authtype == QgsAuthType.None or authtype == QgsAuthType.Unknown:
+                        raise Exception("Cannot restore catalog. Invalid or missing auth information")
+                    if authtype == QgsAuthType.Basic:
+                        amconfig = QgsAuthConfigBasic()
+                        QgsAuthManager.instance().loadAuthenticationConfig(authid, amconfig, True)
+                        password = amconfig.password()
+                        username = amconfig.username()
+                        self.catalog = RetryCatalog(url, username, password)
+                    elif authtype in pem.nonBasicAuthTypes():
+                        certfile, keyfile, cafile = pem.getPemPkiPaths(authid, authtype)
+                        self.catalog = PKICatalog(url, keyfile, certfile, cafile)
+                    else:
+                        raise Exception("The selected authentication type is not supported")
                 else:
-                    raise Exception("The selected authentication type is not supported")
+                    authtype = QgsAuthManager.instance().configAuthMethodKey(authid)
+                    if not authtype or authtype == '':
+                        raise Exception("Cannot restore catalog. Invalid or missing auth information")
+                    if authtype == 'Basic':
+                        amconfig = QgsAuthMethodConfig()
+                        QgsAuthManager.instance().loadAuthenticationConfig(authid, amconfig, True)
+                        password = amconfig.config('username')
+                        username = amconfig.config('password')
+                        self.catalog = RetryCatalog(url, username, password)
+                    elif authtype in pem.nonBasicAuthTypes():
+                        certfile, keyfile, cafile = pem.getPemPkiPaths(authid, authtype)
+                        self.catalog = PKICatalog(url, keyfile, certfile, cafile)
+                    else:
+                        raise Exception("The selected authentication type is not supported")
             else:
                 password, ok = QtGui.QInputDialog.getText(None, "Catalog connection",
                                           "Enter catalog password (user:%s)" % username ,

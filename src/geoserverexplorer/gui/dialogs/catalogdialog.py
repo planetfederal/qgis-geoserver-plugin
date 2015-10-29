@@ -184,22 +184,40 @@ class DefineCatalogDialog(QtGui.QDialog):
             self.username = None
             self.password = None
             self.authid = self.certWidget.configId()
-            authtype = QgsAuthManager.instance().configProviderType(self.authid);
-            if authtype == QgsAuthType.None or authtype == QgsAuthType.Unknown:
-                QtGui.QMessageBox.warning(self, "Authentication needed",
-                                  "Please specify a valid authentication for connecting to the catalog")
-                return
-            if authtype == QgsAuthType.Basic:
-                configbasic = QgsAuthConfigBasic()
-                QgsAuthManager.instance().loadAuthenticationConfig(self.authid, configbasic, True)
-                self.password = configbasic.password()
-                self.username = configbasic.username()
-            elif authtype in pem.nonBasicAuthTypes():
-                self.certfile, self.keyfile, self.cafile = pem.getPemPkiPaths(self.authid, authtype)
+            if QGis.QGIS_VERSION_INT < 21200:
+                authtype = QgsAuthManager.instance().configProviderType(self.authid);
+                if authtype == QgsAuthType.None or authtype == QgsAuthType.Unknown:
+                    QtGui.QMessageBox.warning(self, "Authentication needed",
+                                      "Please specify a valid authentication for connecting to the catalog")
+                    return
+                if authtype == QgsAuthType.Basic:
+                    configbasic = QgsAuthConfigBasic()
+                    QgsAuthManager.instance().loadAuthenticationConfig(self.authid, configbasic, True)
+                    self.password = configbasic.password()
+                    self.username = configbasic.username()
+                elif authtype in pem.nonBasicAuthTypes():
+                    self.certfile, self.keyfile, self.cafile = pem.getPemPkiPaths(self.authid, authtype)
+                else:
+                    QtGui.QMessageBox.warning(self, "Unsupported authentication",
+                                      "The selected authentication type is not supported")
+                    return
             else:
-                QtGui.QMessageBox.warning(self, "Unsupported authentication",
-                                  "The selected authentication type is not supported")
-                return
+                authtype = QgsAuthManager.instance().configAuthMethodKey(self.authid)
+                if not authtype or authtype == '':
+                    QtGui.QMessageBox.warning(self, "Authentication needed",
+                                              "Please specify a valid authentication for connecting to the catalog")
+                    return
+                if authtype == 'Basic':
+                    amconfig = QgsAuthMethodConfig()
+                    QgsAuthManager.instance().loadAuthenticationConfig(self.authid, amconfig, True)
+                    self.password = amconfig.config('username')
+                    self.username = amconfig.config('password')
+                elif authtype in pem.nonBasicAuthTypes():
+                    self.certfile, self.keyfile, self.cafile = pem.getPemPkiPaths(self.authid, authtype)
+                else:
+                    QtGui.QMessageBox.warning(self, "Unsupported authentication",
+                                              "The selected authentication type is not supported")
+                    return
 
         nametxt = unicode(self.nameBox.text())
         # increment only when adding a new connection or if editing a saved
