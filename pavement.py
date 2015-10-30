@@ -24,7 +24,8 @@ options(
             'ext-src',
             'coverage*',
             'nose*',
-            '*.pyc'
+            '*.pyc',
+            'gisdata'
         ],
         # skip certain files inadvertently found by exclude pattern globbing
         skip_exclude = ['coverage.xsd']
