@@ -9,7 +9,7 @@ from geoserverexplorer.test.utils import PT1, DEM, DEM2, PT1JSON, DEMASCII,\
 
 class CatalogTests(unittest.TestCase):
     '''
-    Tests for the OGCatalog class that provides additional capabilities to a gsconfig catalog
+    Tests for the CatalogWrapper class that provides additional capabilities to a gsconfig catalog
     Requires a Geoserver catalog running on localhost:8080 with default credentials
     '''
 
