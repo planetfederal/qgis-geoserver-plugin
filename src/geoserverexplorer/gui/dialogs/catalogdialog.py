@@ -120,7 +120,7 @@ class DefineCatalogDialog(QtGui.QDialog):
         self.tabWidget.addTab(tabBasicAuth, "Basic")
 
         try:
-            self.certWidget = QgsAuthConfigSelect( keypasssupported = False)
+            self.certWidget = QgsAuthConfigSelect()
             if authid is not None:
                 self.certWidget.setConfigId(authid)
             self.tabWidget.addTab(self.certWidget, "Configurations")
