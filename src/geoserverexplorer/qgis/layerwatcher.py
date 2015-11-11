@@ -5,9 +5,11 @@ from qgis.core import *
 _explorer = None
 
 def layerAdded(qgislayer):
-
-    if qgislayer.providerType().lower() != "wfs":
-        return
+    try:
+        if qgislayer.providerType().lower() != "wfs":
+            return
+    except:
+        pass #Not all layers have a providerType method
     catalogs = _explorer.explorerTree.gsItem._catalogs.values()
     for cat in catalogs:
         if cat.gs_base_url in qgislayer.source():
