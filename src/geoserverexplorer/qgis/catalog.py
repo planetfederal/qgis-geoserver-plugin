@@ -199,9 +199,13 @@ class CatalogWrapper(object):
                             "not be auto-fixed: {0} -> {1}"
                             .format(conname, storename))
 
-        if not uri.username():
-            raise Exception("GeoServer requires database connection's username "
-                            "to be defined")
+
+        connInfo = uri.connectionInfo()
+        (success, user, passwd) = QgsCredentials.instance().get(connInfo, None, None)
+        if success:
+            QgsCredentials.instance().put(connInfo, user, passwd)
+        else:
+            raise Exception("Couldn't connect to database")
 
         store = createPGFeatureStore(self.catalog,
                                      storename,
@@ -211,8 +215,8 @@ class CatalogWrapper(object):
                                      database = uri.database(),
                                      schema = uri.schema(),
                                      port = uri.port(),
-                                     user = uri.username(),
-                                     passwd = uri.password())
+                                     user = user,
+                                     passwd = passwd)
         if store is not None:
             rscname = name if uri.table() != name else uri.table()
             grpswlyr = []
