@@ -2,6 +2,7 @@ import unittest
 import os
 from geoserverexplorer.qgis import layers, catalog
 from qgis.core import *
+from qgis.utils import iface
 from PyQt4.QtCore import *
 from geoserverexplorer.test import utils
 from geoserverexplorer.test.utils import PT1, DEM, DEM2, PT1JSON, DEMASCII,\
@@ -21,6 +22,9 @@ class CatalogTests(unittest.TestCase):
         cls.cat.catalog.create_workspace(WORKSPACE, "http://geoserver.com")
         cls.ws = cls.cat.catalog.get_workspace(WORKSPACE)
         assert cls.ws is not None
+        projectFile = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "test.qgs")
+        if projectFile != QgsProject.instance().fileName():
+            iface.addProject(projectFile)
 
     @classmethod
     def tearDownClass(cls):
@@ -54,6 +58,11 @@ class CatalogTests(unittest.TestCase):
         self.assertIsNotNone(self.cat.catalog.get_layer(DEMASCII))
         self.cat.catalog.delete(self.cat.catalog.get_layer(DEMASCII), recurse = True)
 
+    def compareSld(self, a, b):
+        a = a.replace("\r", "").replace("\n", "").replace(" ", "")
+        b = b.replace("\r", "").replace("\n", "").replace(" ", "")
+        return a == b
+
     def testVectorStylingUpload(self):
         self.cat.publishLayer(PT1, self.ws, name = PT1)
         self.assertIsNotNone(self.cat.catalog.get_layer(PT1))
@@ -61,7 +70,7 @@ class CatalogTests(unittest.TestCase):
         with open(sldfile, 'r') as f:
             sld = f.read()
         gssld = self.cat.catalog.get_style(PT1).sld_body
-        self.assertEqual(sld, gssld)
+        self.assertTrue(self.compareSld(sld, gssld))
         self.cat.catalog.delete(self.cat.catalog.get_layer(PT1), recurse = True)
 
     def testRasterStylingUpload(self):
@@ -71,7 +80,7 @@ class CatalogTests(unittest.TestCase):
         with open(sldfile, 'r') as f:
             sld = f.read()
         gssld = self.cat.catalog.get_style(DEM).sld_body
-        self.assertEqual(sld, gssld)
+        self.assertTrue(self.compareSld(sld, gssld))
         self.cat.catalog.delete(self.cat.catalog.get_layer(DEM), recurse = True)
 
     def testGroup(self):

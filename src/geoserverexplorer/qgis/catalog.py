@@ -21,7 +21,8 @@ try:
     from processing.script.ScriptAlgorithm import ScriptAlgorithm
     from processing.core.parameters import *
     from processing.core.outputs import *
-    from processing.gui import AlgorithmExecutor
+
+    from processing.gui.AlgorithmExecutor import *
     from processing.gui.SilentProgress import SilentProgress
     from processing.tools.dataobjects import getObjectFromUri as load
     from processing.modeler.ModelerUtils import ModelerUtils
@@ -489,6 +490,7 @@ class CatalogWrapper(object):
         elif layer.type() == layer.VectorLayer:
             try:
                 hookFile = str(QtCore.QSettings().value("/GeoServer/Settings/GeoServer/PreuploadVectorHook", ""))
+                print hookFile
                 alg = self.getAlgorithmFromHookFile(hookFile)
                 if (len(alg.parameters) == 1 and isinstance(alg.parameters[0], ParameterVector)
                     and len(alg.outputs) == 1 and isinstance(alg.outputs[0], OutputVector)):
@@ -502,12 +504,12 @@ class CatalogWrapper(object):
     def getAlgorithmFromHookFile(self, hookFile):
         if hookFile.endswith('py'):
             script = ScriptAlgorithm(hookFile)
-            script.provider = Providers.providers['script']
+            script.provider = ModelerUtils.providers['script']
             return script
         elif hookFile.endswith('model'):
             model = ModelerAlgorithm()
             model.openModel(hookFile)
-            model.provider = Providers.providers['model']
+            model.provider = ModelerUtils.providers['model']
             return model
         else:
             raise Exception ("Wrong hook file")
