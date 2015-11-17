@@ -113,7 +113,7 @@ class CatalogTests(unittest.TestCase):
             QgsMapLayerRegistry.instance().removeMapLayer(layer.id())
         finally:
             settings.setValue("/GeoServer/Settings/GeoServer/PreuploadVectorHook", oldHookFile)
-                self.cat.catalog.delete(self.cat.catalog.get_layer(HOOK), recurse = True)
+            self.cat.catalog.delete(self.cat.catalog.get_layer(HOOK), recurse = True)
 
 
 def suite():
