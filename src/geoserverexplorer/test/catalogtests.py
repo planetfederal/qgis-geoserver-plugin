@@ -23,7 +23,7 @@ class CatalogTests(unittest.TestCase):
         cls.ws = cls.cat.catalog.get_workspace(WORKSPACE)
         assert cls.ws is not None
         projectFile = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "test.qgs")
-        if projectFile != QgsProject.instance().fileName():
+        if os.path.normcase(projectFile) != os.path.normcase(QgsProject.instance().fileName()):
             iface.addProject(projectFile)
 
     @classmethod
@@ -104,14 +104,16 @@ class CatalogTests(unittest.TestCase):
         oldHookFile = str(settings.value("/GeoServer/Settings/GeoServer/PreuploadVectorHook", ""))
         hookFile = os.path.join(os.path.dirname(__file__), "resources", "vector_hook.py")
         settings.setValue("/GeoServer/Settings/GeoServer/PreuploadVectorHook", hookFile)
-        self.cat.publishLayer(PT1, self.ws, name = HOOK)
-        self.assertIsNotNone(self.cat.catalog.get_layer(HOOK))
-        self.cat.addLayerToProject(HOOK)
-        layer = layers.resolveLayer(HOOK)
-        self.assertEqual(1, layer.featureCount())
-        QgsMapLayerRegistry.instance().removeMapLayer(layer.id())
-        settings.setValue("/GeoServer/Settings/GeoServer/PreuploadVectorHook", oldHookFile)
-        self.cat.catalog.delete(self.cat.catalog.get_layer(HOOK), recurse = True)
+        try:
+            self.cat.publishLayer(PT1, self.ws, name = HOOK)
+            self.assertIsNotNone(self.cat.catalog.get_layer(HOOK))
+            self.cat.addLayerToProject(HOOK)
+            layer = layers.resolveLayer(HOOK)
+            self.assertEqual(1, layer.featureCount())
+            QgsMapLayerRegistry.instance().removeMapLayer(layer.id())
+        finally:
+            settings.setValue("/GeoServer/Settings/GeoServer/PreuploadVectorHook", oldHookFile)
+                self.cat.catalog.delete(self.cat.catalog.get_layer(HOOK), recurse = True)
 
 
 def suite():
