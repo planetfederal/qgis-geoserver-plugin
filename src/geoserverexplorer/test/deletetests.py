@@ -95,6 +95,12 @@ class DeleteTests(ExplorerIntegrationTest):
         item = self.getGWCLayerItem(name)
         self.assertIsNone(item)
     
+    def testDeleteStyle(self):
+        ''' TODO: test deleting only style.
+            delete only if not used in other layers
+        '''
+        pass
+        
 ##################################################################################################
 
 def suiteSubset():
