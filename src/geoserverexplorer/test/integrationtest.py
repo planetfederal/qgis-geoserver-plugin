@@ -14,7 +14,7 @@ class ExplorerIntegrationTest(unittest.TestCase):
         cls.cat = utils.getGeoServerCatalog().catalog
         utils.populateCatalog(cls.cat)
         cls.catalogItem = GsCatalogItem(cls.cat, "catalog")
-        cls.explorer.explorerWidget.gsItem.addChild(cls.catalogItem)
+        cls.explorer.explorerTree.gsItem.addChild(cls.catalogItem)
         cls.catalogItem.populate()
         cls.tree = cls.explorer.tree
         # @TODO - make tests pass using importer
@@ -23,7 +23,6 @@ class ExplorerIntegrationTest(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         utils.cleanCatalog(cls.cat)
-        utils.cleanDatabase(cls.conn)
 
     def _getItemUnder(self, parent, name):
         for idx in range(parent.childCount()):
@@ -57,7 +56,6 @@ class ExplorerIntegrationTest(unittest.TestCase):
 
     def getStylesItem(self):
         return self.catalogItem.child(3)
-
 
     def getGWCLayersItem(self):
         return self.catalogItem.child(4)
