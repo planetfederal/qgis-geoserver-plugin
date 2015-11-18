@@ -28,6 +28,18 @@ class PublishLayersDialog(QtGui.QDialog):
 
         self.columns = [self.lyr, self.wrksp, self.ow, self.name]
 
+        hlayout = QtGui.QHBoxLayout()
+        self.selectAllLabel = QtGui.QLabel()
+        self.selectAllLabel.setText("<a href='#'>Select all</a>")
+        self.selectAllLabel.linkActivated.connect(lambda: self.checkLayers(True))
+        self.unselectAllLabel = QtGui.QLabel()
+        self.unselectAllLabel.setText("<a href='#'>Unselect all</a>")
+        self.unselectAllLabel.linkActivated.connect(lambda: self.checkLayers(False))
+        hlayout.addWidget(self.selectAllLabel)
+        hlayout.addWidget(self.unselectAllLabel)
+        hlayout.addStretch()
+        layout.addLayout(hlayout)
+
         self.table.setColumnCount(len(self.columns))
         self.table.verticalHeader().setVisible(False)
         self.table.horizontalHeader().setVisible(True)
@@ -53,6 +65,12 @@ class PublishLayersDialog(QtGui.QDialog):
         self.buttonBox.rejected.connect(self.cancelPressed)
 
         self.validateNames()  # so OK button is initially updated
+
+    def checkLayers(self, b):
+        state = QtCore.Qt.Checked if b else QtCore.Qt.Unchecked
+        for idx in xrange(len(self.layers)):
+            lyrItem = self.table.item(idx, self.getColumn(self.lyr))
+            lyrItem.setCheckState(state)
 
     def getColumn(self, name):
         if name not in self.columns:
