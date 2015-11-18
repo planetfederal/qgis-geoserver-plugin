@@ -94,8 +94,23 @@ class DeleteTests(ExplorerIntegrationTest):
         item.deleteLayer(self.explorer)
         item = self.getGWCLayerItem(name)
         self.assertIsNone(item)
+    
+##################################################################################################
 
+def suiteSubset():
+    tests = ['testDeleteLayerAndStyle']
+    suite = unittest.TestSuite(map(DeleteTests, tests))
+    return suite
 
 def suite():
     suite = unittest.makeSuite(DeleteTests, 'test')
     return suite
+
+# run all tests using unittest skipping nose or testplugin
+def run_all():
+    # demo_test = unittest.TestLoader().loadTestsFromTestCase(DeleteTests)
+    unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suite())
+
+# run a subset of tests using unittest skipping nose or testplugin
+def run_subset():
+    unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suiteSubset())
