@@ -21,7 +21,7 @@ class DeleteTests(ExplorerIntegrationTest):
 
     def testDeleteLayerAndStyle(self):
         settings = QSettings()
-        layerItem = self.getQgsLayerItem(PT1)
+        layerItem = self.getLayerItem(PT1)
         wsItem = self.getWorkspacesItem()
         wsItem.acceptDroppedItems(self.tree, self.explorer, [layerItem])
         layer = self.cat.get_layer(PT1)
@@ -36,7 +36,7 @@ class DeleteTests(ExplorerIntegrationTest):
         self.assertIsNone(layerItem)
         styleItem = self.getStyleItem(PT1)
         self.assertIsNone(styleItem)
-        layerItem = self.getQgsLayerItem(PT1)
+        layerItem = self.getLayerItem(PT1)
         wsItem = self.getWorkspacesItem()
         wsItem.acceptDroppedItems(self.tree, self.explorer, [layerItem])
         layer = self.cat.get_layer(PT1)
