@@ -1,5 +1,6 @@
 import unittest
 import os
+import sys
 from geoserverexplorer.qgis import layers, catalog
 from qgis.core import *
 from qgis.utils import iface
@@ -115,7 +116,22 @@ class CatalogTests(unittest.TestCase):
             settings.setValue("/GeoServer/Settings/GeoServer/PreuploadVectorHook", oldHookFile)
             self.cat.catalog.delete(self.cat.catalog.get_layer(HOOK), recurse = True)
 
+##################################################################################################
+
+def suiteSubset():
+    tests = ['testPreuploadVectorHook']
+    suite = unittest.TestSuite(map(CatalogTests, tests))
+    return suite
 
 def suite():
     suite = unittest.makeSuite(CatalogTests, 'test')
     return suite
+
+# run all tests using unittest skipping nose or testplugin
+def run_all():
+    # demo_test = unittest.TestLoader().loadTestsFromTestCase(CatalogTests)
+    unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suite())
+
+# run a subset of tests using unittest skipping nose or testplugin
+def run_subset():
+    unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suiteSubset())
