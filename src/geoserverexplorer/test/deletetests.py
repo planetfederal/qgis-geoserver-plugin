@@ -1,6 +1,7 @@
 from geoserverexplorer.test.utils import PT1, safeName, PT2, WORKSPACE
 from geoserverexplorer.test.integrationtest import ExplorerIntegrationTest
 import unittest
+import sys
 from PyQt4.QtCore import *
 from geoserverexplorer.qgis import layers
 
@@ -76,6 +77,22 @@ class DeleteTests(ExplorerIntegrationTest):
         self.assertIsNone(item)
 
 
+##################################################################################################
+
+def suiteSubset():
+    tests = ['name of the test to execute']
+    suite = unittest.TestSuite(map(DeleteTests, tests))
+    return suite
+
 def suite():
     suite = unittest.makeSuite(DeleteTests, 'test')
     return suite
+
+# run all tests using unittest skipping nose or testplugin
+def run_all():
+    # demo_test = unittest.TestLoader().loadTestsFromTestCase(DeleteTests)
+    unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suite())
+
+# run a subset of tests using unittest skipping nose or testplugin
+def run_subset():
+    unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suiteSubset())
