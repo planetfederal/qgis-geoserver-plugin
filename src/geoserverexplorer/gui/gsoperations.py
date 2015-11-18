@@ -164,7 +164,6 @@ def getGroupBounds(layers):
         transform = QgsCoordinateTransform(layer.crs(), QgsCoordinateReferenceSystem("EPSG:4326"))
         bounds = addToBounds(transform.transformBoundingBox(layer.extent()), bounds)
 
-    print bounds
     return (str(bounds[0]), str(bounds[1]), str(bounds[2]), str(bounds[3]), "EPSG:4326")
 
 def publishLayers(tree, explorer, catalog):
