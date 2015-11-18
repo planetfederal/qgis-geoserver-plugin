@@ -405,7 +405,6 @@ class CatalogWrapper(object):
         workspace will not be published. If True, all layers in the group are published, even if layers with the same name
         exist in the workspace
         '''
-
         groups = layers.getGroups()
         if name not in groups:
             raise Exception("The specified group does not exist")
@@ -415,18 +414,34 @@ class CatalogWrapper(object):
         if gsgroup is not None and not overwrite:
             return
 
-
         group = groups[name]
+        bounds = None
+
+        def addToBounds(bbox, bounds):
+            if bounds is not None:
+                bounds = [min(bounds[0], bbox.xMinimum()),
+                            max(bounds[1], bbox.xMaximum()),
+                            min(bounds[2], bbox.yMinimum()),
+                            max(bounds[3], bbox.yMaximum())]
+            else:
+                bounds = [bbox.xMinimum(), bbox.xMaximum(),
+                          bbox.yMinimum(), bbox.yMaximum()]
+            return bounds
 
         for layer in group:
             gslayer = self.catalog.get_layer(layer.name())
             if gslayer is None or overwriteLayers:
                 self.publishLayer(layer, workspace, True)
+            transform = QgsCoordinateTransform(layer.crs(), QgsCoordinateReferenceSystem("EPSG:4326"))
+            bounds = addToBounds(transform.transformBoundingBox(layer.extent()), bounds)
 
         names = [layer.name() for layer in group]
 
-        layergroup = self.catalog.create_layergroup(destName, names, names)
+        bounds = (str(bounds[0]), str(bounds[1]), str(bounds[2]), str(bounds[3]), "EPSG:4326")
+        layergroup = self.catalog.create_layergroup(destName, names, names, bounds)
+
         self.catalog.save(layergroup)
+
 
     def publishLayer (self, layer, workspace=None, overwrite=True, name=None):
         '''

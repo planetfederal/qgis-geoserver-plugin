@@ -133,7 +133,7 @@ def publishProject(tree, explorer, catalog):
     for group in groups:
         names = [layer.name() for layer in groups[group]]
         try:
-            layergroup = catalog.create_layergroup(group, names, names)
+            layergroup = catalog.create_layergroup(group, names, names, getGroupBounds(groups[group]))
             explorer.run(catalog.save, "Create layer group '" + group + "'",
                  [], layergroup)
         except ConflictingDataError, e:
@@ -141,11 +141,31 @@ def publishProject(tree, explorer, catalog):
 
     if groupName is not None:
         names = [layer.name() for layer in layers]
-        layergroup = catalog.create_layergroup(groupName, names, names)
+        layergroup = catalog.create_layergroup(groupName, names, names, getGroupBounds(layers))
         explorer.run(catalog.save, "Create global layer group",
                  [], layergroup)
     tree.findAllItems(catalog)[0].refreshContent(explorer)
     explorer.resetActivity()
+
+def getGroupBounds(layers):
+    bounds = None
+    def addToBounds(bbox, bounds):
+        if bounds is not None:
+            bounds = [min(bounds[0], bbox.xMinimum()),
+                        max(bounds[1], bbox.xMaximum()),
+                        min(bounds[2], bbox.yMinimum()),
+                        max(bounds[3], bbox.yMaximum())]
+        else:
+            bounds = [bbox.xMinimum(), bbox.xMaximum(),
+                      bbox.yMinimum(), bbox.yMaximum()]
+        return bounds
+
+    for layer in layers:
+        transform = QgsCoordinateTransform(layer.crs(), QgsCoordinateReferenceSystem("EPSG:4326"))
+        bounds = addToBounds(transform.transformBoundingBox(layer.extent()), bounds)
+
+    print bounds
+    return (str(bounds[0]), str(bounds[1]), str(bounds[2]), str(bounds[3]), "EPSG:4326")
 
 def publishLayers(tree, explorer, catalog):
     dlg = PublishLayersDialog(catalog)
