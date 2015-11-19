@@ -1,7 +1,8 @@
+from geoserver.catalog import Catalog
 import httplib2
 from gsimporter.client import Client, _Client
 
-class PKICatalog():
+class PKICatalog(Catalog):
 
     def __init__(self, service_url, key, cert, ca_cert):
         self.key = key
