@@ -63,7 +63,24 @@ class DragDropTests(ExplorerIntegrationTest):
         self.assertEquals(childCount + 1, groupItem.childCount())
 
 
+##################################################################################################
+
+def suiteSubset():
+    # set tests you want to execute adding in the following list
+    tests = ['testDropVectorLayerUriInCatalogItem']
+    suite = unittest.TestSuite(map(DragDropTests, tests))
+    return suite
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTests(unittest.makeSuite(DragDropTests, 'test'))
     return suite
+
+# run all tests using unittest skipping nose or testplugin
+def run_all():
+    unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suite())
+
+# run a subset of tests using unittest skipping nose or testplugin
+def run_subset():
+    unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suiteSubset())
+
