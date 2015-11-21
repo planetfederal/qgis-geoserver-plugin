@@ -22,15 +22,15 @@ def layerUri(layer):
             else:
                 _params['authid'] = catalog.authid
         else:
-            _params['password'] = catalog.password
-            _params['username'] = catalog.username
+            _params['PASSWORD'] = catalog.password
+            _params['USERNAME'] = catalog.username
     if resource.resource_type == 'featureType':
         params = {
-            'service': 'WFS',
-            'version': '1.0.0',
-            'request': 'GetFeature',
-            'typename': resource.workspace.name + ":" + layer.name,
-            'srsname': resource.projection,
+            'SERVICE': 'WFS',
+            'VERSION': '1.0.0',
+            'REQUEST': 'GetFeature',
+            'TYPENAME': resource.workspace.name + ":" + layer.name,
+            'SRSNAME': resource.projection,
         }
         addAuth(params)
         uri = layer.catalog.gs_base_url + 'wfs?' + urllib.unquote(urllib.urlencode(params))
