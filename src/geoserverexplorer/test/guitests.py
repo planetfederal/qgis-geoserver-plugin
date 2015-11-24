@@ -1,5 +1,8 @@
 import unittest
+import sys
+import os
 from qgis.core import *
+from qgis.utils import iface
 from PyQt4.QtCore import *
 from PyQt4.QtGui import QWidget, QHBoxLayout, QToolTip
 from PyQt4.QtTest import QTest
@@ -25,7 +28,7 @@ class CreateCatalogDialogTests(unittest.TestCase):
         self.cat = getGeoServerCatalog()
 
     def testCreateCatalogDialog(self):
-        dialog = DefineCatalogDialog(self.explorer)
+        dialog = DefineCatalogDialog(self.explorer.catalogs())
         dialog.nameBox.setText("name")
         dialog.urlBox.setText("http://localhost:8080/geoserver")
         dialog.passwordBox.setText("password")
@@ -44,7 +47,7 @@ class CreateCatalogDialogTests(unittest.TestCase):
         settings.endGroup()
 
     def testCreateCatalogDialogWithUrlWithoutProtocol(self):
-        dialog = DefineCatalogDialog(self.explorer)
+        dialog = DefineCatalogDialog(self.explorer.catalogs())
         dialog.nameBox.setText("name")
         dialog.urlBox.setText("localhost:8080/geoserver")
         dialog.passwordBox.setText("password")
@@ -64,7 +67,7 @@ class CreateCatalogDialogTests(unittest.TestCase):
 
     def testCreateCatalogDialogUsingExistingName(self):
         self.explorer.catalogs()["name"] = self.cat
-        dialog = DefineCatalogDialog(self.explorer)
+        dialog = DefineCatalogDialog(self.explorer.catalogs())
         dialog.nameBox.setText("name")
         okWidget = dialog.buttonBox.button(dialog.buttonBox.Ok)
         QTest.mouseClick(okWidget, Qt.LeftButton)
@@ -79,7 +82,7 @@ class CreateCatalogDialogTests(unittest.TestCase):
         del self.explorer.catalogs()["name"]
 
     def testLastCatalogNameIsShownByDefault(self):
-        dialog = DefineCatalogDialog(self.explorer)
+        dialog = DefineCatalogDialog(self.explorer.catalogs())
         dialog.nameBox.setText("catalogname")
         dialog.urlBox.setText("localhost:8081/geoserver")
         okWidget = dialog.buttonBox.button(dialog.buttonBox.Ok)
@@ -87,7 +90,7 @@ class CreateCatalogDialogTests(unittest.TestCase):
         self.assertTrue(dialog.ok)
         self.assertEquals("catalogname", dialog.name)
         self.assertEquals("http://localhost:8081/geoserver/rest", dialog.url)
-        dialog = DefineCatalogDialog(self.explorer)
+        dialog = DefineCatalogDialog(self.explorer.catalogs())
         self.assertEquals("catalogname", dialog.nameBox.text())
         self.assertEquals("localhost:8081/geoserver", dialog.urlBox.text())
         okWidget = dialog.buttonBox.button(dialog.buttonBox.Ok)
@@ -136,10 +139,13 @@ class LayerDialogTests(unittest.TestCase):
     def setUpClass(cls):
         cls.explorer = GeoServerExplorer()
         cls.cat = Catalog("http://localhost:8080/geoserver/rest", "admin", "geoserver")
-        cls.catalogs = {"catalog": cls.cat}
         cleanCatalog(cls.cat)
         cls.cat.create_workspace(WORKSPACE, "http://test1.com")
         cls.cat.create_workspace(WORKSPACEB, "http://test2.com")
+        # load project
+        projectFile = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "test.qgs")
+        if os.path.normcase(projectFile) != os.path.normcase(QgsProject.instance().fileName()):
+            iface.addProject(projectFile)
 
     @classmethod
     def tearDownClass(cls):
@@ -147,41 +153,36 @@ class LayerDialogTests(unittest.TestCase):
 
 
     def testPublishLayersDialog(self):
-        pt1 = layers.resolveLayer(PT1)
-        pt2 = layers.resolveLayer(PT2)
-        dialog = PublishLayersDialog(self.catalogs, [pt1,pt2])
-        cancelWidget = dialog.buttonBox.button(dialog.buttonBox.Cancel)
-        QTest.mouseClick(cancelWidget, Qt.LeftButton)
-        self.assertIsNone(dialog.topublish)
-
-        cat = self.catalogs.values()[0]
-        for idx, ws in enumerate(cat.get_workspaces()):
+        # test the content of the GUI
+        for idx, ws in enumerate(self.cat.get_workspaces()):
             if ws.name == WORKSPACE:
                 wsIdx = idx
             if ws.name == WORKSPACEB:
                 wsIdxB = idx
-        dialog = PublishLayersDialog(self.catalogs, [pt1,pt2])
-        self.assertEquals(1, dialog.table.columnCount())
-        self.assertEquals(2, dialog.table.rowCount())
-        dialog.table.cellWidget(0,0).setCurrentIndex(wsIdx)
-        dialog.table.cellWidget(1,0).setCurrentIndex(wsIdxB)
-        okWidget = dialog.buttonBox.button(dialog.buttonBox.Ok)
-        QTest.mouseClick(okWidget, Qt.LeftButton)
-        self.assertIsNotNone(dialog.topublish)
-        self.assertEquals(WORKSPACE, dialog.topublish[0][2].name)
-        self.assertEquals(WORKSPACEB, dialog.topublish[1][2].name)
+        dialog = PublishLayersDialog(self.cat)
+        self.assertEquals(4, dialog.table.columnCount())
+        self.assertEquals(8, dialog.table.rowCount())
 
-        dialog = PublishLayersDialog({"catalog": cat, "catalog2:": cat}, [pt1,pt2])
-        self.assertEquals(2, dialog.table.columnCount())
-        self.assertEquals(2, dialog.table.rowCount())
+        # test that cancel return an empty list of layer to publish
+        dialog = PublishLayersDialog(self.cat)
+        cancelWidget = dialog.buttonBox.button(dialog.buttonBox.Cancel)
+        QTest.mouseClick(cancelWidget, Qt.LeftButton)
+        self.assertIsNone(dialog.topublish)
+
+        # check that returned layers in the correct workspaces        
+        # step 1: set first two layer to publish
+        dialog.table.item(0,0).setCheckState(Qt.Checked)
+        dialog.table.item(1,0).setCheckState(Qt.Checked)
+        # step 2: set WS ehere to publish
         dialog.table.cellWidget(0,1).setCurrentIndex(wsIdx)
         dialog.table.cellWidget(1,1).setCurrentIndex(wsIdxB)
+        # step 3: press ok
         okWidget = dialog.buttonBox.button(dialog.buttonBox.Ok)
         QTest.mouseClick(okWidget, Qt.LeftButton)
+        # step 4: last check        
         self.assertIsNotNone(dialog.topublish)
-        self.assertEquals(WORKSPACE, dialog.topublish[0][2].name)
-        self.assertEquals(WORKSPACEB, dialog.topublish[1][2].name)
-
+        self.assertEquals(WORKSPACE, dialog.topublish[0][1].name)
+        self.assertEquals(WORKSPACEB, dialog.topublish[1][1].name)
 
 
 class GsNameUtilsTest(unittest.TestCase):
@@ -384,11 +385,26 @@ class GSNameDialogTest(unittest.TestCase):
         self.assertTrue(ndlg.overwritingName())
 
 
+##################################################################################################
 
+def suiteSubset():
+    tests = ['testPublishLayersDialog']
+    suite = unittest.TestSuite(map(LayerDialogTests, tests))
+    return suite
 
 def suite():
     suite = unittest.TestSuite()
     suite.addTests(unittest.makeSuite(CreateCatalogDialogTests, 'test'))
     suite.addTests(unittest.makeSuite(GroupDialogTests, 'test'))
     suite.addTests(unittest.makeSuite(LayerDialogTests, 'test'))
+    suite.addTests(unittest.makeSuite(GsNameUtilsTest, 'test'))
+    suite.addTests(unittest.makeSuite(GSNameDialogTest, 'test'))
     return suite
+
+# run all tests using unittest skipping nose or testplugin
+def run_all():
+    unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suite())
+
+# run a subset of tests using unittest skipping nose or testplugin
+def run_subset():
+    unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suiteSubset())

@@ -11,7 +11,8 @@ class ExplorerIntegrationTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.explorer = GeoServerExplorer()
-        cls.cat = utils.getGeoServerCatalog().catalog
+        cls.catWrapper = utils.getGeoServerCatalog()
+        cls.cat = cls.catWrapper.catalog
         utils.populateCatalog(cls.cat)
         cls.catalogItem = GsCatalogItem(cls.cat, "catalog")
         cls.explorer.explorerTree.gsItem.addChild(cls.catalogItem)
