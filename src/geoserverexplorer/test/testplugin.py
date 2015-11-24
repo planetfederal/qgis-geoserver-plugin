@@ -73,8 +73,11 @@ def _openAndUpload():
     cat = _setUpCatalogAndWorkspace()
     catWrapper = CatalogWrapper(cat)
     catWrapper.publishLayer(layer, "test_workspace", True)
+    stores = cat.get_stores("test_workspace")
+    assert len(stores) != 0
     url = 'url=http://localhost:8080/geoserver/wms&format=image/png&layers=test_workspace:qgis_plugin_test_pt1&styles=qgis_plugin_test_pt1&crs=EPSG:4326'
     wmsLayer = QgsRasterLayer(url, "WMS", 'wms')
+    assert wmsLayer.isValid()
     QgsMapLayerRegistry.instance().addMapLayer(wmsLayer)
 
 def functionalTests():
