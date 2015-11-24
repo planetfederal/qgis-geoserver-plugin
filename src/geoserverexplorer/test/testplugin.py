@@ -14,11 +14,7 @@ from geoserverexplorer.test.guitests import suite as guiSuite
 
 #Tests assume a standard Geoserver at localhost:8080 and default admin/geoserver credentials
 
-try:
-    from qgistester.tests import addTestModule
-    addTestModule(__module__)
-except:
-    pass
+
 #Some common methods
 
 def _loadTestData():
