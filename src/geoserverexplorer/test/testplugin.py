@@ -6,9 +6,8 @@ from geoserverexplorer.qgis.catalog import CatalogWrapper
 import os
 from geoserverexplorer.test.catalogtests import suite as catalogSuite
 from geoserverexplorer.test.deletetests import suite as deleteSuite
-#from geoserverexplorer.test.dragdroptests import suite as dragdropSuite
+from geoserverexplorer.test.dragdroptests import suite as dragdropSuite
 from geoserverexplorer.test.guitests import suite as guiSuite
-#from geoserverexplorer.test.integrationtest import suite as integrationSuite
 #from geoserverexplorer.test.pkitests import suite as pkiSuite
 
 
@@ -100,8 +99,7 @@ def unitTests():
     _tests = []
     _tests.extend(catalogSuite())
     _tests.extend(deleteSuite())
-    #_tests.extend(dragdropSuite())
-    #_tests.extend(guiSuite())
-    #_tests.extend(integrationSuite())
+    _tests.extend(dragdropSuite())
+    _tests.extend(guiSuite())
     #_tests.extend(pkiSuite())
-    return _tests 
+    return _tests
