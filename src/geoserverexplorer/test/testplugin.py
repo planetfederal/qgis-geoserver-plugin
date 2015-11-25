@@ -10,11 +10,14 @@ from geoserverexplorer.test.dragdroptests import suite as dragdropSuite
 from geoserverexplorer.test.guitests import suite as guiSuite
 #from geoserverexplorer.test.pkitests import suite as pkiSuite
 
+# Tests for the QGIS Tester plugin. To know more see
+# https://github.com/boundlessgeo/qgis-tester-plugin
 
 #Tests assume a standard Geoserver at localhost:8080 and default admin/geoserver credentials
 
 
 #Some common methods
+#-------------------
 
 def _loadTestData():
     projectFile = os.path.join(os.path.dirname(os.path.abspath(geoserverexplorer.__file__)), "test", "data", "test.qgs")
