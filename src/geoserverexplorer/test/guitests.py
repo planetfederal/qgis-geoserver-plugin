@@ -161,7 +161,7 @@ class LayerDialogTests(unittest.TestCase):
                 wsIdxB = idx
         dialog = PublishLayersDialog(self.cat)
         self.assertEquals(4, dialog.table.columnCount())
-        self.assertEquals(9, dialog.table.rowCount())
+        self.assertEquals(8, dialog.table.rowCount())
 
         # test that cancel return an empty list of layer to publish
         dialog = PublishLayersDialog(self.cat)
