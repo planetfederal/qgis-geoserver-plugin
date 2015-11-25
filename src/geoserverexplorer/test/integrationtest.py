@@ -3,7 +3,9 @@ from PyQt4.QtCore import QSettings
 from geoserverexplorer.gui.explorer import GeoServerExplorer
 from geoserverexplorer.test import utils
 from geoserverexplorer.gui.gsexploreritems import GsCatalogItem
-
+import os
+from qgis.utils import iface
+from qgis.core import *
 
 
 class ExplorerIntegrationTest(unittest.TestCase):
@@ -20,6 +22,9 @@ class ExplorerIntegrationTest(unittest.TestCase):
         cls.tree = cls.explorer.tree
         # @TODO - make tests pass using importer
         cls.useRestApi = QSettings().setValue("/GeoServer/Settings/GeoServer/UseRestApi", True)
+        projectFile = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "test.qgs")
+        if os.path.normcase(projectFile) != os.path.normcase(QgsProject.instance().fileName()):
+            iface.addProject(projectFile)
 
     @classmethod
     def tearDownClass(cls):

@@ -161,7 +161,7 @@ class LayerDialogTests(unittest.TestCase):
                 wsIdxB = idx
         dialog = PublishLayersDialog(self.cat)
         self.assertEquals(4, dialog.table.columnCount())
-        self.assertEquals(8, dialog.table.rowCount())
+        self.assertEquals(9, dialog.table.rowCount())
 
         # test that cancel return an empty list of layer to publish
         dialog = PublishLayersDialog(self.cat)
@@ -169,17 +169,17 @@ class LayerDialogTests(unittest.TestCase):
         QTest.mouseClick(cancelWidget, Qt.LeftButton)
         self.assertIsNone(dialog.topublish)
 
-        # check that returned layers in the correct workspaces        
+        # check that returned layers in the correct workspaces
         # step 1: set first two layer to publish
         dialog.table.item(0,0).setCheckState(Qt.Checked)
         dialog.table.item(1,0).setCheckState(Qt.Checked)
-        # step 2: set WS ehere to publish
+        # step 2: set WS where to publish
         dialog.table.cellWidget(0,1).setCurrentIndex(wsIdx)
         dialog.table.cellWidget(1,1).setCurrentIndex(wsIdxB)
         # step 3: press ok
         okWidget = dialog.buttonBox.button(dialog.buttonBox.Ok)
         QTest.mouseClick(okWidget, Qt.LeftButton)
-        # step 4: last check        
+        # step 4: last check
         self.assertIsNotNone(dialog.topublish)
         self.assertEquals(WORKSPACE, dialog.topublish[0][1].name)
         self.assertEquals(WORKSPACEB, dialog.topublish[1][1].name)
