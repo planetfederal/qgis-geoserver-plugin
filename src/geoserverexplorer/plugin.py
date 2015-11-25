@@ -24,7 +24,6 @@ class GeoServerExplorerPlugin:
             from qgistester.tests import addTestModule
             addTestModule(testplugin, "GeoServer")
         except:
-            raise
             pass
 
     def unload(self):
