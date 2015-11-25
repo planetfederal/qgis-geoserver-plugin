@@ -22,7 +22,7 @@ class GeoServerExplorerPlugin:
 
         try:
             from qgistester.tests import addTestModule
-            addTestModule(testplugin)
+            addTestModule(testplugin, "GeoServer")
         except:
             raise
             pass
