@@ -61,7 +61,8 @@ class CatalogWrapper(object):
         layers = self.catalog.get_layers()
         groups = self.catalog.get_layergroups()
         for layer in layers:
-            usedStyles.add(layer.default_style.name)
+            if layer.default_style is not None:
+                usedStyles.add(layer.default_style.name)
             usedStyles.update([s.name for s in layer.styles if s is not None])
         for group in groups:
             usedStyles.update([s for s in group.styles if s is not None])
