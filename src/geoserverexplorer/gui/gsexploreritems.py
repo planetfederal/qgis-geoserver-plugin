@@ -228,7 +228,7 @@ class GsTreeItem(TreeItem):
                     styles = layer.styles
                     if styles:
                         continue
-                    if layer.default_style.name == element.name:
+                    if layer.default_style is not None and layer.default_style.name == element.name:
                         dependent.append(layer)
                     else:
                         for style in styles:
