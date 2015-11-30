@@ -7,33 +7,6 @@ from geoserverexplorer.gui.dialogs.projectdialog import PublishProjectDialog
 from geoserver.catalog import ConflictingDataError
 from geoserverexplorer.gui.dialogs.layerdialog import PublishLayersDialog
 
-def publishDraggedGroup(explorer, groupItem, catalog, workspace):
-    groupName = groupItem.element
-    groups = qgislayers.getGroups()
-    group = groups[groupName]
-    gslayers= [layer.name for layer in catalog.get_layers()]
-    missing = []
-    overwrite = bool(QtCore.QSettings().value("/GeoServer/Settings/GeoServer/OverwriteGroupLayers", True, bool))
-    for layer in group:
-        if layer.name() not in gslayers or overwrite:
-            missing.append(layer)
-    if missing:
-        explorer.setProgressMaximum(len(missing), "Publish layers")
-        progress = 0
-        cat = CatalogWrapper(catalog)
-        for layer in missing:
-            explorer.setProgress(progress)
-            explorer.run(cat.publishLayer,
-                     None,
-                     [],
-                     layer, workspace, True)
-            progress += 1
-            explorer.setProgress(progress)
-        explorer.resetActivity()
-    names = [layer.name() for layer in group]
-    layergroup = catalog.create_layergroup(groupName, names, names)
-    explorer.run(catalog.save, "Create layer group from group '" + groupName + "'",
-             [], layergroup)
 
 def publishDraggedLayer(explorer, layer, workspace):
     cat = workspace.catalog
@@ -131,7 +104,7 @@ def publishProject(tree, explorer, catalog):
     explorer.resetActivity()
     groups = qgislayers.getGroups()
     for group in groups:
-        names = [layer.name() for layer in groups[group]]
+        names = [layer.name() for layer in groups[group][::-1]]
         try:
             layergroup = catalog.create_layergroup(group, names, names, getGroupBounds(groups[group]))
         except ConflictingDataError:
@@ -141,7 +114,7 @@ def publishProject(tree, explorer, catalog):
                  [], layergroup)
 
     if groupName is not None:
-        names = [layer.name() for layer in layers]
+        names = [layer.name() for layer in layers[::-1]]
         try:
             layergroup = catalog.create_layergroup(groupName, names, names, getGroupBounds(layers))
         except ConflictingDataError:
