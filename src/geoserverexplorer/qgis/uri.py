@@ -2,28 +2,31 @@ import urllib
 from qgis.core import *
 from geoserver.layer import Layer
 from geoserverexplorer.geoserver.pki import PKICatalog
+from geoserver.layergroup import LayerGroup
+
+
+def addAuth(_params, catalog):
+    if hasattr(catalog, 'authid') and catalog.authid is not None:
+        hasauthcfg = False
+        try:
+            configpki = QgsAuthConfigPkiPaths()
+            if not hasattr(configpki, "issuerAsPem"):
+                # issuerAsPem() removed at same time as authcfg introduced
+                #   in core PKI implementation
+                hasauthcfg = True
+        except:
+            pass
+        if hasauthcfg and QGis.QGIS_VERSION_INT >= 20801:
+            _params['authcfg'] = catalog.authid
+        else:
+            _params['authid'] = catalog.authid
+    else:
+        _params['PASSWORD'] = catalog.password
+        _params['USERNAME'] = catalog.username
 
 def layerUri(layer):
     resource = layer.resource
     catalog = layer.catalog
-    def addAuth(_params):
-        if hasattr(catalog, 'authid') and catalog.authid is not None:
-            hasauthcfg = False
-            try:
-                configpki = QgsAuthConfigPkiPaths()
-                if not hasattr(configpki, "issuerAsPem"):
-                    # issuerAsPem() removed at same time as authcfg introduced
-                    #   in core PKI implementation
-                    hasauthcfg = True
-            except:
-                pass
-            if hasauthcfg and QGis.QGIS_VERSION_INT >= 20801:
-                _params['authcfg'] = catalog.authid
-            else:
-                _params['authid'] = catalog.authid
-        else:
-            _params['PASSWORD'] = catalog.password
-            _params['USERNAME'] = catalog.username
     if resource.resource_type == 'featureType':
         params = {
             'SERVICE': 'WFS',
@@ -32,7 +35,7 @@ def layerUri(layer):
             'TYPENAME': resource.workspace.name + ":" + layer.name,
             'SRSNAME': resource.projection,
         }
-        addAuth(params)
+        addAuth(params, catalog)
         uri = layer.catalog.gs_base_url + 'wfs?' + urllib.unquote(urllib.urlencode(params))
     elif resource.resource_type == 'coverage':
         params = {
@@ -41,7 +44,7 @@ def layerUri(layer):
             'url': layer.catalog.gs_base_url + 'wcs',
             'cache': 'PreferNetwork'
         }
-        addAuth(params)
+        addAuth(params, catalog)
         uri = urllib.unquote(urllib.urlencode(params))
     else:
         params = {
@@ -51,9 +54,20 @@ def layerUri(layer):
             'styles': '',
             'crs': resource.projection
         }
-        addAuth(params)
+        addAuth(params, catalog)
         uri = urllib.unquote(urllib.urlencode(params))
 
+    return uri
+
+def groupUri(group):
+    params = {
+            'layers': group.name,
+            'format': 'image/png',
+            'url': group.catalog.gs_base_url + 'wms',
+            'styles': '',
+        }
+    addAuth(params, group.catalog)
+    uri = urllib.unquote(urllib.urlencode(params))
     return uri
 
 def layerMimeUri(element):
@@ -74,4 +88,9 @@ def layerMimeUri(element):
         escapedUri = uri.replace( ":", "\\:" );
         mimeUri = ':'.join([layertype, provider, escapedName, escapedUri])
         return mimeUri
-
+    elif isinstance(element, LayerGroup):
+        uri = groupUri(element)
+        escapedName = resource.title.replace( ":", "\\:" );
+        escapedUri = uri.replace( ":", "\\:" );
+        mimeUri = ':'.join(["raster", "wms", escapedName, escapedUri])
+        return mimeUri

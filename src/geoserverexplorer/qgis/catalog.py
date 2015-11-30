@@ -574,6 +574,19 @@ class CatalogWrapper(object):
         else:
             raise Exception("Cannot add layer. Unsupported layer type.")
 
+    def addGroupToProject(self, name):
+        group = self.catalog.get_layergroup(name)
+        if group is None:
+            raise Exception ("A layer with the name '" + name + "' was not found in the catalog")
+
+        uri = uri_utils.groupUri(group)
+
+        qgslayer = QgsRasterLayer(uri, name, "wms")
+        if not qgslayer.isValid():
+            raise Exception ("Layer at %s is not a valid layer" % uri)
+        QgsMapLayerRegistry.instance().addMapLayers([qgslayer])
+
+
 def createPGFeatureStore(catalog, name, workspace=None, overwrite=False,
     host="localhost", port=5432, database="db", schema="public", user="postgres", passwd=""):
     try:

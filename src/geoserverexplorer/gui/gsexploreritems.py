@@ -1017,13 +1017,27 @@ class GsGroupItem(GsTreeItem):
         icon = QtGui.QIcon(os.path.dirname(__file__) + "/../images/delete.gif")
         deleteLayerGroupAction = QtGui.QAction(icon, "Delete", explorer)
         deleteLayerGroupAction.triggered.connect(lambda: self.deleteLayerGroup(tree, explorer))
-        return [editLayerGroupAction, deleteLayerGroupAction]
+        icon = QtGui.QIcon(os.path.dirname(__file__) + "/../images/import_into_qgis.png")
+        addGroupAction = QtGui.QAction(icon, "Add to current QGIS project", explorer)
+        addGroupAction.triggered.connect(lambda: self.addGroupToProject(explorer))
+        return [editLayerGroupAction, deleteLayerGroupAction, addGroupAction]
+
 
     def multipleSelectionContextMenuActions(self, tree, explorer, selected):
         icon = QtGui.QIcon(os.path.dirname(__file__) + "/../images/delete.gif")
         deleteSelectedAction = QtGui.QAction(icon, "Delete", explorer)
         deleteSelectedAction.triggered.connect(lambda: self.deleteElements(selected, tree, explorer))
         return [deleteSelectedAction]
+
+    def addGroupToProject(self, explorer):
+        #Using threads here freezes the QGIS GUI
+        #TODO: fix this
+        cat = CatalogWrapper(self.parentCatalog())
+        try:
+            cat.addGroupToProject(self.element.name)
+            explorer.setInfo("Group layer '" + self.element.name + "' correctly added to QGIS project")
+        except Exception, e:
+            explorer.setError(str(e))
 
     def deleteLayerGroup(self, tree, explorer):
         self.deleteElements([self], tree, explorer);
