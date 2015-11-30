@@ -9,7 +9,7 @@ from qgis.core import *
 from geoserverexplorer.qgis import utils
 import os
 from PyQt4 import QtCore
-from qgis.utils.import iface
+from qgis.utils import iface
 
 def exportVectorLayer(layer):
     '''accepts a QgsVectorLayer or a string with a filepath'''
