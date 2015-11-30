@@ -134,14 +134,19 @@ def publishProject(tree, explorer, catalog):
         names = [layer.name() for layer in groups[group]]
         try:
             layergroup = catalog.create_layergroup(group, names, names, getGroupBounds(groups[group]))
-            explorer.run(catalog.save, "Create layer group '" + group + "'",
+        except ConflictingDataError:
+            layergroup = catalog.get_layergroup(group)
+            layergroup.dirty.update(layers = names, styles = names)
+        explorer.run(catalog.save, "Create layer group '" + group + "'",
                  [], layergroup)
-        except ConflictingDataError, e:
-            explorer.setWarning(str(e))
 
     if groupName is not None:
         names = [layer.name() for layer in layers]
-        layergroup = catalog.create_layergroup(groupName, names, names, getGroupBounds(layers))
+        try:
+            layergroup = catalog.create_layergroup(groupName, names, names, getGroupBounds(layers))
+        except ConflictingDataError:
+            layergroup = catalog.get_layergroup(groupName)
+            layergroup.dirty.update(layers = names, styles = names)
         explorer.run(catalog.save, "Create global layer group",
                  [], layergroup)
     tree.findAllItems(catalog)[0].refreshContent(explorer)
