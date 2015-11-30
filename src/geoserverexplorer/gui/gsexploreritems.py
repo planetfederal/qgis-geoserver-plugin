@@ -890,7 +890,7 @@ class GsLayerItem(GsTreeItem):
                  [self.parent()],
                  group)
 
-    def moveLayerToFrontInGroup(self, explorer):
+    def moveLayerToBackInGroup(self, explorer):
         group = self.parent().element
         layers = group.layers
         styles = group.styles
@@ -907,7 +907,7 @@ class GsLayerItem(GsTreeItem):
                  [self.parent()],
                  group)
 
-    def moveLayerToBackInGroup(self, explorer):
+    def moveLayerToFrontInGroup(self, explorer):
         group = self.parent().element
         layers = group.layers
         styles = group.styles
