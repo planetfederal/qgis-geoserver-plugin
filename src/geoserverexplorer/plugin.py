@@ -11,7 +11,7 @@ from processing.core.Processing import Processing
 from processingprovider.geoserverprovider import GeoServerProvider
 from geoserverexplorer.qgis.sldadapter import adaptGsToQgs
 from geoserverexplorer.qgis import layerwatcher
-from geoserverexplorer.test import testplugin
+
 
 class GeoServerExplorerPlugin:
 
@@ -22,6 +22,7 @@ class GeoServerExplorerPlugin:
 
         try:
             from qgistester.tests import addTestModule
+            from geoserverexplorer.test import testplugin
             addTestModule(testplugin, "GeoServer")
         except:
             pass
