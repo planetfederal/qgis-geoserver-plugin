@@ -2,7 +2,7 @@ import os
 from qgis.core import *
 from geoserverexplorer.gui.gsexploreritems import *
 from geoserverexplorer.qgis import uri as uri_utils
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtGui, QtCore, QtXml
 
 class ExplorerTreeWidget(QtGui.QTreeWidget):
 
@@ -171,9 +171,11 @@ class ExplorerTreeWidget(QtGui.QTreeWidget):
 ###################################DRAG & DROP########################
 
     QGIS_URI_MIME = "application/x-vnd.qgis.qgis.uri"
+    QGIS_LEGEND_MIME = "application/qgis.layertreemodeldata"
+
 
     def mimeTypes(self):
-        return ["application/x-qabstractitemmodeldatalist", self.QGIS_URI_MIME]
+        return ["application/x-qabstractitemmodeldatalist", self.QGIS_URI_MIME, self.QGIS_LEGEND_MIME]
 
     def mimeData(self, items):
         mimeData = QtGui.QTreeWidget.mimeData(self, items)
@@ -211,6 +213,24 @@ class ExplorerTreeWidget(QtGui.QTreeWidget):
             if data.hasFormat(self.QGIS_URI_MIME):
                 for uri in QgsMimeDataUtils.decodeUriList(data):
                     elements.append(uri)
+            elif data.hasFormat(self.QGIS_LEGEND_MIME):
+                encodedData = data.data('application/qgis.layertreemodeldata')
+                doc = QtXml.QDomDocument()
+                if not doc.setContent(encodedData):
+                    return
+                layerRegistry = QgsMapLayerRegistry.instance()
+                root = doc.documentElement()
+                child = root.firstChildElement()
+                while not child.isNull():
+                    node = QgsLayerTreeNode.readXML(child)
+                    if isinstance(node, QgsLayerTreeLayer):
+                        uri = layerRegistry.mapLayer(node.layerId()).dataProvider().dataSourceUri()
+                        elements.append(uri)
+                    else:
+                        # publishing layer groups is not supported now
+                        continue
+                    child = child.nextSiblingElement()
+
             toUpdate = destinationItem.acceptDroppedUris(self, self.explorer, elements)
 
         self.explorer.resetActivity()
