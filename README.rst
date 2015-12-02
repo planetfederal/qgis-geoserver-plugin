@@ -18,7 +18,7 @@ The first command will fetch the dependencies required by the plugin. The second
 Getting Help
 ============
 
-Usage is documented `here <https://github.com/boundlessgeo/qgis-geoserver-plugin/blob/master/doc/source/intro.rst>`_
+Usage is documented `here <http://boundlessgeo.github.io/qgis-geoserver-plugin>`_
 
 If you have questions, please use the project `mailing list <https://groups.google.com/forum/#!forum/qgis-geoserver-plugin>`_
 
