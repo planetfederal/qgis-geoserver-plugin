@@ -1,6 +1,7 @@
 import os
 from qgis.core import *
 from geoserverexplorer.gui.gsexploreritems import *
+from geoserverexplorer.qgis.layers import *
 from geoserverexplorer.qgis import uri as uri_utils
 from PyQt4 import QtGui, QtCore, QtXml
 
@@ -224,8 +225,8 @@ class ExplorerTreeWidget(QtGui.QTreeWidget):
                 while not child.isNull():
                     node = QgsLayerTreeNode.readXML(child)
                     if isinstance(node, QgsLayerTreeLayer):
-                        uri = layerRegistry.mapLayer(node.layerId()).dataProvider().dataSourceUri()
-                        elements.append(uri)
+                        layer = layerRegistry.mapLayer(node.layerId())
+                        elements.append(layer.source())
                     else:
                         # publishing layer groups is not supported now
                         continue

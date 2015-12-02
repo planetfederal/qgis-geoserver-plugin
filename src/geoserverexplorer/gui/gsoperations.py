@@ -32,30 +32,35 @@ def addDraggedLayerToGroup(explorer, layer, groupItem):
 
 def addDraggedUrisToWorkspace(uris, catalog, workspace, explorer, tree):
     if uris and workspace:
+        allLayers = qgislayers.getAllLayersAsDict()
+        publishableLayers = qgislayers.getPublishableLayersAsDict()
         if len(uris) > 1:
             explorer.setProgressMaximum(len(uris))
         for i, uri in enumerate(uris):
-            if isinstance(uri, basestring):
-                layerName = QtCore.QFileInfo(uri).completeBaseName()
-                layer = QgsRasterLayer(uri, layerName)
+            source = uri if isinstance(uri, basestring) else uri.uri
+            if source in allLayers:
+                layer = publishableLayers.get(source, None)
             else:
-                layer = QgsRasterLayer(uri.uri, uri.name)
-            if not layer.isValid() or layer.type() != QgsMapLayer.RasterLayer:
                 if isinstance(uri, basestring):
                     layerName = QtCore.QFileInfo(uri).completeBaseName()
-                    layer = QgsVectorLayer(uri, layerName, "ogr")
+                    layer = QgsRasterLayer(uri, layerName)
                 else:
-                    layer = QgsVectorLayer(uri.uri, uri.name, uri.providerKey)
-                if not layer.isValid() or layer.type() != QgsMapLayer.VectorLayer:
-                    layer.deleteLater()
-                    name = uri if isinstance(uri, basestring) else uri.uri
-                    explorer.setError("Error reading file {} or it is not a valid layer file".format(name))
-                else:
-                    if not publishDraggedLayer(explorer, layer, workspace):
-                        return []
+                    layer = QgsRasterLayer(uri.uri, uri.name)
+                if not layer.isValid() or layer.type() != QgsMapLayer.RasterLayer:
+                    if isinstance(uri, basestring):
+                        layerName = QtCore.QFileInfo(uri).completeBaseName()
+                        layer = QgsVectorLayer(uri, layerName, "ogr")
+                    else:
+                        layer = QgsVectorLayer(uri.uri, uri.name, uri.providerKey)
+                    if not layer.isValid() or layer.type() != QgsMapLayer.VectorLayer:
+                        layer.deleteLater()
+                        layer = None
+            if layer is None:
+                name = "'%s'" % allLayers[source] if source in allLayers else "with source '%s'" % source
+                explorer.setWarning("Layer %s is not valid for publication" % name)
             else:
                 if not publishDraggedLayer(explorer, layer, workspace):
-                    return []
+                    break
             explorer.setProgress(i + 1)
         explorer.resetActivity()
         return [tree.findAllItems(catalog)[0]]

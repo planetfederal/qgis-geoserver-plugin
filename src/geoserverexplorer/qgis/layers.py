@@ -13,33 +13,18 @@ def resolveLayer(name):
             return layer
     raise WrongLayerNameException()
 
-def getRasterLayers():
+def getPublishableLayers():
     layers = config.iface.legendInterface().layers()
-    raster = list()
-
-    for layer in layers:
-        if layer.type() == layer.RasterLayer:
-            raster.append(layer)
-    return raster
-
-
-def getVectorLayers(shapetype=-1):
-    layers = config.iface.legendInterface().layers()
-    vector = list()
-    for layer in layers:
-        if layer.type() == layer.VectorLayer:
-            if shapetype == ALL_TYPES or layer.geometryType() == shapetype:
-                uri = unicode(layer.source())
-                if not uri.lower().endswith("csv") and not uri.lower().endswith("dbf"):
-                    vector.append(layer)
-    return vector
+    return [layer for layer in layers if layer.dataProvider().name() != "wms"]
 
 def getAllLayers():
-    layers = []
-    layers += getRasterLayers();
-    layers += getVectorLayers();
-    return layers
+    return config.iface.legendInterface().layers()
 
+def getAllLayersAsDict():
+    return {layer.source(): layer for layer in getAllLayers()}
+
+def getPublishableLayersAsDict():
+    return {layer.source(): layer for layer in getPublishableLayers()}
 
 def getGroups():
     groups = {}
