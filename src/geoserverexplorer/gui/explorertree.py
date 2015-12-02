@@ -240,4 +240,4 @@ class ExplorerTreeWidget(QtGui.QTreeWidget):
             item.refreshContent(self.explorer)
             self.explorer.setProgress(i)
         self.explorer.resetActivity()
-        event.acceptProposedAction()
+        event.ignore()
