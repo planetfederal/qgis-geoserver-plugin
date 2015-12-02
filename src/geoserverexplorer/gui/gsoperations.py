@@ -31,7 +31,7 @@ def addDraggedLayerToGroup(explorer, layer, groupItem):
                  group)
 
 def addDraggedUrisToWorkspace(uris, catalog, workspace, explorer, tree):
-    if uris:
+    if uris and workspace:
         if len(uris) > 1:
             explorer.setProgressMaximum(len(uris))
         for i, uri in enumerate(uris):
