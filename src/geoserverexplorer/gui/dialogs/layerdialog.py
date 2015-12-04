@@ -17,6 +17,7 @@ class PublishLayersDialog(QtGui.QDialog):
         self.wrksp = "Workspace"
         self.ow = "Overwrite"
         self.name = "Name"
+        self.style = "Style"
         self.initGui()
 
 
@@ -26,7 +27,7 @@ class PublishLayersDialog(QtGui.QDialog):
         self.setWindowTitle('Publish layers')
         self.table = QtGui.QTableWidget(None)
 
-        self.columns = [self.lyr, self.wrksp, self.ow, self.name]
+        self.columns = [self.lyr, self.wrksp, self.style, self.ow, self.name]
 
         hlayout = QtGui.QHBoxLayout()
         self.selectAllLabel = QtGui.QLabel()
@@ -78,6 +79,8 @@ class PublishLayersDialog(QtGui.QDialog):
         return self.columns.index(name)
 
     def setTableContent(self):
+        styles = self.catalog.get_styles()
+        workspaces = self.catalog.get_workspaces()
         self.table.setRowCount(len(self.layers))
         catlayers = [lyr.name for lyr in self.catalog.get_layers()]
         for idx, layer in enumerate(self.layers):
@@ -95,7 +98,10 @@ class PublishLayersDialog(QtGui.QDialog):
                 names=catlayers,
                 unique=False)
             self.table.setCellWidget(idx, self.getColumn(self.name), nameBox)
-
+            nameBox.setSizePolicy(
+                QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum,
+                                  QtGui.QSizePolicy.Fixed))
+            styleNames = ["[Use QGIS Style]"]
             self.nameBoxes.append(nameBox)
 
             overwriteBox = QtGui.QCheckBox()
@@ -111,7 +117,6 @@ class PublishLayersDialog(QtGui.QDialog):
             workspaceBox.setSizePolicy(
                 QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum,
                                   QtGui.QSizePolicy.Fixed))
-            workspaces = self.catalog.get_workspaces()
             try:
                 defaultWorkspace = self.catalog.get_default_workspace()
                 defaultWorkspace.fetch()
@@ -123,6 +128,11 @@ class PublishLayersDialog(QtGui.QDialog):
             if defaultName is not None:
                 workspaceBox.setCurrentIndex(workspaceNames.index(defaultName))
             self.table.setCellWidget(idx, self.getColumn(self.wrksp), workspaceBox)
+
+            stylesBox = QtGui.QComboBox()
+            styleNames += [s.name for s in styles]
+            stylesBox.addItems(styleNames)
+            self.table.setCellWidget(idx, self.getColumn(self.style), stylesBox)
 
     def validateNames(self):
         valid = True
@@ -141,9 +151,12 @@ class PublishLayersDialog(QtGui.QDialog):
                 nameBox = self.table.cellWidget(idx, self.getColumn(self.name))
                 layername = nameBox.definedName()
                 workspaceBox = self.table.cellWidget(idx, self.getColumn(self.wrksp))
+                stylesBox = self.table.cellWidget(idx, self.getColumn(self.style))
                 workspaces = self.catalog.get_workspaces()
+                styles = self.catalog.get_styles()
                 workspace = workspaces[workspaceBox.currentIndex()]
-                self.topublish.append((layer, workspace, layername))
+                style = None if stylesBox.currentIndex() == 0 else styles[stylesBox.currentIndex() - 1]
+                self.topublish.append((layer, workspace, layername, style))
         if not bool(self.topublish):
             ret = QtGui.QMessageBox.warning(self, "No layers selected", "You haven't selected any layer to be published\n"
                                       "Are you sure you want to proceed?", QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)

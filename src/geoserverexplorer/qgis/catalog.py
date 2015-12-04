@@ -444,7 +444,7 @@ class CatalogWrapper(object):
         self.catalog.save(layergroup)
 
 
-    def publishLayer (self, layer, workspace=None, overwrite=True, name=None):
+    def publishLayer (self, layer, workspace=None, overwrite=True, name=None, style=None):
         '''
         Publishes a QGIS layer.
         It creates the corresponding store and the layer itself.
@@ -458,6 +458,9 @@ class CatalogWrapper(object):
         name: the name for the published layer. Uses the QGIS layer name if not passed
         or None
 
+        style: the style to use from the ones in the catalog. Will upload the QGIS style if
+        not passed or None
+
         '''
 
         if isinstance(layer, basestring):
@@ -470,17 +473,15 @@ class CatalogWrapper(object):
         if gslayer is not None and not overwrite:
             return
 
-        title = name
-
-        sld = self.publishStyle(layer, overwrite, name)
+        sld = self.publishStyle(layer, overwrite, name) if style is None else None
 
         layer = self.preprocess(layer)
-        self.upload(layer, workspace, overwrite, title)
+        self.upload(layer, workspace, overwrite, name)
 
-        if sld is not None:
+        if sld is not None or style is not None:
             #assign style to created store
             publishing = self.catalog.get_layer(name)
-            publishing.default_style = self.catalog.get_style(name)
+            publishing.default_style = style or self.catalog.get_style(name)
             self.catalog.save(publishing)
 
     def preprocess(self, layer):

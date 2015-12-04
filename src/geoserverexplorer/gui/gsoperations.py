@@ -157,11 +157,11 @@ def publishLayers(tree, explorer, catalog):
     cat = CatalogWrapper(catalog)
     progress = 0
     explorer.setProgressMaximum(len(dlg.topublish), "Publish layers")
-    for layer, workspace, name in dlg.topublish:
+    for layer, workspace, name, style in dlg.topublish:
         explorer.run(cat.publishLayer,
              None,
              [],
-             layer, workspace, True, name)
+             layer, workspace, True, name, style)
         progress += 1
         explorer.setProgress(progress)
     catItem = tree.findAllItems(catalog)[0]
