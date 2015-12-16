@@ -1,11 +1,13 @@
 [general]
 name=GeoServer Explorer
 description=An interface to easily manage and configure GeoServer instances
+about=The GeoServer Explorer plugin allows performing configuration tasks for GeoServer catalogs from the QGIS interface, acting as a GUI for the GeoServer REST API
 version=0.1
 qgisMinimumVersion=2.0
 author=Victor Olaya (Boundless)
 email=volaya@boundlessgeo.com
-homepage=
+repository=https://github.com/boundlessgeo/qgis-geoserver-plugin
+tracker=https://github.com/boundlessgeo/qgis-geoserver-plugin/issues
 icon=images/geoserver.png
 class_name=GeoServerExplorerPlugin
 experimental = False
