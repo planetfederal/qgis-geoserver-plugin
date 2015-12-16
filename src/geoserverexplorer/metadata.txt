@@ -1,7 +1,7 @@
 [general]
 name=GeoServer Explorer
 description=An interface to easily manage and configure GeoServer instances
-version=1.0
+version=0.1
 qgisMinimumVersion=2.0
 author=Victor Olaya (Boundless)
 email=volaya@boundlessgeo.com
