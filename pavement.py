@@ -65,10 +65,10 @@ def setup(options):
             localpath = ext_src / req
             if not develop:
                 if localpath.exists():
-                    cwd = getcwd()
-                    chdir(localpath)
+                    cwd = os.getcwd()
+                    os.chdir(localpath)
                     sh('git pull')
-                    chdir(cwd)
+                    os.chdir(cwd)
                 else:
                     sh('git clone  %s %s' % (urlspec, localpath))
             req = localpath
