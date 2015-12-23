@@ -1142,10 +1142,12 @@ class GsStyleItem(GsTreeItem):
             uri += fieldsstring
         layer = QgsVectorLayer(uri, "tmp", "memory")
         layer.loadSldStyle(sldfile)
-        oldSld = getGsCompatibleSld(layer)
+        oldSld = getGsCompatibleSld(layer)[0]
         config.iface.showLayerProperties(layer)
         settings.setValue('/Projections/defaultBehaviour', prjSetting)
-        newSld = getGsCompatibleSld(layer)
+        newSld = getGsCompatibleSld(layer)[0]
+        #TODO: we are not considering the possibility of the user selecting new svg markers,
+        #      which would need to be uploaded
         if newSld != oldSld:
             explorer.run(self.element.update_body, "Update style", [], newSld)
 
