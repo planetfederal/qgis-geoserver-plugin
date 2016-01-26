@@ -61,7 +61,8 @@ class CatalogWrapper(object):
         layers = self.catalog.get_layers()
         groups = self.catalog.get_layergroups()
         for layer in layers:
-            usedStyles.add(layer.default_style.name)
+            if layer.default_style is not None:
+                usedStyles.add(layer.default_style.name)
             usedStyles.update([s.name for s in layer.styles if s is not None])
         for group in groups:
             usedStyles.update([s for s in group.styles if s is not None])
@@ -443,7 +444,7 @@ class CatalogWrapper(object):
         self.catalog.save(layergroup)
 
 
-    def publishLayer (self, layer, workspace=None, overwrite=True, name=None):
+    def publishLayer (self, layer, workspace=None, overwrite=True, name=None, style=None):
         '''
         Publishes a QGIS layer.
         It creates the corresponding store and the layer itself.
@@ -457,6 +458,9 @@ class CatalogWrapper(object):
         name: the name for the published layer. Uses the QGIS layer name if not passed
         or None
 
+        style: the style to use from the ones in the catalog. Will upload the QGIS style if
+        not passed or None
+
         '''
 
         if isinstance(layer, basestring):
@@ -469,17 +473,15 @@ class CatalogWrapper(object):
         if gslayer is not None and not overwrite:
             return
 
-        title = name
-
-        sld = self.publishStyle(layer, overwrite, name)
+        sld = self.publishStyle(layer, overwrite, name) if style is None else None
 
         layer = self.preprocess(layer)
-        self.upload(layer, workspace, overwrite, title)
+        self.upload(layer, workspace, overwrite, name)
 
-        if sld is not None:
+        if sld is not None or style is not None:
             #assign style to created store
             publishing = self.catalog.get_layer(name)
-            publishing.default_style = self.catalog.get_style(name)
+            publishing.default_style = style or self.catalog.get_style(name)
             self.catalog.save(publishing)
 
     def preprocess(self, layer):
@@ -572,6 +574,19 @@ class CatalogWrapper(object):
             QgsMapLayerRegistry.instance().addMapLayers([qgslayer])
         else:
             raise Exception("Cannot add layer. Unsupported layer type.")
+
+    def addGroupToProject(self, name):
+        group = self.catalog.get_layergroup(name)
+        if group is None:
+            raise Exception ("A layer with the name '" + name + "' was not found in the catalog")
+
+        uri = uri_utils.groupUri(group)
+
+        qgslayer = QgsRasterLayer(uri, name, "wms")
+        if not qgslayer.isValid():
+            raise Exception ("Layer at %s is not a valid layer" % uri)
+        QgsMapLayerRegistry.instance().addMapLayers([qgslayer])
+
 
 def createPGFeatureStore(catalog, name, workspace=None, overwrite=False,
     host="localhost", port=5432, database="db", schema="public", user="postgres", passwd=""):

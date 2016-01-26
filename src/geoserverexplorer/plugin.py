@@ -12,12 +12,20 @@ from processingprovider.geoserverprovider import GeoServerProvider
 from geoserverexplorer.qgis.sldadapter import adaptGsToQgs
 from geoserverexplorer.qgis import layerwatcher
 
+
 class GeoServerExplorerPlugin:
 
     def __init__(self, iface):
         self.iface = iface
         config.iface = iface
         self.provider = GeoServerProvider()
+
+        try:
+            from qgistester.tests import addTestModule
+            from geoserverexplorer.test import testplugin
+            addTestModule(testplugin, "GeoServer")
+        except:
+            pass
 
     def unload(self):
         pem.removePkiTempFiles(self.explorer.catalogs())

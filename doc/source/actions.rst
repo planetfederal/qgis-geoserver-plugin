@@ -174,7 +174,7 @@ The Explorer tree supports drag & drop, and you can use it to relocate elements,
 Below you can find more information about the operations that can be performed this way.
 
 - Dragging a GeoServer layer item onto a GeoServer group element. It adds the layer to the group, using its default style.
-- Dragging a GeoServer or QGIS style item onto a GeoServer layer. It adds the style to the list of alternative styles of the layer.
+- Dragging a GeoServer or style item onto a GeoServer layer. It adds the style to the list of alternative styles of the layer.
 - Dragging a GeoServer layer item onto the *GeoWebCache layers* item of the same catalog. It will add the corresponding cached layer for the dragged layer.
 
 Multiple elements can be selected and dragged, as long as they are of the same type.
@@ -186,7 +186,9 @@ You can also drag elements from outside of the GeoServer Explorer itself. For in
 
 If the dragged files are not opened in the current QGIS project, no style will be uploaded along with them when publishing to a GeoServer catalog.
 
-Also, elements from the explorer can be dropped onto the QGIS canvas. GeoServer layers can be dropped onto the QGIS canvas to add them to the project. The corresponding WFS/WCS layer will be created as in the case of using the *Add to QGIS project* menu option, already described. 
+To upload a layer and its style, you can drag and drop an element in the QGIS Layers panel.
+
+Also, elements from the explorer can be dropped onto the QGIS canvas. GeoServer layers can be dropped onto the QGIS canvas to add them to the project. The corresponding WFS/WCS layer will be created as in the case of using the *Add to QGIS project* menu option, already described. If a group element is dragged from the Explorer and into the canvas, a WMS layer corresponding to that layer group will be added to the tproject.
 
 
 

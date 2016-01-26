@@ -40,8 +40,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'OpenGeo Suite QGIS plugin'
-copyright = u'2013, OpenGeo'
+project = u'GeoServer QGIS plugin'
+copyright = u'2015, Boundless'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -164,7 +164,7 @@ html_theme_path = ['../themes']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'OpenGeoSuiteQGISplugindoc'
+htmlhelp_basename = 'GeoServerQGISplugindoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -183,7 +183,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'OpenGeoSuiteQGISplugin.tex', u'OpenGeo Suite QGIS plugin Documentation',
+  ('index', 'GeoServerQGISplugin.tex', u'GeoServer QGIS plugin Documentation',
    u'Boundless', 'manual'),
 ]
 

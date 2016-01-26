@@ -6,20 +6,18 @@ from geoserverexplorer.qgis.catalog import CatalogWrapper
 import os
 from geoserverexplorer.test.catalogtests import suite as catalogSuite
 from geoserverexplorer.test.deletetests import suite as deleteSuite
-#from geoserverexplorer.test.dragdroptests import suite as dragdropSuite
+from geoserverexplorer.test.dragdroptests import suite as dragdropSuite
 from geoserverexplorer.test.guitests import suite as guiSuite
-#from geoserverexplorer.test.integrationtest import suite as integrationSuite
 #from geoserverexplorer.test.pkitests import suite as pkiSuite
 
+# Tests for the QGIS Tester plugin. To know more see
+# https://github.com/boundlessgeo/qgis-tester-plugin
 
 #Tests assume a standard Geoserver at localhost:8080 and default admin/geoserver credentials
 
-try:
-    from qgistester.tests import addTestModule
-    addTestModule(__module__)
-except:
-    pass
+
 #Some common methods
+#-------------------
 
 def _loadTestData():
     projectFile = os.path.join(os.path.dirname(os.path.abspath(geoserverexplorer.__file__)), "test", "data", "test.qgs")
@@ -104,8 +102,7 @@ def unitTests():
     _tests = []
     _tests.extend(catalogSuite())
     _tests.extend(deleteSuite())
-    #_tests.extend(dragdropSuite())
-    #_tests.extend(guiSuite())
-    #_tests.extend(integrationSuite())
+    _tests.extend(dragdropSuite())
+    _tests.extend(guiSuite())
     #_tests.extend(pkiSuite())
-    return _tests 
+    return _tests

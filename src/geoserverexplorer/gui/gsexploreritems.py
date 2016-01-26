@@ -228,7 +228,7 @@ class GsTreeItem(TreeItem):
                     styles = layer.styles
                     if styles:
                         continue
-                    if layer.default_style.name == element.name:
+                    if layer.default_style is not None and layer.default_style.name == element.name:
                         dependent.append(layer)
                     else:
                         for style in styles:
@@ -890,7 +890,7 @@ class GsLayerItem(GsTreeItem):
                  [self.parent()],
                  group)
 
-    def moveLayerToFrontInGroup(self, explorer):
+    def moveLayerToBackInGroup(self, explorer):
         group = self.parent().element
         layers = group.layers
         styles = group.styles
@@ -907,7 +907,7 @@ class GsLayerItem(GsTreeItem):
                  [self.parent()],
                  group)
 
-    def moveLayerToBackInGroup(self, explorer):
+    def moveLayerToFrontInGroup(self, explorer):
         group = self.parent().element
         layers = group.layers
         styles = group.styles
@@ -1017,13 +1017,27 @@ class GsGroupItem(GsTreeItem):
         icon = QtGui.QIcon(os.path.dirname(__file__) + "/../images/delete.gif")
         deleteLayerGroupAction = QtGui.QAction(icon, "Delete", explorer)
         deleteLayerGroupAction.triggered.connect(lambda: self.deleteLayerGroup(tree, explorer))
-        return [editLayerGroupAction, deleteLayerGroupAction]
+        icon = QtGui.QIcon(os.path.dirname(__file__) + "/../images/import_into_qgis.png")
+        addGroupAction = QtGui.QAction(icon, "Add to current QGIS project", explorer)
+        addGroupAction.triggered.connect(lambda: self.addGroupToProject(explorer))
+        return [editLayerGroupAction, deleteLayerGroupAction, addGroupAction]
+
 
     def multipleSelectionContextMenuActions(self, tree, explorer, selected):
         icon = QtGui.QIcon(os.path.dirname(__file__) + "/../images/delete.gif")
         deleteSelectedAction = QtGui.QAction(icon, "Delete", explorer)
         deleteSelectedAction.triggered.connect(lambda: self.deleteElements(selected, tree, explorer))
         return [deleteSelectedAction]
+
+    def addGroupToProject(self, explorer):
+        #Using threads here freezes the QGIS GUI
+        #TODO: fix this
+        cat = CatalogWrapper(self.parentCatalog())
+        try:
+            cat.addGroupToProject(self.element.name)
+            explorer.setInfo("Group layer '" + self.element.name + "' correctly added to QGIS project")
+        except Exception, e:
+            explorer.setError(str(e))
 
     def deleteLayerGroup(self, tree, explorer):
         self.deleteElements([self], tree, explorer);
@@ -1128,10 +1142,12 @@ class GsStyleItem(GsTreeItem):
             uri += fieldsstring
         layer = QgsVectorLayer(uri, "tmp", "memory")
         layer.loadSldStyle(sldfile)
-        oldSld = getGsCompatibleSld(layer)
+        oldSld = getGsCompatibleSld(layer)[0]
         config.iface.showLayerProperties(layer)
         settings.setValue('/Projections/defaultBehaviour', prjSetting)
-        newSld = getGsCompatibleSld(layer)
+        newSld = getGsCompatibleSld(layer)[0]
+        #TODO: we are not considering the possibility of the user selecting new svg markers,
+        #      which would need to be uploaded
         if newSld != oldSld:
             explorer.run(self.element.update_body, "Update style", [], newSld)
 

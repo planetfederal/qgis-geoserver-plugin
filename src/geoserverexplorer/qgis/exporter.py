@@ -9,6 +9,8 @@ from qgis.core import *
 from geoserverexplorer.qgis import utils
 import os
 from PyQt4 import QtCore
+from qgis.utils import iface
+from qgis.gui import QgsMessageBar
 
 def exportVectorLayer(layer):
     '''accepts a QgsVectorLayer or a string with a filepath'''
@@ -31,6 +33,9 @@ def exportVectorLayer(layer):
         for feat in layer.getFeatures():
             writer.addFeature(feat)
         del writer
+        iface.messageBar().pushMessage("Warning", "Layer had to be exported to shapefile for importing. Data might be lost.",
+                                              level = QgsMessageBar.WARNING,
+                                              duration = 5)
         return output
     else:
         return filename
