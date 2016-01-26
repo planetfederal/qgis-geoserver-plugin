@@ -1,3 +1,5 @@
+from qgistester.utils import layerFromName
+from qgis.core import QgsProject
 import qgis.utils
 import geoserverexplorer
 from geoserverexplorer.geoserver.retry import RetryCatalog
@@ -13,11 +15,13 @@ from geoserverexplorer.test.guitests import suite as guiSuite
 # Tests for the QGIS Tester plugin. To know more see
 # https://github.com/boundlessgeo/qgis-tester-plugin
 
-#Tests assume a standard Geoserver at localhost:8080 and default admin/geoserver credentials
+#Tests assume a standard Geoserver at 192.168.0.4:8080 and default admin/geoserver credentials
 
 
 #Some common methods
 #-------------------
+
+geoserverlocation = "localhost:8080"
 
 def _loadTestData():
     projectFile = os.path.join(os.path.dirname(os.path.abspath(geoserverexplorer.__file__)), "test", "data", "test.qgs")
@@ -30,7 +34,8 @@ def _loadSymbologyTestData():
         qgis.utils.iface.addProject(projectFile)
 
 def _getCatalog():
-    return RetryCatalog("http://localhost:8080/geoserver/rest", "admin", "geoserver")
+    global geoserverlocation
+    return RetryCatalog("http://"+geoserverlocation+"/geoserver/rest", "admin", "geoserver")
 
 def _setUpCatalogAndWorkspace():
     cat = _getCatalog()
@@ -51,7 +56,6 @@ def _setUpCatalogAndExplorer():
     geoserverItem.populate()
     gsItem.setExpanded(True)
 
-
 #TESTS
 
 def _checkNewLayer():
@@ -66,6 +70,7 @@ def _clean():
         cat.delete(ws, recurse = True)
 
 def _openAndUpload():
+    global geoserverlocation
     _loadTestData()
     layer = layerFromName("qgis_plugin_test_pt1")
     cat = _setUpCatalogAndWorkspace()
@@ -73,10 +78,11 @@ def _openAndUpload():
     catWrapper.publishLayer(layer, "test_workspace", True)
     stores = cat.get_stores("test_workspace")
     assert len(stores) != 0
-    url = 'url=http://localhost:8080/geoserver/wms&format=image/png&layers=test_workspace:qgis_plugin_test_pt1&styles=qgis_plugin_test_pt1&crs=EPSG:4326'
+    url = 'url=http://'+geoserverlocation+'/geoserver/wms&format=image/png&layers=test_workspace:qgis_plugin_test_pt1&styles=qgis_plugin_test_pt1&crs=EPSG:4326'
     wmsLayer = QgsRasterLayer(url, "WMS", 'wms')
     assert wmsLayer.isValid()
     QgsMapLayerRegistry.instance().addMapLayer(wmsLayer)
+    qgis.utils.iface.zoomToActiveLayer()
 
 def functionalTests():
     try:
@@ -87,7 +93,8 @@ def functionalTests():
 
     dragdropTest = Test("Verify dragging browser element into workspace")
     dragdropTest.addStep("Setting up catalog and explorer", _setUpCatalogAndExplorer)
-    dragdropTest.addStep("Drag layer from browser into testing workspace of testing catalog")
+    dragdropTest.addStep("Setting up test data project", _loadTestData)
+    dragdropTest.addStep("Drag layer from browser 'Project home->qgis_plugin_test_pt1.shp' into\ntest_catalog->Workspaces->test_workspace")
     dragdropTest.addStep("Checking new layer", _checkNewLayer)
     dragdropTest.setCleanup(_clean)
 
