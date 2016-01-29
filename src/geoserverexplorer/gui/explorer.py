@@ -11,8 +11,6 @@ from geoserverexplorer.qgis.utils import UserCanceledOperation
 
 class GeoServerExplorer(QtGui.QDockWidget):
 
-    objectName = 'GeoServerExplorer'
-
     def __init__(self, parent = None):
         super(GeoServerExplorer, self).__init__(parent)
         self.setObjectName('GeoServerExplorer')
