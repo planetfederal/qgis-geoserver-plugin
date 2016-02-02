@@ -19,6 +19,7 @@ from geoserverexplorer.gui.gsnameutils import GSNameWidget, xmlNameRegex, \
 from geoserverexplorer.gui.dialogs.gsnamedialog import GSNameDialog
 from geoserverexplorer.gui.contextualhelp import InfoIcon
 from geoserverexplorer.gui.gsnameutils import xmlNameEmptyRegex
+from geoserverexplorer.test.utils import geoserverLocation
 
 class CreateCatalogDialogTests(unittest.TestCase):
 
@@ -30,7 +31,7 @@ class CreateCatalogDialogTests(unittest.TestCase):
     def testCreateCatalogDialog(self):
         dialog = DefineCatalogDialog(self.explorer.catalogs())
         dialog.nameBox.setText("name")
-        dialog.urlBox.setText("http://localhost:8080/geoserver")
+        dialog.urlBox.setText("http://"+geoserverLocation()+"/geoserver")
         dialog.passwordBox.setText("password")
         dialog.usernameBox.setText("username")
         okWidget = dialog.buttonBox.button(dialog.buttonBox.Ok)
@@ -39,7 +40,7 @@ class CreateCatalogDialogTests(unittest.TestCase):
         self.assertEquals("username", dialog.username)
         self.assertEquals("password", dialog.password)
         self.assertEquals("name", dialog.name)
-        self.assertEquals("http://localhost:8080/geoserver/rest", dialog.url)
+        self.assertEquals("http://"+geoserverLocation()+"/geoserver/rest", dialog.url)
         settings = QSettings()
         settings.endGroup()
         settings.beginGroup("/GeoServer/Catalogs/name")
@@ -49,7 +50,7 @@ class CreateCatalogDialogTests(unittest.TestCase):
     def testCreateCatalogDialogWithUrlWithoutProtocol(self):
         dialog = DefineCatalogDialog(self.explorer.catalogs())
         dialog.nameBox.setText("name")
-        dialog.urlBox.setText("localhost:8080/geoserver")
+        dialog.urlBox.setText(geoserverLocation()+"/geoserver")
         dialog.passwordBox.setText("password")
         dialog.usernameBox.setText("username")
         okWidget = dialog.buttonBox.button(dialog.buttonBox.Ok)
@@ -58,7 +59,7 @@ class CreateCatalogDialogTests(unittest.TestCase):
         self.assertEquals("username", dialog.username)
         self.assertEquals("password", dialog.password)
         self.assertEquals("name", dialog.name)
-        self.assertEquals("http://localhost:8080/geoserver/rest", dialog.url)
+        self.assertEquals("http://"+geoserverLocation()+"/geoserver/rest", dialog.url)
         settings = QSettings()
         settings.endGroup()
         settings.beginGroup("/GeoServer/Catalogs/name")
@@ -138,7 +139,7 @@ class LayerDialogTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.explorer = GeoServerExplorer()
-        cls.cat = Catalog("http://localhost:8080/geoserver/rest", "admin", "geoserver")
+        cls.cat = Catalog("http://"+geoserverLocation()+"/geoserver/rest", "admin", "geoserver")
         cleanCatalog(cls.cat)
         cls.cat.create_workspace(WORKSPACE, "http://test1.com")
         cls.cat.create_workspace(WORKSPACEB, "http://test2.com")
