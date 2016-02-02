@@ -6,11 +6,12 @@ from geoserverexplorer.geoserver.retry import RetryCatalog
 from geoserverexplorer.gui.gsexploreritems import *
 from geoserverexplorer.qgis.catalog import CatalogWrapper
 import os
+from geoserverexplorer.test.utils import geoserverLocation
 from geoserverexplorer.test.catalogtests import suite as catalogSuite
 from geoserverexplorer.test.deletetests import suite as deleteSuite
 from geoserverexplorer.test.dragdroptests import suite as dragdropSuite
 from geoserverexplorer.test.guitests import suite as guiSuite
-#from geoserverexplorer.test.pkitests import suite as pkiSuite
+from geoserverexplorer.test.pkitests import suite as pkiSuite
 
 # Tests for the QGIS Tester plugin. To know more see
 # https://github.com/boundlessgeo/qgis-tester-plugin
@@ -20,8 +21,6 @@ from geoserverexplorer.test.guitests import suite as guiSuite
 
 #Some common methods
 #-------------------
-
-geoserverlocation = "localhost:8080"
 
 def _loadTestData():
     projectFile = os.path.join(os.path.dirname(os.path.abspath(geoserverexplorer.__file__)), "test", "data", "test.qgs")
@@ -34,8 +33,7 @@ def _loadSymbologyTestData():
         qgis.utils.iface.addProject(projectFile)
 
 def _getCatalog():
-    global geoserverlocation
-    return RetryCatalog("http://"+geoserverlocation+"/geoserver/rest", "admin", "geoserver")
+    return RetryCatalog("http://"+geoserverLocation()+"/geoserver/rest", "admin", "geoserver")
 
 def _setUpCatalogAndWorkspace():
     cat = _getCatalog()
@@ -70,7 +68,6 @@ def _clean():
         cat.delete(ws, recurse = True)
 
 def _openAndUpload():
-    global geoserverlocation
     _loadTestData()
     layer = layerFromName("qgis_plugin_test_pt1")
     cat = _setUpCatalogAndWorkspace()
@@ -78,38 +75,38 @@ def _openAndUpload():
     catWrapper.publishLayer(layer, "test_workspace", True)
     stores = cat.get_stores("test_workspace")
     assert len(stores) != 0
-    url = 'url=http://'+geoserverlocation+'/geoserver/wms&format=image/png&layers=test_workspace:qgis_plugin_test_pt1&styles=qgis_plugin_test_pt1&crs=EPSG:4326'
+    url = 'url=http://'+geoserverLocation()+'/geoserver/wms&format=image/png&layers=test_workspace:qgis_plugin_test_pt1&styles=qgis_plugin_test_pt1&crs=EPSG:4326'
     wmsLayer = QgsRasterLayer(url, "WMS", 'wms')
     assert wmsLayer.isValid()
     QgsMapLayerRegistry.instance().addMapLayer(wmsLayer)
     qgis.utils.iface.zoomToActiveLayer()
 
-def functionalTests():
-    try:
-        from qgistester.test import Test
-        from qgistester.utils import layerFromName
-    except:
-        return []
-
-    dragdropTest = Test("Verify dragging browser element into workspace")
-    dragdropTest.addStep("Setting up catalog and explorer", _setUpCatalogAndExplorer)
-    dragdropTest.addStep("Setting up test data project", _loadTestData)
-    dragdropTest.addStep("Drag layer from browser 'Project home->qgis_plugin_test_pt1.shp' into\ntest_catalog->Workspaces->test_workspace")
-    dragdropTest.addStep("Checking new layer", _checkNewLayer)
-    dragdropTest.setCleanup(_clean)
-
-    vectorRenderingTest = Test("Verify rendering of uploaded style")
-    vectorRenderingTest.addStep("Preparing data", _openAndUpload)
-    vectorRenderingTest.addStep("Check that WMS layer is correctly rendered")
-    vectorRenderingTest.setCleanup(_clean)
-
-    return [dragdropTest, vectorRenderingTest]
+# def functionalTests():
+#     try:
+#         from qgistester.test import Test
+#         from qgistester.utils import layerFromName
+#     except:
+#         return []
+# 
+#     dragdropTest = Test("Verify dragging browser element into workspace")
+#     dragdropTest.addStep("Setting up catalog and explorer", _setUpCatalogAndExplorer)
+#     dragdropTest.addStep("Setting up test data project", _loadTestData)
+#     dragdropTest.addStep("Drag layer from browser 'Project home->qgis_plugin_test_pt1.shp' into\ntest_catalog->Workspaces->test_workspace")
+#     dragdropTest.addStep("Checking new layer", _checkNewLayer)
+#     dragdropTest.setCleanup(_clean)
+# 
+#     vectorRenderingTest = Test("Verify rendering of uploaded style")
+#     vectorRenderingTest.addStep("Preparing data", _openAndUpload)
+#     vectorRenderingTest.addStep("Check that WMS layer is correctly rendered")
+#     vectorRenderingTest.setCleanup(_clean)
+# 
+#     return [dragdropTest, vectorRenderingTest]
 
 def unitTests():
     _tests = []
-    _tests.extend(catalogSuite())
-    _tests.extend(deleteSuite())
-    _tests.extend(dragdropSuite())
-    _tests.extend(guiSuite())
-    #_tests.extend(pkiSuite())
+#     _tests.extend(catalogSuite())
+#     _tests.extend(deleteSuite())
+#     _tests.extend(dragdropSuite())
+#     _tests.extend(guiSuite())
+    _tests.extend(pkiSuite())
     return _tests

@@ -27,7 +27,7 @@ WORKSPACEB = safeName("workspaceb")
 
 def getGeoServerCatalog():
     conf = dict(
-        URL = 'http://localhost:8080/geoserver/rest',
+        URL = 'http://'+geoserverLocation()+'/geoserver/rest',
         USER = 'admin',
         PASSWORD = 'geoserver'
     )
@@ -96,4 +96,10 @@ def populateCatalog(cat):
     cat.create_workspace(WORKSPACEB, "http://testb.com")
     cat.set_default_workspace(WORKSPACE)
 
+def geoserverLocation():
+    return "localhost:8080"
+
+def geoserverLocationSsh():
+    location = geoserverLocation().split(":")[0]
+    return location+":8443"
 
