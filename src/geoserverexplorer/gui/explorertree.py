@@ -176,7 +176,10 @@ class ExplorerTreeWidget(QtGui.QTreeWidget):
 
 
     def mimeTypes(self):
-        return ["application/x-qabstractitemmodeldatalist", self.QGIS_URI_MIME, self.QGIS_LEGEND_MIME]
+        if QGis.QGIS_VERSION_INT < 21400:
+            return ["application/x-qabstractitemmodeldatalist", self.QGIS_URI_MIME]
+        else:
+            return ["application/x-qabstractitemmodeldatalist", self.QGIS_URI_MIME, self.QGIS_LEGEND_MIME]
 
     def mimeData(self, items):
         mimeData = QtGui.QTreeWidget.mimeData(self, items)
