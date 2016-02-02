@@ -176,7 +176,7 @@ class ExplorerTreeWidget(QtGui.QTreeWidget):
 
 
     def mimeTypes(self):
-        return ["application/x-qabstractitemmodeldatalist", self.QGIS_URI_MIME]#, self.QGIS_LEGEND_MIME]
+        return ["application/x-qabstractitemmodeldatalist", self.QGIS_URI_MIME, self.QGIS_LEGEND_MIME]
 
     def mimeData(self, items):
         mimeData = QtGui.QTreeWidget.mimeData(self, items)
@@ -241,4 +241,6 @@ class ExplorerTreeWidget(QtGui.QTreeWidget):
             item.refreshContent(self.explorer)
             self.explorer.setProgress(i)
         self.explorer.resetActivity()
-        event.ignore()
+
+        event.setDropAction(QtCore.Qt.CopyAction)
+        event.accept()
