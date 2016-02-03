@@ -81,32 +81,32 @@ def _openAndUpload():
     QgsMapLayerRegistry.instance().addMapLayer(wmsLayer)
     qgis.utils.iface.zoomToActiveLayer()
 
-# def functionalTests():
-#     try:
-#         from qgistester.test import Test
-#         from qgistester.utils import layerFromName
-#     except:
-#         return []
-# 
-#     dragdropTest = Test("Verify dragging browser element into workspace")
-#     dragdropTest.addStep("Setting up catalog and explorer", _setUpCatalogAndExplorer)
-#     dragdropTest.addStep("Setting up test data project", _loadTestData)
-#     dragdropTest.addStep("Drag layer from browser 'Project home->qgis_plugin_test_pt1.shp' into\ntest_catalog->Workspaces->test_workspace")
-#     dragdropTest.addStep("Checking new layer", _checkNewLayer)
-#     dragdropTest.setCleanup(_clean)
-# 
-#     vectorRenderingTest = Test("Verify rendering of uploaded style")
-#     vectorRenderingTest.addStep("Preparing data", _openAndUpload)
-#     vectorRenderingTest.addStep("Check that WMS layer is correctly rendered")
-#     vectorRenderingTest.setCleanup(_clean)
-# 
-#     return [dragdropTest, vectorRenderingTest]
+def functionalTests():
+    try:
+        from qgistester.test import Test
+        from qgistester.utils import layerFromName
+    except:
+        return []
+ 
+    dragdropTest = Test("Verify dragging browser element into workspace")
+    dragdropTest.addStep("Setting up catalog and explorer", _setUpCatalogAndExplorer)
+    dragdropTest.addStep("Setting up test data project", _loadTestData)
+    dragdropTest.addStep("Drag layer from browser 'Project home->qgis_plugin_test_pt1.shp' into\ntest_catalog->Workspaces->test_workspace")
+    dragdropTest.addStep("Checking new layer", _checkNewLayer)
+    dragdropTest.setCleanup(_clean)
+ 
+    vectorRenderingTest = Test("Verify rendering of uploaded style")
+    vectorRenderingTest.addStep("Preparing data", _openAndUpload)
+    vectorRenderingTest.addStep("Check that WMS layer is correctly rendered")
+    vectorRenderingTest.setCleanup(_clean)
+ 
+    return [dragdropTest, vectorRenderingTest]
 
 def unitTests():
     _tests = []
-#     _tests.extend(catalogSuite())
-#     _tests.extend(deleteSuite())
-#     _tests.extend(dragdropSuite())
-#     _tests.extend(guiSuite())
+    _tests.extend(catalogSuite())
+    _tests.extend(deleteSuite())
+    _tests.extend(dragdropSuite())
+    _tests.extend(guiSuite())
     _tests.extend(pkiSuite())
     return _tests
