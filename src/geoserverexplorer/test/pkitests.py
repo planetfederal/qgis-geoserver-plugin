@@ -62,7 +62,7 @@ class PKITests(unittest.TestCase):
         quri.setParam("featureCount", '10')
         quri.setParam("authcfg", self.authcfg)
         quri.setParam("contextualWMSLegend", '0')
-        quri.setParam("url", 'https://localhost:8443/geoserver/wms')
+        quri.setParam("url", 'https://'+geoserverLocationSsh()+'/geoserver/wms')
         
         rlayer = QgsRasterLayer(str(quri.encodedUri()), 'states', 'wms')
         self.assertTrue(rlayer.isValid())
