@@ -7,8 +7,12 @@ from geoserverexplorer.gui.explorer import GeoServerExplorer
 from geoserverexplorer.gui.dialogs.configdialog import ConfigDialog
 from geoserverexplorer.geoserver import pem
 from PyQt4 import QtGui, QtCore
-from processing.core.Processing import Processing
-from processingprovider.geoserverprovider import GeoServerProvider
+try:
+    from processing.core.Processing import Processing
+    from processingprovider.geoserverprovider import GeoServerProvider
+    processingOk = True
+except:
+    processingOk = False
 from geoserverexplorer.qgis.sldadapter import adaptGsToQgs
 from geoserverexplorer.qgis import layerwatcher
 
@@ -18,7 +22,8 @@ class GeoServerExplorerPlugin:
     def __init__(self, iface):
         self.iface = iface
         config.iface = iface
-        self.provider = GeoServerProvider()
+        if processingOk:
+            self.provider = GeoServerProvider()
 
         try:
             from qgistester.tests import addTestModule
@@ -33,7 +38,8 @@ class GeoServerExplorerPlugin:
         self.iface.removePluginWebMenu(u"GeoServer", self.explorerAction)
         self.iface.removePluginWebMenu(u"GeoServer", self.configAction)
         self.iface.removePluginWebMenu(u"GeoServer", self.helpAction)
-        Processing.removeProvider(self.provider)
+        if processingOk:
+            Processing.removeProvider(self.provider)
         layerwatcher.disconnectLayerWasAdded()
 
     def initGui(self):
@@ -60,7 +66,8 @@ class GeoServerExplorerPlugin:
         self.helpAction.triggered.connect(self.showHelp)
         self.iface.addPluginToWebMenu(u"GeoServer", self.helpAction)
 
-        Processing.addProvider(self.provider)
+        if processingOk:
+            Processing.addProvider(self.provider)
 
         layerwatcher.connectLayerWasAdded(self.explorer)
 
