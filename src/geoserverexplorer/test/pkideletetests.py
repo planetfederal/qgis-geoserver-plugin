@@ -7,9 +7,7 @@ from qgis.utils import iface
 from geoserverexplorer.geoserver import pem
 from geoserverexplorer.test import utils
 from geoserverexplorer.test.deletetests import DeleteTests
-from geoserverexplorer.test.utils import WORKSPACE,\
-    GSHOSTNAME, GSPORT, GSSSHPORT, GSUSER, GSPASSWORD, \
-    AUTHDB_MASTERPWD, AUTHCFGID, AUTHTYPE, AUTH_TESTDATA
+from geoserverexplorer.test.utils import WORKSPACE, AUTHDB_MASTERPWD, AUTHCFGID, AUTHTYPE, AUTH_TESTDATA
 
 class PkiDeleteTests(DeleteTests):
     '''
@@ -26,7 +24,7 @@ class PkiDeleteTests(DeleteTests):
         assert cls.authm.setMasterPassword(AUTHDB_MASTERPWD, True), msg
         
         # do workspace popuplation
-        super(DeleteTests, cls).setUpClass()
+        super(PkiDeleteTests, cls).setUpClass()
 
         cls.ws = cls.cat.get_workspace(WORKSPACE)
         assert cls.ws is not None
@@ -41,7 +39,7 @@ class PkiDeleteTests(DeleteTests):
 
     @classmethod
     def tearDownClass(cls):
-        super(DeleteTests, cls).tearDownClass()
+        super(PkiDeleteTests, cls).tearDownClass()
         QSettings().setValue("/GeoServer/Settings/General/ConfirmDelete", cls.confirmDelete)
         # remove certs
         pem.removeCatalogPkiTempFiles(cls.cat)
