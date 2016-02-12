@@ -28,8 +28,10 @@ class GeoServerExplorerPlugin:
         try:
             from qgistester.tests import addTestModule
             from geoserverexplorer.test import testplugin
+            from geoserverexplorer.test import testpkigeoserver
             addTestModule(testplugin, "GeoServer")
-        except:
+            addTestModule(testpkigeoserver, "PKI GeoServer")
+        except Exception as ex:
             pass
 
     def unload(self):
