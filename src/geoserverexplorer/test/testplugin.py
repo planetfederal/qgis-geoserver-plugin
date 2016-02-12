@@ -11,7 +11,7 @@ from geoserverexplorer.test.catalogtests import suite as catalogSuite
 from geoserverexplorer.test.deletetests import suite as deleteSuite
 from geoserverexplorer.test.dragdroptests import suite as dragdropSuite
 from geoserverexplorer.test.guitests import suite as guiSuite
-from geoserverexplorer.test.pkitests import suite as pkiSuite
+
 
 # Tests for the QGIS Tester plugin. To know more see
 # https://github.com/boundlessgeo/qgis-tester-plugin
@@ -87,19 +87,19 @@ def functionalTests():
         from qgistester.utils import layerFromName
     except:
         return []
- 
+
     dragdropTest = Test("Verify dragging browser element into workspace")
     dragdropTest.addStep("Setting up catalog and explorer", _setUpCatalogAndExplorer)
     dragdropTest.addStep("Setting up test data project", _loadTestData)
     dragdropTest.addStep("Drag layer from browser 'Project home->qgis_plugin_test_pt1.shp' into\ntest_catalog->Workspaces->test_workspace")
     dragdropTest.addStep("Checking new layer", _checkNewLayer)
     dragdropTest.setCleanup(_clean)
- 
+
     vectorRenderingTest = Test("Verify rendering of uploaded style")
     vectorRenderingTest.addStep("Preparing data", _openAndUpload)
     vectorRenderingTest.addStep("Check that WMS layer is correctly rendered")
     vectorRenderingTest.setCleanup(_clean)
- 
+
     return [dragdropTest, vectorRenderingTest]
 
 def unitTests():
@@ -108,5 +108,4 @@ def unitTests():
     _tests.extend(deleteSuite())
     _tests.extend(dragdropSuite())
     _tests.extend(guiSuite())
-    _tests.extend(pkiSuite())
     return _tests
