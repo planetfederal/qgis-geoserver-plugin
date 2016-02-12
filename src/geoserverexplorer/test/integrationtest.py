@@ -6,6 +6,7 @@ from geoserverexplorer.gui.gsexploreritems import GsCatalogItem
 import os
 from qgis.utils import iface
 from qgis.core import *
+from geoserverexplorer.test.utils import AUTHCFGID, AUTHTYPE
 
 
 class ExplorerIntegrationTest(unittest.TestCase):
@@ -13,7 +14,11 @@ class ExplorerIntegrationTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.explorer = GeoServerExplorer()
-        cls.catWrapper = utils.getGeoServerCatalog()
+        # check if context is a PKI auth context
+        if hasattr(cls, 'authm') and cls.authm:
+            cls.catWrapper = utils.getGeoServerCatalog(authcfgid=AUTHCFGID, authtype=AUTHTYPE)
+        else:
+            cls.catWrapper = utils.getGeoServerCatalog()
         cls.cat = cls.catWrapper.catalog
         utils.populateCatalog(cls.cat)
         cls.catalogItem = GsCatalogItem(cls.cat, "catalog")
