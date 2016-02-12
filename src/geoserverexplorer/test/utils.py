@@ -23,16 +23,44 @@ HOOK = safeName("hook")
 WORKSPACE = safeName("workspace")
 WORKSPACEB = safeName("workspaceb")
 
+# envs that can be override by os.environ envs
+GSHOSTNAME = 'localhost'
+GSPORT = '8080'
+GSSSHPORT = '8443' 
+GSUSER = 'admin'
+GSPASSWORD = 'geoserver'
 
+# pki envs
+AUTHDB_MASTERPWD = 'pass'
+AUTHCFGID = 'y45c26z' # Fra user has id y45c26z in the test qgis_auth.db
+AUTHTYPE = 'Identity-Cert' # other are "PKI-Paths" and 'PKI-PKCS#12'
 
-def getGeoServerCatalog():
-    conf = dict(
-        URL = 'http://'+geoserverLocation()+'/geoserver/rest',
-        USER = 'admin',
-        PASSWORD = 'geoserver'
-    )
+# authdb and cert data
+AUTH_TESTDATA = os.path.join(os.path.dirname(__file__), "resources", 'auth_system')
+#PKIDATA = os.path.join(AUTH_TESTDATA, 'certs_keys')
+#AUTHDBDIR = tempfile.mkdtemp()
+
+def getGeoServerCatalog(authcfgid=None, authtype=None):
+    # beaware that these envs can be overrided by os.environ envs cnaging
+    # the function behaviour
+    if authcfgid:
+        conf = dict(
+            URL = serverLocationPkiAuth()+'/rest',
+            USER = None,
+            PASSWORD = None,
+            AUTHCFG = authcfgid,
+            AUTHTYPE = authtype
+        )
+    else:
+        conf = dict(
+            URL = serverLocationBasicAuth()+'/rest',
+            USER = GSUSER,
+            PASSWORD = GSPASSWORD,
+            AUTHCFG = authcfgid,
+            AUTHTYPE = authtype
+        )
     conf.update([ (k,os.getenv('GS%s' % k)) for k in conf if 'GS%s' % k in os.environ])
-    cat = createGeoServerCatalog(conf['URL'], conf['USER'], conf['PASSWORD'])
+    cat = createGeoServerCatalog(conf['URL'], conf['USER'], conf['PASSWORD'], conf['AUTHCFG'], conf['AUTHTYPE'])
     try:
         cat.catalog.gsversion()
     except Exception, ex:
@@ -97,9 +125,21 @@ def populateCatalog(cat):
     cat.set_default_workspace(WORKSPACE)
 
 def geoserverLocation():
-    return "localhost:8080"
+    server = GSHOSTNAME
+    port = GSPORT
+    server = os.getenv('GSHOSTNAME', server)
+    port = os.getenv('GSPORT', port)
+    return '%s:%s' % (server, port)
 
 def geoserverLocationSsh():
     location = geoserverLocation().split(":")[0]
-    return location+":8443"
+    sshport = GSSSHPORT
+    sshport = os.getenv('GSSSHPORT', sshport)
+    return '%s:%s' % (location, sshport)
+
+def serverLocationBasicAuth():
+    return "http://"+geoserverLocation()+"/geoserver"
+
+def serverLocationPkiAuth():
+    return "https://"+geoserverLocationSsh()+"/geoserver"
 
