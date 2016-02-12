@@ -6,6 +6,7 @@ from qgis.utils import iface
 from PyQt4.QtCore import *
 from PyQt4.QtGui import QWidget, QHBoxLayout, QToolTip
 from PyQt4.QtTest import QTest
+from geoserverexplorer.geoserver import pem
 from geoserverexplorer.gui.dialogs.catalogdialog import DefineCatalogDialog
 from geoserverexplorer.gui.explorer import GeoServerExplorer
 from geoserverexplorer.gui.dialogs.groupdialog import LayerGroupDialog
@@ -19,15 +20,25 @@ from geoserverexplorer.gui.gsnameutils import GSNameWidget, xmlNameRegex, \
 from geoserverexplorer.gui.dialogs.gsnamedialog import GSNameDialog
 from geoserverexplorer.gui.contextualhelp import InfoIcon
 from geoserverexplorer.gui.gsnameutils import xmlNameEmptyRegex
-from geoserverexplorer.test.utils import geoserverLocation
+from geoserverexplorer.test.utils import geoserverLocation, AUTHCFGID, AUTHTYPE
 
 class CreateCatalogDialogTests(unittest.TestCase):
 
     explorer = GeoServerExplorer()
 
     def setUp(self):
-        self.cat = getGeoServerCatalog()
-
+        # reasize if in PKI auth context
+        if hasattr(self, 'authm') and self.authm:
+            self.cat = getGeoServerCatalog(authcfgid=AUTHCFGID, authtype=AUTHTYPE)
+        else:
+            self.cat = getGeoServerCatalog()
+    
+    def tearDown(self):
+        # reasize if in PKI auth context
+        if hasattr(self, 'authm') and self.authm:
+            # remove certs
+            pem.removeCatalogPkiTempFiles(self.cat)
+    
     def testCreateCatalogDialog(self):
         dialog = DefineCatalogDialog(self.explorer.catalogs())
         dialog.nameBox.setText("name")
@@ -111,13 +122,17 @@ class GroupDialogTests(ExplorerIntegrationTest):
         dialog.nameBox.setName("")
         okWidget = dialog.buttonBox.button(dialog.buttonBox.Ok)
         self.assertFalse(okWidget.isEnabled())
-
+        dialog.deleteLater()
+        okWidget.deleteLater()
+ 
     def testGroupDialogWithNameContaingBlankSpaces(self):
         dialog = LayerGroupDialog(self.cat)
         dialog.nameBox.setName("my group")
         dialog.table.cellWidget(0, 0).setChecked(True)
         okWidget = dialog.buttonBox.button(dialog.buttonBox.Ok)
         self.assertFalse(okWidget.isEnabled())
+        dialog.deleteLater()
+        okWidget.deleteLater()
 
     def testSelectAllButton(self):
         dialog = LayerGroupDialog(self.cat)
@@ -139,7 +154,13 @@ class LayerDialogTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.explorer = GeoServerExplorer()
-        cls.cat = Catalog("http://"+geoserverLocation()+"/geoserver/rest", "admin", "geoserver")
+        
+        # reasize if in PKI auth context
+        if hasattr(cls, 'authm') and cls.authm:
+            cls.catWrapper = getGeoServerCatalog(authcfgid=AUTHCFGID, authtype=AUTHTYPE)
+        else:
+            cls.catWrapper = getGeoServerCatalog()
+        cls.cat = cls.catWrapper.catalog
         cleanCatalog(cls.cat)
         cls.cat.create_workspace(WORKSPACE, "http://test1.com")
         cls.cat.create_workspace(WORKSPACEB, "http://test2.com")
@@ -161,7 +182,7 @@ class LayerDialogTests(unittest.TestCase):
             if ws.name == WORKSPACEB:
                 wsIdxB = idx
         dialog = PublishLayersDialog(self.cat)
-        self.assertEquals(4, dialog.table.columnCount())
+        self.assertEquals(5, dialog.table.columnCount())
         self.assertEquals(8, dialog.table.rowCount())
 
         # test that cancel return an empty list of layer to publish
