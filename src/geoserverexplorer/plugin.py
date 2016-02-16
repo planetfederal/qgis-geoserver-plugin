@@ -28,9 +28,9 @@ class GeoServerExplorerPlugin:
         try:
             from qgistester.tests import addTestModule
             from geoserverexplorer.test import testplugin
-            from geoserverexplorer.test import testpkigeoserver
+            from geoserverexplorer.test import testpkiplugin
             addTestModule(testplugin, "GeoServer")
-            addTestModule(testpkigeoserver, "PKI GeoServer")
+            addTestModule(testpkiplugin, "PKI GeoServer")
         except Exception as ex:
             pass
 
