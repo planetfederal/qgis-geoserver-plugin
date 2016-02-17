@@ -107,7 +107,7 @@ def install(options):
         src.symlink(dst)
     else:
         dst.rmtree()
-        src.copy(dst)
+        src.copytree(dst)
 
 
 @task
