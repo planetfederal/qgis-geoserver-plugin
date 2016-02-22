@@ -256,7 +256,7 @@ class CatalogWrapper(object):
             # once table-based feature type created, switch name to user-chosen
             if ftype.name != rscname:
                 ftype.dirty["name"] = rscname
-                self.catalog.save(ftype)
+            self.catalog.save(ftype)
 
             # now re-add to any previously assigned-to layer groups
             if overwrite and grpswlyr:
