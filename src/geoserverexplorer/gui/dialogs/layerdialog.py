@@ -160,7 +160,7 @@ class PublishLayersDialog(QtGui.QDialog):
         if not bool(self.topublish):
             ret = QtGui.QMessageBox.warning(self, "No layers selected", "You haven't selected any layer to be published\n"
                                       "Are you sure you want to proceed?", QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
-            if not ret:
+            if ret == QtGui.QMessageBox.No:
                 return
         self.close()
 
