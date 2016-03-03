@@ -6,16 +6,7 @@ import urllib
 import tempfile
 from geoserverexplorer.test.utils import geoserverLocationSsh
 
-# keyfile = os.path.join(os.path.dirname(__file__), "resources", "certs_keys", "fra_key.pem")
-# certfile = os.path.join(os.path.dirname(__file__), "resources", "certs_keys", "fra_cert.pem")
-# cafile =  os.path.join(os.path.dirname(__file__), "resources", "certs_keys", "chains_subissuer-issuer-root_issuer2-root2.pem")
-
-TESTDATA = os.path.join(os.path.dirname(__file__), "resources", 'auth_system')
-PKIDATA = os.path.join(TESTDATA, 'certs_keys')
-AUTHDBDIR = tempfile.mkdtemp()
-os.environ['QGIS_AUTH_DB_DIR_PATH'] = TESTDATA
-
-class PKITests(unittest.TestCase):
+class PKIOWSTests(unittest.TestCase):
     '''
     Tests for PKI support in QGIS
     Requires a Geoserver catalog with pki auth on localhost:8443 with the default sample data
@@ -72,16 +63,16 @@ class PKITests(unittest.TestCase):
 
 def suiteSubset():
     tests = ['testOpenWFSLayer']
-    suite = unittest.TestSuite(map(PKITests, tests))
+    suite = unittest.TestSuite(map(PKIOWSTests, tests))
     return suite
 
 def suite():
-    suite = unittest.makeSuite(PKITests, 'test')
+    suite = unittest.makeSuite(PKIOWSTests, 'test')
     return suite
 
 # run all tests using unittest skipping nose or testplugin
 def run_all():
-    # demo_test = unittest.TestLoader().loadTestsFromTestCase(PKITests)
+    # demo_test = unittest.TestLoader().loadTestsFromTestCase(PKIOWSTests)
     unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suite())
 
 # run a subset of tests using unittest skipping nose or testplugin

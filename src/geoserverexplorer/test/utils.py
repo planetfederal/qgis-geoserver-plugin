@@ -1,6 +1,14 @@
 import os
+from qgistester.utils import layerFromName
 from geoserver.util import shapefile_and_friends
 from geoserverexplorer.qgis.catalog import createGeoServerCatalog
+
+from qgis.core import QgsProject
+import qgis
+import geoserverexplorer
+from geoserverexplorer.geoserver.retry import RetryCatalog
+from geoserverexplorer.gui.gsexploreritems import *
+from geoserverexplorer.qgis.catalog import CatalogWrapper
 
 PREFIX = "qgis_plugin_test_"
 
@@ -23,16 +31,44 @@ HOOK = safeName("hook")
 WORKSPACE = safeName("workspace")
 WORKSPACEB = safeName("workspaceb")
 
+# envs that can be override by os.environ envs
+GSHOSTNAME = 'localhost'
+GSPORT = '8080'
+GSSSHPORT = '8443' 
+GSUSER = 'admin'
+GSPASSWORD = 'geoserver'
 
+# pki envs
+AUTHDB_MASTERPWD = 'pass'
+AUTHCFGID = 'y45c26z' # Fra user has id y45c26z in the test qgis_auth.db
+AUTHTYPE = 'Identity-Cert' # other are "PKI-Paths" and 'PKI-PKCS#12'
 
-def getGeoServerCatalog():
-    conf = dict(
-        URL = 'http://'+geoserverLocation()+'/geoserver/rest',
-        USER = 'admin',
-        PASSWORD = 'geoserver'
-    )
+# authdb and cert data
+AUTH_TESTDATA = os.path.join(os.path.dirname(__file__), "resources", 'auth_system')
+#PKIDATA = os.path.join(AUTH_TESTDATA, 'certs_keys')
+#AUTHDBDIR = tempfile.mkdtemp()
+
+def getGeoServerCatalog(authcfgid=None, authtype=None):
+    # beaware that these envs can be overrided by os.environ envs cnaging
+    # the function behaviour
+    if authcfgid:
+        conf = dict(
+            URL = serverLocationPkiAuth()+'/rest',
+            USER = None,
+            PASSWORD = None,
+            AUTHCFG = authcfgid,
+            AUTHTYPE = authtype
+        )
+    else:
+        conf = dict(
+            URL = serverLocationBasicAuth()+'/rest',
+            USER = GSUSER,
+            PASSWORD = GSPASSWORD,
+            AUTHCFG = authcfgid,
+            AUTHTYPE = authtype
+        )
     conf.update([ (k,os.getenv('GS%s' % k)) for k in conf if 'GS%s' % k in os.environ])
-    cat = createGeoServerCatalog(conf['URL'], conf['USER'], conf['PASSWORD'])
+    cat = createGeoServerCatalog(conf['URL'], conf['USER'], conf['PASSWORD'], conf['AUTHCFG'], conf['AUTHTYPE'])
     try:
         cat.catalog.gsversion()
     except Exception, ex:
@@ -97,9 +133,119 @@ def populateCatalog(cat):
     cat.set_default_workspace(WORKSPACE)
 
 def geoserverLocation():
-    return "localhost:8080"
+    server = GSHOSTNAME
+    port = GSPORT
+    server = os.getenv('GSHOSTNAME', server)
+    port = os.getenv('GSPORT', port)
+    return '%s:%s' % (server, port)
 
 def geoserverLocationSsh():
     location = geoserverLocation().split(":")[0]
-    return location+":8443"
+    sshport = GSSSHPORT
+    sshport = os.getenv('GSSSHPORT', sshport)
+    return '%s:%s' % (location, sshport)
 
+def serverLocationBasicAuth():
+    return "http://"+geoserverLocation()+"/geoserver"
+
+def serverLocationPkiAuth():
+    return "https://"+geoserverLocationSsh()+"/geoserver"
+
+#######################################################################
+#     Functional test utils
+#######################################################################
+
+#
+# To avoid revrite these methods in PKI context
+# has been created a global variable that define the running context
+# of the following functions. This global affect only next methods.
+# A better solution could be create a util class initialized basing on context
+# but it's an improper use of a class
+#
+
+authm = None
+def setUtilContext(pki=False):
+    global authm
+    if pki:
+        # setup auth configuration
+        os.environ['QGIS_AUTH_DB_DIR_PATH'] = AUTH_TESTDATA
+        authm = QgsAuthManager.instance()
+        msg = 'Failed to verify master password in auth db'
+        assert authm.setMasterPassword(AUTHDB_MASTERPWD, True), msg
+    else:
+        # use basic auth
+        authm = None
+
+#Some common methods
+#-------------------
+
+def loadTestData():
+    projectFile = os.path.join(os.path.dirname(os.path.abspath(geoserverexplorer.__file__)), "test", "data", "test.qgs")
+    if projectFile != QgsProject.instance().fileName():
+        qgis.utils.iface.addProject(projectFile)
+
+def loadSymbologyTestData():
+    projectFile = os.path.join(os.path.dirname(os.path.abspath(geoserverexplorer.__file__)), "test", "data", "symbology", "test.qgs")
+    if projectFile != QgsProject.instance().fileName():
+        qgis.utils.iface.addProject(projectFile)
+
+def getCatalog():
+    if authm:
+        # connect and prepare pki catalog
+        catWrapper = getGeoServerCatalog(authcfgid=AUTHCFGID, authtype=AUTHTYPE)
+    else:
+        catWrapper = getGeoServerCatalog()
+    
+    return catWrapper
+    #return RetryCatalog(serverLocationBasicAuth()+"/rest", "admin", "geoserver")
+        
+def setUpCatalogAndWorkspace():
+    catWrapper = getCatalog()
+    try:
+        clean()
+    except:
+        raise
+    catWrapper.catalog.create_workspace("test_workspace", "http://test.com")
+    return catWrapper
+
+def setUpCatalogAndExplorer():
+    explorer = qgis.utils.plugins["geoserverexplorer"].explorer
+    explorer.show()
+    gsItem = explorer.explorerTree.gsItem
+    catWrapper = setUpCatalogAndWorkspace()
+    geoserverItem = GsCatalogItem(catWrapper.catalog, "test_catalog")
+    gsItem.addChild(geoserverItem)
+    geoserverItem.populate()
+    gsItem.setExpanded(True)
+
+#TESTS
+
+def checkNewLayer():
+    cat = getCatalog().catalog
+    stores = cat.get_stores("test_workspace")
+    assert len(stores) != 0
+
+def clean():
+    cat = getCatalog().catalog
+    ws = cat.get_workspace("test_workspace")
+    if ws:
+        cat.delete(ws, recurse = True)
+
+def openAndUpload():
+    loadTestData()
+    layer = layerFromName("qgis_plugin_test_pt1")
+    catWrapper = setUpCatalogAndWorkspace()
+    cat = catWrapper.catalog
+    #catWrapper = CatalogWrapper(cat)
+    catWrapper.publishLayer(layer, "test_workspace", True)
+    stores = cat.get_stores("test_workspace")
+    assert len(stores) != 0
+    if authm:
+        url = 'url='+serverLocationPkiAuth()
+    else:
+        url = 'url='+serverLocationBasicAuth()
+    url += '/wms&format=image/png&layers=test_workspace:qgis_plugin_test_pt1&styles=qgis_plugin_test_pt1&crs=EPSG:4326'
+    wmsLayer = QgsRasterLayer(url, "WMS", 'wms')
+    assert wmsLayer.isValid()
+    QgsMapLayerRegistry.instance().addMapLayer(wmsLayer)
+    qgis.utils.iface.zoomToActiveLayer()

@@ -11,6 +11,7 @@ from geoserverexplorer.qgis.sldadapter import adaptGsToQgs,\
 from geoserverexplorer.qgis import uri as uri_utils
 from gsimporter.client import Client
 from geoserverexplorer.geoserver.pki import PKICatalog, PKIClient
+from geoserverexplorer.geoserver import pem
 from geoserverexplorer.geoserver.util import groupsWithLayer, removeLayerFromGroups, \
     addLayerToGroups
 from geoserverexplorer.gui.gsnameutils import xmlNameFixUp, xmlNameIsValid
@@ -31,8 +32,26 @@ except Exception, e:
     processingOk = False
 
 def createGeoServerCatalog(service_url = "http://localhost:8080/geoserver/rest",
-                 username="admin", password="geoserver", disable_ssl_certificate_validation=False):
-    catalog = GSCatalog(service_url, username, password, disable_ssl_certificate_validation)
+                           username="admin",
+                           password="geoserver",
+                           authcfg=None,
+                           authtype=None,
+                           disable_ssl_certificate_validation=False):
+    # if not authcfg use basic auth
+    if not authcfg or not authtype:
+        catalog = GSCatalog(service_url, username, password, disable_ssl_certificate_validation)
+        
+    # if autcfg, then get certs and ca and create a PKICatalog
+    else:
+        certfile, keyfile, cafile = pem.getPemPkiPaths(authcfg, authtype)
+        
+        # set connection
+        catalog = PKICatalog(service_url, keyfile, certfile, cafile)
+        
+        # set authcfg parameter used by uri.py functions to manage
+        # uri creation with pki credential
+        catalog.authcfg = authcfg
+        
     return CatalogWrapper(catalog)
 
 
