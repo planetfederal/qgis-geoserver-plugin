@@ -10,11 +10,12 @@ repository=https://github.com/boundlessgeo/qgis-geoserver-plugin
 tracker=https://github.com/boundlessgeo/qgis-geoserver-plugin/issues
 homepage=http://boundlessgeo.github.io/qgis-geoserver-plugin/
 icon=images/geoserver.png
+tags=plugins,boundless
 class_name=GeoServerExplorerPlugin
-experimental = False
-changelog=    
+experimental=False
+changelog=
 	** General **
 	0.1.1:
-		-fixed wrongly packaged version of requests library   
+		-fixed wrongly packaged version of requests library
 	0.1:
 		-First version
