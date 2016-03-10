@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+#
+# (c) 2016 Boundless, http://boundlessgeo.com
+# This code is licensed under the GPL 2.0 license.
+#
 import os
 from PyQt4 import QtGui
 from processing.core.GeoAlgorithm import GeoAlgorithm

@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-
+#
+# (c) 2016 Boundless, http://boundlessgeo.com
+# This code is licensed under the GPL 2.0 license.
+#
 '''
 This module provides methods to export layers so they can be used as valid data
 for uploading to GeoServer.

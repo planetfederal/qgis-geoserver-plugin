@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+#
+# (c) 2016 Boundless, http://boundlessgeo.com
+# This code is licensed under the GPL 2.0 license.
+#
 from geoserverexplorer.qgis.utils import tempFilename
 from geoserverexplorer.qgis import uri as uri_utils
 from geoserverexplorer.qgis.sldadapter import adaptGsToQgs
