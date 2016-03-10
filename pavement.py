@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+#
+# (c) 2016 Boundless, http://boundlessgeo.com
+# This code is licensed under the GPL 2.0 license.
+#
 import os
 import xmlrpclib
 import zipfile
@@ -107,7 +112,7 @@ def install(options):
         src.symlink(dst)
     else:
         dst.rmtree()
-        src.copy(dst)
+        src.copytree(dst)
 
 
 @task

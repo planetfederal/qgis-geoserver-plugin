@@ -1,3 +1,6 @@
+.. (c) 2016 Boundless, http://boundlessgeo.com
+   This code is licensed under the GPL 2.0 license.
+
 Contributing
 ============
 
@@ -22,6 +25,7 @@ The project committers:
 * `Victor Olaya <https://github.com/volaya>`_ (Boundless)
 * `Larry Shaffer <https://github.com/dakcarto>`_ (Boundless)
 * `Luigi Pirelli <https://github.com/luipir>`_ (Boundless)
+* `Alexandre Bruy <https://github.com/alexbruy>`_ (Boundless)
 
 This is a small project that communicates via pull request.
 

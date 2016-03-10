@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+#
+# (c) 2016 Boundless, http://boundlessgeo.com
+# This code is licensed under the GPL 2.0 license.
+#
 from geoserver.catalog import Catalog
 import httplib2
 from gsimporter.client import Client, _Client

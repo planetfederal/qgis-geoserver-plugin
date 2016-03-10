@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 #
+# (c) 2016 Boundless, http://boundlessgeo.com
+# This code is licensed under the GPL 2.0 license.
+#
 # OpenGeo Suite QGIS plugin documentation build configuration file, created by
 # sphinx-quickstart on Tue Aug 27 11:03:43 2013.
 #

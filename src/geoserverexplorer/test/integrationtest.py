@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+#
+# (c) 2016 Boundless, http://boundlessgeo.com
+# This code is licensed under the GPL 2.0 license.
+#
 import unittest
 from PyQt4.QtCore import QSettings
 from geoserverexplorer.gui.explorer import GeoServerExplorer

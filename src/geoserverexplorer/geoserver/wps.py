@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+#
+# (c) 2016 Boundless, http://boundlessgeo.com
+# This code is licensed under the GPL 2.0 license.
+#
 import httplib2
 from xml.etree.ElementTree import XML
 from urlparse import urlparse

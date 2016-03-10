@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-
+#
+# (c) 2016 Boundless, http://boundlessgeo.com
+# This code is licensed under the GPL 2.0 license.
+#
 import os
 from qgis.core import *
 from PyQt4 import QtCore
@@ -202,15 +205,7 @@ class CatalogWrapper(object):
     def _publishPostgisLayer(self, layer, workspace, overwrite, name, storename=None):
         uri = QgsDataSourceURI(layer.dataProvider().dataSourceUri())
 
-        # check for table.name conflict in existing layer names where the
-        # table.name is not the same as the user-chosen layer name,
-        # i.e. unintended overwrite
-        resource = self.catalog.get_resource(uri.table())
-        if resource is not None and uri.table() != name:
-            raise Exception("QGIS PostGIS layer has table name conflict with "
-                            "existing GeoServer layer name: {0}\n"
-                            "You may need to rename GeoServer layer name."
-                            .format(uri.table()))
+
 
         conname = self.getConnectionNameFromLayer(layer)
         storename = xmlNameFixUp(storename or conname)
@@ -239,7 +234,6 @@ class CatalogWrapper(object):
                                      user = user,
                                      passwd = passwd)
         if store is not None:
-            rscname = name if uri.table() != name else uri.table()
             grpswlyr = []
             if overwrite:
                 # TODO: How do we honor *unchecked* user setting of
@@ -254,7 +248,7 @@ class CatalogWrapper(object):
                 # type layer to custom name, then add new resultant layer back
                 # to any layer groups the existing layer belonged to. Phew!
 
-                flyr = self.catalog.get_layer(rscname)
+                flyr = self.catalog.get_layer(name)
                 if flyr is not None:
                     grpswlyr = groupsWithLayer(self.catalog, flyr)
                     if grpswlyr:
@@ -264,7 +258,7 @@ class CatalogWrapper(object):
                 #   underlying db connection/store has changed? Not an issue?
                 #   The layer is deleted, which is correct, but the original
                 #   db store and feature type will not be changed. A conflict?
-                frsc = store.get_resources(name=rscname)
+                frsc = store.get_resources(name=name)
                 if frsc is not None:
                     self.catalog.delete(frsc)
 
@@ -273,13 +267,14 @@ class CatalogWrapper(object):
                                                      layer.crs().authid())
 
             # once table-based feature type created, switch name to user-chosen
-            if ftype.name != rscname:
-                ftype.dirty["name"] = rscname
-                self.catalog.save(ftype)
+            if ftype.name != name:
+                ftype.dirty["name"] = name
+                ftype.dirty["title"] = name
+            self.catalog.save(ftype)
 
             # now re-add to any previously assigned-to layer groups
             if overwrite and grpswlyr:
-                ftype = self.catalog.get_resource(rscname)
+                ftype = self.catalog.get_resource(name)
                 if ftype:
                     addLayerToGroups(self.catalog, ftype, grpswlyr,
                                      workspace=workspace)
@@ -331,7 +326,7 @@ class CatalogWrapper(object):
         if isinstance(layer, basestring):
             layer = layers.resolveLayer(layer)
 
-        name = name if name is not None else layer.name()
+        name = name or layer.name()
         title = name
         name = name.replace(" ", "_")
 

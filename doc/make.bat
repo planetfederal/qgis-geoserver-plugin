@@ -1,4 +1,8 @@
 @ECHO OFF
+REM
+REM (c) 2016 Boundless, http://boundlessgeo.com
+REM This code is licensed under the GPL 2.0 license.
+REM
 
 REM Command file for Sphinx documentation
 
