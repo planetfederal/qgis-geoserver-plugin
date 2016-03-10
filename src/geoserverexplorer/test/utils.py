@@ -32,15 +32,15 @@ WORKSPACE = safeName("workspace")
 WORKSPACEB = safeName("workspaceb")
 
 # envs that can be override by os.environ envs
-GSHOSTNAME = 'localhost'
+GSHOSTNAME = 'boundless-test'
 GSPORT = '8080'
 GSSSHPORT = '8443' 
 GSUSER = 'admin'
 GSPASSWORD = 'geoserver'
 
 # pki envs
-AUTHDB_MASTERPWD = 'pass'
-AUTHCFGID = 'y45c26z' # Fra user has id y45c26z in the test qgis_auth.db
+AUTHDB_MASTERPWD = 'password'
+AUTHCFGID = 'fm1s770' # 'alice' user has id fm1s770 in the test qgis_auth.db
 AUTHTYPE = 'Identity-Cert' # other are "PKI-Paths" and 'PKI-PKCS#12'
 
 # authdb and cert data
