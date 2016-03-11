@@ -208,7 +208,8 @@ def pep8(args):
 @task
 @consume_args
 def autopep8(args):
-    """Format code according to PEP8"""
+    """Format code according to PEP8
+    """
     try:
         import autopep8
     except:
@@ -218,8 +219,10 @@ def autopep8(args):
     if any(x not in args for x in ['-i', '--in-place']):
         args.append('-i')
 
+    args.append('--ignore=E261,E265,E402,E501')
     args.insert(0, 'dummy')
-    cmd_args = autopep8.parse_args(args)[0]
+
+    cmd_args = autopep8.parse_args(args)
 
     excludes = ('ext-lib', 'ext-src')
     for p in options.plugin.source_dir.walk():

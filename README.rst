@@ -1,6 +1,3 @@
-.. (c) 2016 Boundless, http://boundlessgeo.com
-   This code is licensed under the GPL 2.0 license.
-
 GeoServer Explorer QGIS Plugin
 *******************************
 
@@ -12,7 +9,7 @@ Installation
 To install, run the following in a terminal (you will need to have `paver <http://paver.github.io/paver/>`_ installed):
 
 ::
-	
+
 	$ paver setup
 	$ paver install
 
