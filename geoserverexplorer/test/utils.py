@@ -195,6 +195,7 @@ def loadSymbologyTestData():
         qgis.utils.iface.addProject(projectFile)
 
 def getCatalog():
+    global authm
     if authm:
         # connect and prepare pki catalog
         catWrapper = getGeoServerCatalog(authcfgid=AUTHCFGID, authtype=AUTHTYPE)
@@ -235,8 +236,11 @@ def clean():
     ws = cat.get_workspace("test_workspace")
     if ws:
         cat.delete(ws, recurse = True)
+        ws = cat.get_workspace(ws.name)
+        assert ws is None
 
 def openAndUpload():
+    global authm
     loadTestData()
     layer = layerFromName("qgis_plugin_test_pt1")
     catWrapper = setUpCatalogAndWorkspace()
@@ -250,6 +254,9 @@ def openAndUpload():
     else:
         url = 'url='+serverLocationBasicAuth()
     url += '/wms&format=image/png&layers=test_workspace:qgis_plugin_test_pt1&styles=qgis_plugin_test_pt1&crs=EPSG:4326'
+    # add authcfg if in PKI context
+    if authm:
+        url += '&authcfg='+AUTHCFGID
     wmsLayer = QgsRasterLayer(url, "WMS", 'wms')
     assert wmsLayer.isValid()
     QgsMapLayerRegistry.instance().addMapLayer(wmsLayer)
