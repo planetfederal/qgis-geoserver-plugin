@@ -9,7 +9,7 @@ import sys
 import os
 import urllib
 import tempfile
-from geoserverexplorer.test.utils import geoserverLocationSsh
+from geoserverexplorer.test.utils import geoserverLocationSsh, AUTHDB_MASTERPWD, AUTHCFGID
 
 class PKIOWSTests(unittest.TestCase):
     '''
@@ -23,8 +23,8 @@ class PKIOWSTests(unittest.TestCase):
         
         # setup auth configuration
         cls.authm = QgsAuthManager.instance()
-        cls.mpass = 'pass'  # master password
-        cls.authcfg = 'y45c26z' # Fra user has id y45c26z in the test qgis_auth.db
+        cls.mpass = AUTHDB_MASTERPWD  # master password
+        cls.authcfg = AUTHCFGID # Fra user has id y45c26z in the test qgis_auth.db
 
         msg = 'Failed to verify master password in auth db'
         assert cls.authm.setMasterPassword(cls.mpass, True), msg
