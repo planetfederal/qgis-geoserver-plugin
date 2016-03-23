@@ -37,13 +37,13 @@ class CreateCatalogDialogTests(unittest.TestCase):
             self.cat = getGeoServerCatalog(authcfgid=AUTHCFGID, authtype=AUTHTYPE)
         else:
             self.cat = getGeoServerCatalog()
-    
+
     def tearDown(self):
         # reasize if in PKI auth context
         if hasattr(self, 'authm') and self.authm:
             # remove certs
             pem.removeCatalogPkiTempFiles(self.cat)
-    
+
     def testCreateCatalogDialog(self):
         dialog = DefineCatalogDialog(self.explorer.catalogs())
         dialog.nameBox.setText("name")
@@ -129,7 +129,7 @@ class GroupDialogTests(ExplorerIntegrationTest):
         self.assertFalse(okWidget.isEnabled())
         dialog.deleteLater()
         okWidget.deleteLater()
- 
+
     def testGroupDialogWithNameContaingBlankSpaces(self):
         dialog = LayerGroupDialog(self.cat)
         dialog.nameBox.setName("my group")
@@ -159,7 +159,7 @@ class LayerDialogTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.explorer = GeoServerExplorer()
-        
+
         # reasize if in PKI auth context
         if hasattr(cls, 'authm') and cls.authm:
             cls.catWrapper = getGeoServerCatalog(authcfgid=AUTHCFGID, authtype=AUTHTYPE)
@@ -171,8 +171,7 @@ class LayerDialogTests(unittest.TestCase):
         cls.cat.create_workspace(WORKSPACEB, "http://test2.com")
         # load project
         projectFile = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "test.qgs")
-        if os.path.normcase(projectFile) != os.path.normcase(QgsProject.instance().fileName()):
-            iface.addProject(projectFile)
+        iface.addProject(projectFile)
 
     @classmethod
     def tearDownClass(cls):

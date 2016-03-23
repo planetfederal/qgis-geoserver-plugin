@@ -7,9 +7,9 @@ import os
 import uuid
 import time
 from qgis.core import *
+from qgis.utils import *
 from PyQt4 import QtCore, QtGui
 from geoserverexplorer.qgis import layers as qgislayers
-from geoserverexplorer import config
 from geoserverexplorer.qgis import uri as uri_utils
 
 class UserCanceledOperation(Warning):
@@ -18,7 +18,7 @@ class UserCanceledOperation(Warning):
 def checkLayers():
     layers = qgislayers.getAllLayers()
     if len(layers) == 0:
-        QtGui.QMessageBox.warning(config.iface.mainWindow(), 'QGIS layers needed',
+        QtGui.QMessageBox.warning(iface.mainWindow(), 'QGIS layers needed',
             "No suitable layers can be found in your current QGIS project.\n"
             "You must open the layers in QGIS to be able to work with them.",
             QtGui.QMessageBox.Ok)

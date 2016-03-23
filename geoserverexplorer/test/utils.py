@@ -39,7 +39,7 @@ WORKSPACEB = safeName("workspaceb")
 # envs that can be override by os.environ envs
 GSHOSTNAME = 'boundless-test'
 GSPORT = '8080'
-GSSSHPORT = '8443' 
+GSSSHPORT = '8443'
 GSUSER = 'admin'
 GSPASSWORD = 'geoserver'
 
@@ -186,13 +186,11 @@ def setUtilContext(pki=False):
 
 def loadTestData():
     projectFile = os.path.join(os.path.dirname(os.path.abspath(geoserverexplorer.__file__)), "test", "data", "test.qgs")
-    if projectFile != QgsProject.instance().fileName():
-        qgis.utils.iface.addProject(projectFile)
+    qgis.utils.iface.addProject(projectFile)
 
 def loadSymbologyTestData():
     projectFile = os.path.join(os.path.dirname(os.path.abspath(geoserverexplorer.__file__)), "test", "data", "symbology", "test.qgs")
-    if projectFile != QgsProject.instance().fileName():
-        qgis.utils.iface.addProject(projectFile)
+    qgis.utils.iface.addProject(projectFile)
 
 def getCatalog():
     global authm
@@ -201,10 +199,10 @@ def getCatalog():
         catWrapper = getGeoServerCatalog(authcfgid=AUTHCFGID, authtype=AUTHTYPE)
     else:
         catWrapper = getGeoServerCatalog()
-    
+
     return catWrapper
     #return RetryCatalog(serverLocationBasicAuth()+"/rest", "admin", "geoserver")
-        
+
 def setUpCatalogAndWorkspace():
     catWrapper = getCatalog()
     try:
@@ -218,6 +216,8 @@ def setUpCatalogAndExplorer():
     explorer = qgis.utils.plugins["geoserverexplorer"].explorer
     explorer.show()
     gsItem = explorer.explorerTree.gsItem
+    for c in range(gsItem.childCount()):
+        gsItem.removeChild(gsItem.child(c))
     catWrapper = setUpCatalogAndWorkspace()
     geoserverItem = GsCatalogItem(catWrapper.catalog, "test_catalog")
     gsItem.addChild(geoserverItem)
@@ -238,6 +238,8 @@ def clean():
         cat.delete(ws, recurse = True)
         ws = cat.get_workspace(ws.name)
         assert ws is None
+
+
 
 def openAndUpload():
     global authm
