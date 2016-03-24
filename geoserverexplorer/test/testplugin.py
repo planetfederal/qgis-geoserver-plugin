@@ -22,7 +22,7 @@ def functionalTests():
         from qgistester.test import Test
     except:
         return []
-    
+
     dragdropTest = Test("Verify dragging browser element into workspace")
     dragdropTest.addStep("Setting up basic auth context", lambda: utils.setUtilContext(pki=False))
     dragdropTest.addStep("Setting up catalog and explorer", utils.setUpCatalogAndExplorer)

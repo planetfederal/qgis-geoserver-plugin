@@ -33,8 +33,7 @@ class ExplorerIntegrationTest(unittest.TestCase):
         # @TODO - make tests pass using importer
         cls.useRestApi = QSettings().setValue("/GeoServer/Settings/GeoServer/UseRestApi", True)
         projectFile = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "test.qgs")
-        if os.path.normcase(projectFile) != os.path.normcase(QgsProject.instance().fileName()):
-            iface.addProject(projectFile)
+        iface.addProject(projectFile)
 
     @classmethod
     def tearDownClass(cls):

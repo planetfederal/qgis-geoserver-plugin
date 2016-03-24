@@ -13,6 +13,7 @@ from PyQt4.QtCore import *
 from geoserverexplorer.test import utils
 from geoserverexplorer.test.utils import PT1, DEM, DEM2, PT1JSON, DEMASCII,\
     GEOLOGY_GROUP, GEOFORMS, LANDUSE, HOOK, WORKSPACE
+import re
 
 class CatalogTests(unittest.TestCase):
     '''
@@ -29,8 +30,7 @@ class CatalogTests(unittest.TestCase):
         cls.ws = cls.cat.catalog.get_workspace(WORKSPACE)
         assert cls.ws is not None
         projectFile = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "test.qgs")
-        if os.path.normcase(projectFile) != os.path.normcase(QgsProject.instance().fileName()):
-            iface.addProject(projectFile)
+        iface.addProject(projectFile)
 
     @classmethod
     def tearDownClass(cls):
@@ -67,6 +67,8 @@ class CatalogTests(unittest.TestCase):
     def compareSld(self, a, b):
         a = a.replace("\r", "").replace("\n", "").replace(" ", "")
         b = b.replace("\r", "").replace("\n", "").replace(" ", "")
+        a = re.sub(r"<sld:StyledLayerDescriptor.*?>", "", a)
+        b = re.sub(r"<sld:StyledLayerDescriptor.*?>", "", b)
         return a == b
 
     def testVectorStylingUpload(self):

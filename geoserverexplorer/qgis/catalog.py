@@ -216,12 +216,15 @@ class CatalogWrapper(object):
                             .format(conname, storename))
 
 
-        connInfo = uri.connectionInfo()
-        (success, user, passwd) = QgsCredentials.instance().get(connInfo, None, None)
-        if success:
-            QgsCredentials.instance().put(connInfo, user, passwd)
-        else:
-            raise Exception("Couldn't connect to database")
+        user = uri.username()
+        passwd = uri.password()
+        if not uri or not passwd:
+            connInfo = uri.connectionInfo()
+            (success, user, passwd) = QgsCredentials.instance().get(connInfo, None, None)
+            if success:
+                QgsCredentials.instance().put(connInfo, user, passwd)
+            else:
+                raise Exception("Couldn't connect to database")
 
         store = createPGFeatureStore(self.catalog,
                                      storename,
