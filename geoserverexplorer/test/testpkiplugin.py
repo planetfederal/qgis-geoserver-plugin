@@ -3,6 +3,8 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
+import unittest
+import sys
 from geoserverexplorer.test import utils
 from geoserverexplorer.test.pkicatalogtests import suite as pkiCatalogSuite
 from geoserverexplorer.test.pkideletetests import suite as pkiDeleteSuite
@@ -46,3 +48,13 @@ def unitTests():
     _tests.extend(pkiGuiSuite())
     _tests.extend(pkiOwsSuite())
     return _tests
+
+def runAllUnitTests():
+    ''' run all unittests - No funcgtional test managed only by Tester Plugin '''
+    suite = unittest.TestSuite()
+    suite.addTest(pkiCatalogSuite())
+    suite.addTest(pkiDeleteSuite())
+    suite.addTest(pkiDragDropSuite())
+    suite.addTest(pkiGuiSuite())
+    suite.addTest(pkiOwsSuite())
+    unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suite)

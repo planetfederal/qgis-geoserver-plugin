@@ -3,6 +3,8 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
+import unittest
+import sys
 from geoserverexplorer.test import utils
 from geoserverexplorer.test.catalogtests import suite as catalogSuite
 from geoserverexplorer.test.deletetests import suite as deleteSuite
@@ -44,3 +46,12 @@ def unitTests():
     _tests.extend(dragdropSuite())
     _tests.extend(guiSuite())
     return _tests
+
+def runAllUnitTests():
+    ''' run all unittests - No funcgtional test managed only by Tester Plugin '''
+    suite = unittest.TestSuite()
+    suite.addTest(catalogSuite())
+    suite.addTest(deleteSuite())
+    suite.addTest(dragdropSuite())
+    suite.addTest(guiSuite())
+    unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suite)
