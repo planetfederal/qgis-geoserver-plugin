@@ -24,7 +24,10 @@ def addAuth(_params, catalog):
         if hasauthcfg and QGis.QGIS_VERSION_INT >= 20801:
             _params['authcfg'] = catalog.authid
         else:
-            _params['authid'] = catalog.authid
+            if QGis.QGIS_VERSION_INT >= 21200:
+                _params['authcfg'] = catalog.authid
+            else:
+                _params['authid'] = catalog.authid
     elif hasattr(catalog, 'authcfg') and catalog.authcfg is not None:
         _params['authcfg'] = catalog.authcfg
     else:
