@@ -4,11 +4,10 @@
 # This code is licensed under the GPL 2.0 license.
 #
 import os
-from qgistester.utils import layerFromName
 from geoserver.util import shapefile_and_friends
 from geoserverexplorer.qgis.catalog import createGeoServerCatalog
 
-from qgis.core import QgsProject
+from qgis.core import QgsProject, QgsMapLayerRegistry
 import qgis
 import geoserverexplorer
 from geoserverexplorer.geoserver.retry import RetryCatalog
@@ -263,3 +262,15 @@ def openAndUpload():
     assert wmsLayer.isValid()
     QgsMapLayerRegistry.instance().addMapLayer(wmsLayer)
     qgis.utils.iface.zoomToActiveLayer()
+
+def layerFromName(name):
+    '''
+    Returns the layer from the current project with the passed name
+    Returns None if no layer with that name is found
+    If several layers with that name exist, only the first one is returned
+    '''
+    layers = QgsMapLayerRegistry.instance().mapLayers().values()
+    for layer in layers:
+        if layer.name() == name:
+            return layer
+
