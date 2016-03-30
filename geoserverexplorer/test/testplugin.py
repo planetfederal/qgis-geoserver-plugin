@@ -14,7 +14,7 @@ from geoserverexplorer.test.guitests import suite as guiSuite
 # Tests for the QGIS Tester plugin. To know more see
 # https://github.com/boundlessgeo/qgis-tester-plugin
 
-# Tests assume a standard Geoserver at localhost:8080 or GSHOSTNAME:GSPORT
+# Tests assume a Geoserver 2.8 instance at localhost:8080 or GSHOSTNAME:GSPORT
 # and default admin/geoserver credentials
 
 def functionalTests():

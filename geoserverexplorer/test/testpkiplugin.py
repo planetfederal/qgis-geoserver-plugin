@@ -15,7 +15,7 @@ from geoserverexplorer.test.pkiowstests import suite as pkiOwsSuite
 # Tests for the QGIS Tester plugin. To know more see
 # https://github.com/boundlessgeo/qgis-tester-plugin
 
-# Tests assume a standard Geoserver at localhost:8443 or GSHOSTNAME:GSPORT
+# Tests assume a Geoserver 2.8 instance at localhost:8443 or GSHOSTNAME:GSPORT
 # and 'Fra' for pki credentials (more in the geoserverexplorer.test.utils code)
 
 def functionalTests():
@@ -23,7 +23,7 @@ def functionalTests():
         from qgistester.test import Test
     except:
         return []
-  
+
     dragdropTest = Test("Verify dragging browser element into workspace")
     dragdropTest.addStep("Setting up pki auth context", lambda: utils.setUtilContext(pki=True))
     dragdropTest.addStep("Setting up catalog and explorer", utils.setUpCatalogAndExplorer)
