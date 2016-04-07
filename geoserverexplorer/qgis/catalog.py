@@ -43,18 +43,18 @@ def createGeoServerCatalog(service_url = "http://localhost:8080/geoserver/rest",
     # if not authcfg use basic auth
     if not authcfg or not authtype:
         catalog = GSCatalog(service_url, username, password, disable_ssl_certificate_validation)
-        
+
     # if autcfg, then get certs and ca and create a PKICatalog
     else:
         certfile, keyfile, cafile = pem.getPemPkiPaths(authcfg, authtype)
-        
+
         # set connection
         catalog = PKICatalog(service_url, keyfile, certfile, cafile)
-        
+
         # set authcfg parameter used by uri.py functions to manage
         # uri creation with pki credential
         catalog.authcfg = authcfg
-        
+
     return CatalogWrapper(catalog)
 
 
@@ -524,7 +524,6 @@ class CatalogWrapper(object):
         elif layer.type() == layer.VectorLayer:
             try:
                 hookFile = str(QtCore.QSettings().value("/GeoServer/Settings/GeoServer/PreuploadVectorHook", ""))
-                print hookFile
                 alg = self.getAlgorithmFromHookFile(hookFile)
                 if (len(alg.parameters) == 1 and isinstance(alg.parameters[0], ParameterVector)
                     and len(alg.outputs) == 1 and isinstance(alg.outputs[0], OutputVector)):
@@ -533,6 +532,7 @@ class CatalogWrapper(object):
                         return load(alg.outputs[0].value)
                     return layer
             except:
+                QgsMessageLog.logMessage("Could not apply hook to layer upload. Wrong Hook", QgsMessageLog.WARNING)
                 return layer
 
     def getAlgorithmFromHookFile(self, hookFile):

@@ -113,6 +113,11 @@ class CatalogTests(unittest.TestCase):
         hookFile = os.path.join(os.path.dirname(__file__), "resources", "vector_hook.py")
         settings.setValue("/GeoServer/Settings/GeoServer/PreuploadVectorHook", hookFile)
         try:
+            hookFile = str(QSettings().value("/GeoServer/Settings/GeoServer/PreuploadVectorHook", ""))
+            try:
+                self.cat.getAlgorithmFromHookFile(hookFile)
+            except:
+                raise Exception("Processing hook cannot be executed")
             self.cat.publishLayer(PT1, self.ws, name = HOOK)
             self.assertIsNotNone(self.cat.catalog.get_layer(HOOK))
             self.cat.addLayerToProject(HOOK)
