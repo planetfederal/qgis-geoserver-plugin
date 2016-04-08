@@ -512,24 +512,31 @@ class CatalogWrapper(object):
         if layer.type() == layer.RasterLayer:
             try:
                 hookFile = str(QtCore.QSettings().value("/GeoServer/Settings/GeoServer/PreuploadRasterHook", ""))
-                alg = self.getAlgorithmFromHookFile(hookFile)
-                if (len(alg.parameters) == 1 and isinstance(alg.parameters[0], ParameterRaster)
-                    and len(alg.outputs) == 1 and isinstance(alg.outputs[0], OutputRaster)):
-                    alg.parameters[0].setValue(layer)
-                    if runalg(alg, SilentProgress()):
-                        return load(alg.outputs[0].value)
+                if hookFile:
+                    alg = self.getAlgorithmFromHookFile(hookFile)
+                    if (len(alg.parameters) == 1 and isinstance(alg.parameters[0], ParameterRaster)
+                        and len(alg.outputs) == 1 and isinstance(alg.outputs[0], OutputRaster)):
+                        alg.parameters[0].setValue(layer)
+                        if runalg(alg, SilentProgress()):
+                            return load(alg.outputs[0].value)
+                        return layer
+                else:
                     return layer
             except:
+                QgsMessageLog.logMessage("Could not apply hook to layer upload. Wrong Hook", level=QgsMessageLog.WARNING)
                 return layer
         elif layer.type() == layer.VectorLayer:
             try:
                 hookFile = str(QtCore.QSettings().value("/GeoServer/Settings/GeoServer/PreuploadVectorHook", ""))
-                alg = self.getAlgorithmFromHookFile(hookFile)
-                if (len(alg.parameters) == 1 and isinstance(alg.parameters[0], ParameterVector)
-                    and len(alg.outputs) == 1 and isinstance(alg.outputs[0], OutputVector)):
-                    alg.parameters[0].setValue(layer)
-                    if runalg(alg, SilentProgress()):
-                        return load(alg.outputs[0].value)
+                if hookFile:
+                    alg = self.getAlgorithmFromHookFile(hookFile)
+                    if (len(alg.parameters) == 1 and isinstance(alg.parameters[0], ParameterVector)
+                        and len(alg.outputs) == 1 and isinstance(alg.outputs[0], OutputVector)):
+                        alg.parameters[0].setValue(layer)
+                        if runalg(alg, SilentProgress()):
+                            return load(alg.outputs[0].value)
+                        return layer
+                else:
                     return layer
             except:
                 QgsMessageLog.logMessage("Could not apply hook to layer upload. Wrong Hook", level=QgsMessageLog.WARNING)
