@@ -532,7 +532,7 @@ class CatalogWrapper(object):
                         return load(alg.outputs[0].value)
                     return layer
             except:
-                QgsMessageLog.logMessage("Could not apply hook to layer upload. Wrong Hook", QgsMessageLog.WARNING)
+                QgsMessageLog.logMessage("Could not apply hook to layer upload. Wrong Hook", level=QgsMessageLog.WARNING)
                 return layer
 
     def getAlgorithmFromHookFile(self, hookFile):
