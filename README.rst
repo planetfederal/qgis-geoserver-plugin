@@ -1,3 +1,6 @@
+.. image:: https://travis-ci.org/boundlessgeo/qgis-geoserver-plugin.svg?branch=master
+    :target: https://travis-ci.org/boundlessgeo/qgis-geoserver-plugin
+
 GeoServer Explorer
 ==================
 

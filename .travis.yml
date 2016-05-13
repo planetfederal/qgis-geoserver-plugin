@@ -1,0 +1,27 @@
+sudo: required
+dist: trusty
+language: python
+python:
+  - "2.7"
+virtualenv:
+      system_site_packages: true
+install:
+    #- pip install pep8
+    - pip install nose2
+    - echo "deb http://qgis.org/debian $(lsb_release -cs) main" | sudo tee -a /etc/apt/sources.list
+    - echo "deb-src http://qgis.org/debian $(lsb_release -cs) main" | sudo tee -a /etc/apt/sources.list
+    - gpg --keyserver keyserver.ubuntu.com --recv 3FF5FFCAD71472C4
+    - gpg --export --armor 3FF5FFCAD71472C4 | sudo apt-key add -
+    - sudo apt-get update
+    - sudo apt-get install python-qt4 -qq
+    - sudo apt-get install qgis --force-yes -qq
+    - sudo apt-get install python-qgis -qq
+before_script:
+    # I need a (fake) display on Travis so I need to start a X server.
+    - export DISPLAY=:99.0
+    - export PYTHONPATH=$PYTHONPATH:/usr/share/qgis/python/
+    - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1400x900x24 -ac +extension GLX +render
+script:
+    # - python your_test_goes_here.py
+    #- pep8 *.py
+    - /bin/true
