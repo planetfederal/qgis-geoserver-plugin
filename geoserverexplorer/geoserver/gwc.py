@@ -100,7 +100,7 @@ class GwcLayer(object):
                 #in case this parameters are not in the layer description
                 self.metaWidth, self.metaHeight = 1, 1
         else:
-            raise FailedRequestError(content)
+            raise FailedRequestError(str(response) + content)
 
     def xml(self):
         root = ET.Element('GeoServerLayer')
@@ -189,7 +189,7 @@ class GwcLayer(object):
         response, content = self.gwc.http.request(url, "POST", message, headers=self.headers)
 
         if response.status != 200:
-            raise FailedRequestError(content)
+            raise FailedRequestError(str(response) + content)
 
 
     def getSeedingState(self):
@@ -198,7 +198,7 @@ class GwcLayer(object):
         response, content = self.gwc.http.request(url, 'GET', headers=headers)
 
         if response.status != 200:
-            raise FailedRequestError(content)
+            raise FailedRequestError(str(response) + content)
         else:
             try:
                 array = json.loads(content)['long-array-array']
@@ -216,7 +216,7 @@ class GwcLayer(object):
         response, content = self.gwc.http.request(url, 'POST', "kill_all=all", headers=headers)
 
         if response.status != 200:
-            raise FailedRequestError(content)
+            raise FailedRequestError(str(response) + content)
 
 
 
