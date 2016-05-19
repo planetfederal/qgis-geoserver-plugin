@@ -6,32 +6,29 @@
 import unittest
 from qgis.core import *
 import sys
-import os
 import urllib
-import tempfile
-from geoserverexplorer.test.utils import geoserverLocationSsh, AUTHDB_MASTERPWD, AUTHCFGID
+from geoserverexplorer.test import utils
+
 
 class PKIOWSTests(unittest.TestCase):
     '''
-    Tests for PKI support in QGIS
-    Requires a Geoserver catalog with pki auth on localhost:8443 with the default sample data
+    Tests for PKI support in QGIS.
+
+    Requires a Geoserver catalog with pki auth on localhost:8443 with the
+    default sample data
     '''
 
     @classmethod
     def setUpClass(cls):
         """Run before all tests"""
-        
         # setup auth configuration
-        cls.authm = QgsAuthManager.instance()
-        cls.mpass = AUTHDB_MASTERPWD  # master password
-        cls.authcfg = AUTHCFGID # Fra user has id y45c26z in the test qgis_auth.db
+        utils.initAuthManager()
+        utils.populatePKITestCerts()
 
-        msg = 'Failed to verify master password in auth db'
-        assert cls.authm.setMasterPassword(cls.mpass, True), msg
-        
     @classmethod
     def tearDownClass(cls):
         """Run after all tests"""
+        utils.removePKITestCerts()
 
     def testOpenWFSLayer(self):
         params = {
@@ -40,10 +37,13 @@ class PKIOWSTests(unittest.TestCase):
             'request': 'GetFeature',
             'typename': 'usa:states',
             'srsname': 'EPSG:4326',
-            'authcfg':  self.authcfg
+            'authcfg':  utils.AUTHCFGID
         }
-        uri = 'https://'+geoserverLocationSsh()+'/geoserver/wfs?' +  urllib.unquote(urllib.urlencode(params))
- 
+        uri = 'https://'+utils.geoserverLocationSsh()+'/geoserver/wfs?' + \
+              urllib.unquote(urllib.urlencode(params))
+
+        print uri
+
         vlayer = QgsVectorLayer(uri, "states", "WFS")
         self.assertTrue(vlayer.isValid())
 
@@ -56,29 +56,36 @@ class PKIOWSTests(unittest.TestCase):
         quri.setParam("crs", 'EPSG:4326')
         quri.setParam("dpiMode", '7')
         quri.setParam("featureCount", '10')
-        quri.setParam("authcfg", self.authcfg)
+        quri.setParam("authcfg", utils.AUTHCFGID)
         quri.setParam("contextualWMSLegend", '0')
-        quri.setParam("url", 'https://'+geoserverLocationSsh()+'/geoserver/wms')
-        
+        quri.setParam("url",
+                      'https://'+utils.geoserverLocationSsh()+'/geoserver/wms')
+
+        print str(quri.encodedUri())
+
         rlayer = QgsRasterLayer(str(quri.encodedUri()), 'states', 'wms')
         self.assertTrue(rlayer.isValid())
-        #QgsMapLayerRegistry.instance().addMapLayers([rlayer])
+        # QgsMapLayerRegistry.instance().addMapLayers([rlayer])
 
-##################################################################################################
+###############################################################################
+
 
 def suiteSubset():
     tests = ['testOpenWFSLayer']
     suite = unittest.TestSuite(map(PKIOWSTests, tests))
     return suite
 
+
 def suite():
     suite = unittest.makeSuite(PKIOWSTests, 'test')
     return suite
+
 
 # run all tests using unittest skipping nose or testplugin
 def run_all():
     # demo_test = unittest.TestLoader().loadTestsFromTestCase(PKIOWSTests)
     unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suite())
+
 
 # run a subset of tests using unittest skipping nose or testplugin
 def run_subset():

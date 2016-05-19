@@ -24,7 +24,6 @@ def functionalTests():
         return []
 
     dragdropTest = Test("Verify dragging browser element into workspace")
-    dragdropTest.addStep("Setting up basic auth context", lambda: utils.setUtilContext(pki=False))
     dragdropTest.addStep("Setting up catalog and explorer", utils.setUpCatalogAndExplorer)
     dragdropTest.addStep("Setting up test data project", utils.loadTestData)
     dragdropTest.addStep("Drag layer from browser 'Project home->qgis_plugin_test_pt1.shp' into\ntest_catalog->Workspaces->test_workspace")
@@ -32,7 +31,6 @@ def functionalTests():
     dragdropTest.setCleanup(utils.clean)
 
     vectorRenderingTest = Test("Verify rendering of uploaded style")
-    vectorRenderingTest.addStep("Setting up basic auth context", lambda: utils.setUtilContext(pki=False))
     vectorRenderingTest.addStep("Preparing data", utils.openAndUpload)
     vectorRenderingTest.addStep("Check that WMS layer is correctly rendered")
     vectorRenderingTest.setCleanup(utils.clean)

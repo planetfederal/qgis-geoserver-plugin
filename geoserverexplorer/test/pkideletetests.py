@@ -8,11 +8,11 @@ import os
 import sys
 from PyQt4.QtCore import *
 from qgis.core import *
-from qgis.utils import iface 
+from qgis.utils import iface
 from geoserverexplorer.geoserver import pem
 from geoserverexplorer.test import utils
 from geoserverexplorer.test.deletetests import DeleteTests
-from geoserverexplorer.test.utils import WORKSPACE, AUTHDB_MASTERPWD, AUTHCFGID, AUTHTYPE, AUTH_TESTDATA
+from geoserverexplorer.test import utils
 
 class PkiDeleteTests(DeleteTests):
     '''
@@ -23,17 +23,15 @@ class PkiDeleteTests(DeleteTests):
     @classmethod
     def setUpClass(cls):
         # setup auth configuration
-        os.environ['QGIS_AUTH_DB_DIR_PATH'] = AUTH_TESTDATA
-        cls.authm = QgsAuthManager.instance()
-        msg = 'Failed to verify master password in auth db'
-        assert cls.authm.setMasterPassword(AUTHDB_MASTERPWD, True), msg
-        
+        utils.initAuthManager()
+        utils.populatePKITestCerts()
+
         # do workspace popuplation
         super(PkiDeleteTests, cls).setUpClass()
 
-        cls.ws = cls.cat.get_workspace(WORKSPACE)
+        cls.ws = cls.cat.get_workspace(utils.WORKSPACE)
         assert cls.ws is not None
-        
+
         # load project
         projectFile = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "test.qgs")
         if os.path.normcase(projectFile) != os.path.normcase(QgsProject.instance().fileName()):
@@ -48,6 +46,7 @@ class PkiDeleteTests(DeleteTests):
         QSettings().setValue("/GeoServer/Settings/General/ConfirmDelete", cls.confirmDelete)
         # remove certs
         pem.removeCatalogPkiTempFiles(cls.cat)
+        utils.removePKITestCerts()
 
 ##################################################################################################
 

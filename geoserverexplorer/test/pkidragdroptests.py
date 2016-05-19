@@ -10,7 +10,7 @@ from PyQt4.QtCore import *
 from qgis.core import *
 from geoserverexplorer.geoserver import pem
 from geoserverexplorer.test.dragdroptests import DragDropTests
-from geoserverexplorer.test.utils import AUTHDB_MASTERPWD, AUTHCFGID, AUTHTYPE, AUTH_TESTDATA
+from geoserverexplorer.test import utils
 
 class PkiDragDropTests(DragDropTests):
 
@@ -20,11 +20,9 @@ class PkiDragDropTests(DragDropTests):
     @classmethod
     def setUpClass(cls):
         # setup auth configuration
-        os.environ['QGIS_AUTH_DB_DIR_PATH'] = AUTH_TESTDATA
-        cls.authm = QgsAuthManager.instance()
-        msg = 'Failed to verify master password in auth db'
-        assert cls.authm.setMasterPassword(AUTHDB_MASTERPWD, True), msg
-        
+        utils.initAuthManager()
+        utils.populatePKITestCerts()
+
         # do workspace popuplation
         super(PkiDragDropTests, cls).setUpClass()
 
@@ -33,6 +31,7 @@ class PkiDragDropTests(DragDropTests):
         super(PkiDragDropTests, cls).tearDownClass()
         # remove certs
         pem.removeCatalogPkiTempFiles(cls.cat)
+        utils.removePKITestCerts()
 
 
 ##################################################################################################
@@ -55,4 +54,3 @@ def run_all():
 # run a subset of tests using unittest skipping nose or testplugin
 def run_subset():
     unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suiteSubset())
-
