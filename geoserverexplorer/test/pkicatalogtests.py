@@ -23,7 +23,6 @@ class PkiCatalogTests(CatalogTests):
 
     @classmethod
     def setUpClass(cls):
-        print "++++++++++++++++++++++++++++++++++++++++++"
         ''' 'test' workspace cannot exist in the test catalog'''
         # setup auth configuration
         utils.initAuthManager()
@@ -44,7 +43,6 @@ class PkiCatalogTests(CatalogTests):
 
     @classmethod
     def tearDownClass(cls):
-        print "---------------------------------------"
         """Teardown test class."""
         utils.cleanCatalog(cls.cat.catalog)
         # remove certs
