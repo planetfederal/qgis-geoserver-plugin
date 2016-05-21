@@ -31,6 +31,7 @@ class PKIOWSTests(unittest.TestCase):
         utils.removePKITestCerts()
 
     def testOpenWFSLayer(self):
+        #  https://boundless-test:8443/geoserver/wfs?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&TYPENAME=usa:states&SRSNAME=EPSG:4326&authcfg=fm1s770
         params = {
             'service': 'WFS',
             'version': '1.0.0',
@@ -41,8 +42,6 @@ class PKIOWSTests(unittest.TestCase):
         }
         uri = 'https://'+utils.geoserverLocationSsh()+'/geoserver/wfs?' + \
               urllib.unquote(urllib.urlencode(params))
-
-        print uri
 
         vlayer = QgsVectorLayer(uri, "states", "WFS")
         self.assertTrue(vlayer.isValid())
