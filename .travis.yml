@@ -46,5 +46,8 @@ script:
     # Start the real tests!
     - docker exec -it qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.catalogtests"
     - docker exec -it qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.deletetests"
-
-
+    - docker exec -it qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.dragdroptests"
+    - docker exec -it qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.guitests"
+    # Not a real unit test?
+    # - docker exec -it qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.integrationtests"
+    
