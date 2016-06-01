@@ -8,10 +8,9 @@ before_install:
     - docker pull elpaso/qgis-testing-environment:2.14.2-kartoza
     - docker tag elpaso/qgis-testing-environment:2.14.2-kartoza qgis-testing-environment
 install:
-    - echo ${TRAVIS_BUILD_DIR}
-    - mkdir -p .qgis2/python/plugins
     - docker run -d --name qgis-testing-environment -v ${TRAVIS_BUILD_DIR}:/tests_directory -e DISPLAY=:99 qgis-testing-environment
     - sleep 10
+    # Set the host name resolution
     - docker exec -it qgis-testing-environment sh -c "echo '172.17.42.1   boundless-test' >> /etc/hosts"
 
     # Setup qgis and enable the plugin
@@ -50,4 +49,6 @@ script:
     - docker exec -it qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.guitests"
     # Not a real unit test?
     # - docker exec -it qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.integrationtests"
-    
+
+    # PKI tests
+    #- docker exec -it qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.pkicatalogtests"
