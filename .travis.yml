@@ -1,27 +1,50 @@
 sudo: required
-dist: trusty
-language: python
-python:
-  - "2.7"
-virtualenv:
-      system_site_packages: true
+addons:
+  hosts:
+    - boundless-test
+services:
+    - docker
+before_install:
+    - docker pull elpaso/qgis-testing-environment:2.14.2-kartoza
+    - docker tag elpaso/qgis-testing-environment:2.14.2-kartoza qgis-testing-environment
 install:
-    #- pip install pep8
-    - pip install nose2
-    - echo "deb http://qgis.org/debian $(lsb_release -cs) main" | sudo tee -a /etc/apt/sources.list
-    - echo "deb-src http://qgis.org/debian $(lsb_release -cs) main" | sudo tee -a /etc/apt/sources.list
-    - gpg --keyserver keyserver.ubuntu.com --recv 3FF5FFCAD71472C4
-    - gpg --export --armor 3FF5FFCAD71472C4 | sudo apt-key add -
-    - sudo apt-get update
-    - sudo apt-get install python-qt4 -qq
-    - sudo apt-get install qgis --force-yes -qq
-    - sudo apt-get install python-qgis -qq
+    - echo ${TRAVIS_BUILD_DIR}
+    - mkdir -p .qgis2/python/plugins
+    - docker run -d --name qgis-testing-environment -v ${TRAVIS_BUILD_DIR}:/tests_directory -e DISPLAY=:99 qgis-testing-environment
+    - sleep 10
+    - docker exec -it qgis-testing-environment sh -c "echo '172.17.42.1   boundless-test' >> /etc/hosts"
+
+    # Setup qgis and enable the plugin
+    - docker exec -it qgis-testing-environment sh -c "qgis_setup.sh geoserverexplorer"
+
+    # If needd additional steps (for example make or paver setup, place it here)
+    # Build the GeoServer plugin
+    - docker exec -it qgis-testing-environment sh -c "pip install paver"
+    - docker exec -it qgis-testing-environment sh -c "cd /tests_directory && paver setup"
+
+    # Link the plugin to the python/plugins directory
+    - docker exec -it qgis-testing-environment sh -c "ln -s /tests_directory/geoserverexplorer /root/.qgis2/python/plugins/geoserverexplorer"
+
+    # GeoServer
+    - sudo mkdir /usr/share/geoserver
+    - sudo chown travis /usr/share/geoserver
+    - wget -O /usr/share/geoserver/geoserver.zip http://sourceforge.net/projects/geoserver/files/GeoServer/2.9-RC1/geoserver-2.9-RC1-bin.zip
+    - pushd .
+    - cd /usr/share/geoserver && unzip geoserver.zip
+    - popd
 before_script:
-    # I need a (fake) display on Travis so I need to start a X server.
-    - export DISPLAY=:99.0
-    - export PYTHONPATH=$PYTHONPATH:/usr/share/qgis/python/
-    - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1400x900x24 -ac +extension GLX +render
+    - GEOSERVER_HOME=/usr/share/geoserver/geoserver-2.9-RC1 /usr/share/geoserver/geoserver-2.9-RC1/bin/startup.sh&
+    # Wait for GS to start
+    - sleep 20
 script:
-    # - python your_test_goes_here.py
-    #- pep8 *.py
-    - /bin/true
+    # Test that GeoServer is listening
+    - wget -O - http://boundless-test:8080/geoserver/web/|grep GeoServer
+    # Test that GeoServer is accessible from the container
+    - docker exec -it qgis-testing-environment sh -c "ping -W 1 -c 1 boundless-test"
+    - docker exec -it qgis-testing-environment sh -c "apt-get install -y wget && wget -O - http://boundless-test:8080/geoserver/web/|grep GeoServer"
+
+    # Start the real tests!
+    - docker exec -it qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.catalogtests"
+    - docker exec -it qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.deletetests"
+
+
