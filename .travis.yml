@@ -5,8 +5,8 @@ addons:
 services:
     - docker
 before_install:
-    - docker pull elpaso/qgis-testing-environment:2.14.2-kartoza
-    - docker tag elpaso/qgis-testing-environment:2.14.2-kartoza qgis-testing-environment
+    - docker pull elpaso/qgis-testing-environment:latest
+    - docker tag elpaso/qgis-testing-environment:latest qgis-testing-environment
 install:
     - docker run -d --name qgis-testing-environment -v ${TRAVIS_BUILD_DIR}:/tests_directory -e DISPLAY=:99 qgis-testing-environment
     - sleep 10
