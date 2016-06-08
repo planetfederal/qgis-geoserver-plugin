@@ -4,15 +4,18 @@
 # This code is licensed under the GPL 2.0 license.
 #
 import os
+import tempfile
 from geoserver.util import shapefile_and_friends
 from geoserverexplorer.qgis.catalog import createGeoServerCatalog
 
-from qgis.core import QgsProject, QgsMapLayerRegistry
+from qgis.core import (QgsMapLayerRegistry,
+                       QgsAuthManager,
+                       QgsAuthMethodConfig,
+                       QgsAuthCertUtils)
 import qgis
 import geoserverexplorer
-from geoserverexplorer.geoserver.retry import RetryCatalog
 from geoserverexplorer.gui.gsexploreritems import *
-from geoserverexplorer.qgis.catalog import CatalogWrapper
+from PyQt4.QtNetwork import QSslCertificate, QSslKey, QSsl
 
 PREFIX = "qgis_plugin_test_"
 
@@ -44,40 +47,50 @@ GSPASSWORD = 'geoserver'
 
 # pki envs
 AUTHDB_MASTERPWD = 'password'
-AUTHCFGID = 'fm1s770' # 'alice' user has id fm1s770 in the test qgis_auth.db
-AUTHTYPE = 'Identity-Cert' # other are "PKI-Paths" and 'PKI-PKCS#12'
+AUTHCFGID = None
+AUTHTYPE = None  # 'Identity-Cert' or "PKI-Paths" or 'PKI-PKCS#12'
 
 # authdb and cert data
-AUTH_TESTDATA = os.path.join(os.path.dirname(__file__), "resources", 'auth_system')
-#PKIDATA = os.path.join(AUTH_TESTDATA, 'certs_keys')
-#AUTHDBDIR = tempfile.mkdtemp()
+AUTH_TESTDATA = os.path.join(os.path.dirname(__file__), "resources",
+                             'auth_system')
+PKIDATA = os.path.join(AUTH_TESTDATA, 'certs-keys')
+AUTHDBDIR = tempfile.mkdtemp(prefix='tmp-qgis_authdb',
+                             dir=tempfile.gettempdir())
+
+#
+# To avoid revrite some utils methods in PKI context
+# has been created a global variable 'AUTHM' that define the running context
+#
+AUTHM = None
 
 def getGeoServerCatalog(authcfgid=None, authtype=None):
     # beaware that these envs can be overrided by os.environ envs cnaging
     # the function behaviour
     if authcfgid:
         conf = dict(
-            URL = serverLocationPkiAuth()+'/rest',
-            USER = None,
-            PASSWORD = None,
-            AUTHCFG = authcfgid,
-            AUTHTYPE = authtype
+            URL=serverLocationPkiAuth()+'/rest',
+            USER=None,
+            PASSWORD=None,
+            AUTHCFG=authcfgid,
+            AUTHTYPE=authtype
         )
     else:
         conf = dict(
-            URL = serverLocationBasicAuth()+'/rest',
-            USER = GSUSER,
-            PASSWORD = GSPASSWORD,
-            AUTHCFG = authcfgid,
-            AUTHTYPE = authtype
+            URL=serverLocationBasicAuth()+'/rest',
+            USER=GSUSER,
+            PASSWORD=GSPASSWORD,
+            AUTHCFG=authcfgid,
+            AUTHTYPE=authtype
         )
-    conf.update([ (k,os.getenv('GS%s' % k)) for k in conf if 'GS%s' % k in os.environ])
-    cat = createGeoServerCatalog(conf['URL'], conf['USER'], conf['PASSWORD'], conf['AUTHCFG'], conf['AUTHTYPE'])
+    conf.update([(k, os.getenv('GS%s' % k))
+                for k in conf if 'GS%s' % k in os.environ])
+    cat = createGeoServerCatalog(conf['URL'], conf['USER'], conf['PASSWORD'],
+                                 conf['AUTHCFG'], conf['AUTHTYPE'])
     try:
         cat.catalog.gsversion()
     except Exception, ex:
         msg = 'cannot reach geoserver using provided credentials %s, msg is %s'
-        raise AssertionError(msg % (conf,ex))
+        raise AssertionError(msg % (conf, ex))
     return cat
 
 
@@ -99,7 +112,7 @@ def cleanCatalog(cat):
             toDelete.append(style)
 
     for e in toDelete:
-        cat.delete(e, purge = True)
+        cat.delete(e, purge=True)
 
     for ws in cat.get_workspaces():
         if not ws.name.startswith(PREFIX):
@@ -127,7 +140,8 @@ def populateCatalog(cat):
     path = os.path.join(os.path.dirname(__file__), "data", PT3)
     data = shapefile_and_friends(path)
     cat.create_featurestore(PT3, data, ws)
-    sldfile = os.path.join(os.path.dirname(__file__), "resources", "vector.sld")
+    sldfile = os.path.join(os.path.dirname(__file__),
+                           "resources", "vector.sld")
     with open(sldfile, 'r') as f:
         sld = f.read()
     cat.create_style(STYLE, sld, True)
@@ -136,6 +150,7 @@ def populateCatalog(cat):
     cat.create_workspace(WORKSPACEB, "http://testb.com")
     cat.set_default_workspace(WORKSPACE)
 
+
 def geoserverLocation():
     server = GSHOSTNAME
     port = GSPORT
@@ -143,64 +158,162 @@ def geoserverLocation():
     port = os.getenv('GSPORT', port)
     return '%s:%s' % (server, port)
 
+
 def geoserverLocationSsh():
     location = geoserverLocation().split(":")[0]
     sshport = GSSSHPORT
     sshport = os.getenv('GSSSHPORT', sshport)
     return '%s:%s' % (location, sshport)
 
+
 def serverLocationBasicAuth():
     return "http://"+geoserverLocation()+"/geoserver"
+
 
 def serverLocationPkiAuth():
     return "https://"+geoserverLocationSsh()+"/geoserver"
 
 #######################################################################
+#     PKI config utils
+#######################################################################
+
+
+def initAuthManager():
+    """
+    Setup AuthManager instance.
+
+    heavily based on testqgsauthmanager.cpp.
+    """
+    global AUTHM
+    if not AUTHM:
+        AUTHM = QgsAuthManager.instance()
+        # check if QgsAuthManager has been already initialised... a side effect
+        # of the QgsAuthManager.init() is that AuthDbPath is set
+        if AUTHM.authenticationDbPath():
+            # already initilised => we are inside QGIS. Assumed that the
+            # actual qgis_auth.db has the same master pwd as AUTHDB_MASTERPWD
+            if AUTHM.masterPasswordIsSet():
+                msg = 'Auth master password not set from passed string'
+                assert AUTHM.masterPasswordSame(AUTHDB_MASTERPWD)
+            else:
+                msg = 'Master password could not be set'
+                assert AUTHM.setMasterPassword(AUTHDB_MASTERPWD, True), msg
+        else:
+            # outside qgis => setup env var before db init
+            os.environ['QGIS_AUTH_DB_DIR_PATH'] = AUTHDBDIR
+            msg = 'Master password could not be set'
+            assert AUTHM.setMasterPassword(AUTHDB_MASTERPWD, True), msg
+            AUTHM.init(AUTHDBDIR)
+
+
+def populatePKITestCerts():
+    """
+    Populate AuthManager with test certificates.
+
+    heavily based on testqgsauthmanager.cpp.
+    """
+    global AUTHM
+    global AUTHCFGID
+    global AUTHTYPE
+    assert (AUTHM is not None)
+    if AUTHCFGID:
+        removePKITestCerts()
+    assert (AUTHCFGID is None)
+    # set alice PKI data
+    p_config = QgsAuthMethodConfig()
+    p_config.setName("alice")
+    p_config.setMethod("PKI-Paths")
+    p_config.setUri("http://example.com")
+    p_config.setConfig("certpath", os.path.join(PKIDATA, 'alice-cert.pem'))
+    p_config.setConfig("keypath", os.path.join(PKIDATA, 'alice-key.pem'))
+    assert p_config.isValid()
+    # add authorities
+    cacerts = QSslCertificate.fromPath(os.path.join(PKIDATA, 'subissuer-issuer-root-ca_issuer-2-root-2-ca_chains.pem'))
+    assert cacerts is not None
+    AUTHM.storeCertAuthorities(cacerts)
+    AUTHM.rebuildCaCertsCache()
+    AUTHM.rebuildTrustedCaCertsCache()
+    # add alice cert
+    # boundle = QgsPkiBundle.fromPemPaths(os.path.join(PKIDATA, 'alice-cert.pem'),
+    #                                    os.path.join(PKIDATA, 'alice-key_w-pass.pem'),
+    #                                    'password',
+    #                                    cacerts)
+    # assert boundle is not None
+    # assert boundle.isValid()
+
+    # register alice data in auth
+    AUTHM.storeAuthenticationConfig(p_config)
+    AUTHCFGID = p_config.id()
+    assert (AUTHCFGID is not None)
+    assert (AUTHCFGID != '')
+    AUTHTYPE = p_config.method()
+    # # get client cert
+    # clientcert = None
+    # certpath = os.path.join(PKIDATA, 'alice-cert.pem')
+    # certs = QgsAuthCertUtils.certsFromFile(certpath)
+    # assert certs is not None
+    # clientcert = certs
+    # print certs
+    #
+    # # get private key
+    # keypath = os.path.join(PKIDATA, 'alice-key.pem')
+    # with open(keypath, 'r') as keyFile:
+    #     keydata = keyFile.readAll()
+    #
+    # clientkey = QSslKey(keydata, QSsl.Rsa, True, QSsl.PrivateKey, None)
+    # assert clientkey
+    # AUTHM.storeCertIdentity(clientcert, clientkey)
+    # AUTHTYPE = "PKI-Paths"
+    # AUTHCFGID = QgsAuthCertUtils.shaHexForCert(clientcert)
+
+
+def removePKITestCerts():
+    """
+    Remove test certificates from AuthManager.
+
+    heavily based on testqgsauthmanager.cpp.
+    """
+    global AUTHM
+    global AUTHCFGID
+    assert (AUTHM is not None)
+    assert (AUTHCFGID is not None)
+
+    if AUTHCFGID:
+        AUTHM.removeAuthenticationConfig(AUTHCFGID)
+        AUTHCFGID = None
+    AUTHM = None
+
+
+#######################################################################
 #     Functional test utils
 #######################################################################
 
-#
-# To avoid revrite these methods in PKI context
-# has been created a global variable that define the running context
-# of the following functions. This global affect only next methods.
-# A better solution could be create a util class initialized basing on context
-# but it's an improper use of a class
-#
-
-authm = None
-def setUtilContext(pki=False):
-    global authm
-    if pki:
-        # setup auth configuration
-        os.environ['QGIS_AUTH_DB_DIR_PATH'] = AUTH_TESTDATA
-        authm = QgsAuthManager.instance()
-        msg = 'Failed to verify master password in auth db'
-        assert authm.setMasterPassword(AUTHDB_MASTERPWD, True), msg
-    else:
-        # use basic auth
-        authm = None
-
-#Some common methods
-#-------------------
-
+# Some common methods
 def loadTestData():
-    projectFile = os.path.join(os.path.dirname(os.path.abspath(geoserverexplorer.__file__)), "test", "data", "test.qgs")
+    curPath = os.path.dirname(os.path.abspath(geoserverexplorer.__file__))
+    projectFile = os.path.join(curPath, "test", "data", "test.qgs")
     qgis.utils.iface.addProject(projectFile)
+
 
 def loadSymbologyTestData():
-    projectFile = os.path.join(os.path.dirname(os.path.abspath(geoserverexplorer.__file__)), "test", "data", "symbology", "test.qgs")
+    curPath = os.path.dirname(os.path.abspath(geoserverexplorer.__file__))
+    projectFile = os.path.join(curPath, "test", "data",
+                               "symbology", "test.qgs")
     qgis.utils.iface.addProject(projectFile)
 
+
 def getCatalog():
-    global authm
-    if authm:
+    global AUTHM
+    if AUTHM:
         # connect and prepare pki catalog
-        catWrapper = getGeoServerCatalog(authcfgid=AUTHCFGID, authtype=AUTHTYPE)
+        catWrapper = getGeoServerCatalog(authcfgid=AUTHCFGID,
+                                         authtype=AUTHTYPE)
     else:
         catWrapper = getGeoServerCatalog()
 
     return catWrapper
-    #return RetryCatalog(serverLocationBasicAuth()+"/rest", "admin", "geoserver")
+    # return RetryCatalog(serverLocationBasicAuth()+"/rest", "admin", "geoserver")
+
 
 def setUpCatalogAndWorkspace():
     catWrapper = getCatalog()
@@ -210,6 +323,7 @@ def setUpCatalogAndWorkspace():
         raise
     catWrapper.catalog.create_workspace("test_workspace", "http://test.com")
     return catWrapper
+
 
 def setUpCatalogAndExplorer():
     explorer = qgis.utils.plugins["geoserverexplorer"].explorer
@@ -223,45 +337,61 @@ def setUpCatalogAndExplorer():
     geoserverItem.populate()
     gsItem.setExpanded(True)
 
-#TESTS
+# TESTS
+
 
 def checkNewLayer():
     cat = getCatalog().catalog
     stores = cat.get_stores("test_workspace")
     assert len(stores) != 0
 
+
 def clean():
+    global AUTHM
     cat = getCatalog().catalog
     ws = cat.get_workspace("test_workspace")
     if ws:
-        cat.delete(ws, recurse = True)
+        cat.delete(ws, recurse=True)
         ws = cat.get_workspace(ws.name)
         assert ws is None
 
 
+def cleanAndPki():
+    clean()
+    removePKITestCerts()
+
 
 def openAndUpload():
-    global authm
+    global AUTHM
+    global AUTHCFGID
     loadTestData()
     layer = layerFromName("qgis_plugin_test_pt1")
     catWrapper = setUpCatalogAndWorkspace()
     cat = catWrapper.catalog
-    #catWrapper = CatalogWrapper(cat)
+    # catWrapper = CatalogWrapper(cat)
     catWrapper.publishLayer(layer, "test_workspace", True)
     stores = cat.get_stores("test_workspace")
     assert len(stores) != 0
-    if authm:
-        url = 'url='+serverLocationPkiAuth()
+    quri = QgsDataSourceURI()
+    quri.setParam("layers", 'test_workspace:qgis_plugin_test_pt1')
+    quri.setParam("styles", 'qgis_plugin_test_pt1')
+    quri.setParam("format", 'image/png')
+    quri.setParam("crs", 'EPSG:4326')
+    if AUTHM:
+        quri.setParam("url", serverLocationPkiAuth()+'/wms')
     else:
-        url = 'url='+serverLocationBasicAuth()
-    url += '/wms&format=image/png&layers=test_workspace:qgis_plugin_test_pt1&styles=qgis_plugin_test_pt1&crs=EPSG:4326'
+        quri.setParam("url", serverLocationBasicAuth()+'/wms')
     # add authcfg if in PKI context
-    if authm:
-        url += '&authcfg='+AUTHCFGID
-    wmsLayer = QgsRasterLayer(url, "WMS", 'wms')
+    if AUTHCFGID:
+        quri.setParam("authcfg", AUTHCFGID)
+
+    print str(quri.encodedUri())
+
+    wmsLayer = QgsRasterLayer(str(quri.encodedUri()), "WMS", 'wms')
     assert wmsLayer.isValid()
     QgsMapLayerRegistry.instance().addMapLayer(wmsLayer)
     qgis.utils.iface.zoomToActiveLayer()
+
 
 def layerFromName(name):
     '''
@@ -273,4 +403,3 @@ def layerFromName(name):
     for layer in layers:
         if layer.name() == name:
             return layer
-

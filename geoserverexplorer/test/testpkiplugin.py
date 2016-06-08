@@ -25,18 +25,26 @@ def functionalTests():
         return []
 
     dragdropTest = Test("Verify dragging browser element into workspace")
-    dragdropTest.addStep("Setting up pki auth context", lambda: utils.setUtilContext(pki=True))
+    # pki context setup
+    dragdropTest.addStep("Setting up pki auth context", utils.initAuthManager)
+    dragdropTest.addStep("configuring pki auth context", utils.populatePKITestCerts)
+    # normal steps
     dragdropTest.addStep("Setting up catalog and explorer", utils.setUpCatalogAndExplorer)
     dragdropTest.addStep("Setting up test data project", utils.loadTestData)
     dragdropTest.addStep("Drag layer from browser 'Project home->qgis_plugin_test_pt1.shp' into\ntest_catalog->Workspaces->test_workspace")
     dragdropTest.addStep("Checking new layer", utils.checkNewLayer)
-    dragdropTest.setCleanup(utils.clean)
+    # cleaup with clean of pki context
+    dragdropTest.setCleanup(utils.cleanAndPki)
 
     vectorRenderingTest = Test("Verify rendering of uploaded style")
-    vectorRenderingTest.addStep("Setting up basic pki context", lambda: utils.setUtilContext(pki=True))
+    # pki context setup
+    vectorRenderingTest.addStep("Setting up pki auth context", utils.initAuthManager)
+    vectorRenderingTest.addStep("configuring pki auth context", utils.populatePKITestCerts)
+    # normal steps
     vectorRenderingTest.addStep("Preparing data", utils.openAndUpload)
     vectorRenderingTest.addStep("Check that WMS layer is correctly rendered")
-    vectorRenderingTest.setCleanup(utils.clean)
+    # cleaup with clean of pki context
+    vectorRenderingTest.setCleanup(utils.cleanAndPki)
 
     return [dragdropTest, vectorRenderingTest]
 
@@ -49,8 +57,9 @@ def unitTests():
     _tests.extend(pkiOwsSuite())
     return _tests
 
+
 def runAllUnitTests():
-    ''' run all unittests - No funcgtional test managed only by Tester Plugin '''
+    """run all unittests: No funcgtional test managed only by Tester Plugin."""
     suite = unittest.TestSuite()
     suite.addTest(pkiCatalogSuite())
     suite.addTest(pkiDeleteSuite())
