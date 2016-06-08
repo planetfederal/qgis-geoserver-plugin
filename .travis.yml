@@ -33,7 +33,7 @@ before_install:
     - docker-compose exec qgis-testing-environment sh -c "cd /tests_directory && paver setup"
 
     # Link the plugin to the python/plugins directory
-    - docke-compose exec qgis-testing-environment sh -c "ln -s /tests_directory/geoserverexplorer /root/.qgis2/python/plugins/geoserverexplorer"
+    - docker-compose exec qgis-testing-environment sh -c "ln -s /tests_directory/geoserverexplorer /root/.qgis2/python/plugins/geoserverexplorer"
 
 script:
     - docker version
