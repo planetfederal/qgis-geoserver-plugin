@@ -1,54 +1,55 @@
 sudo: required
-addons:
-  hosts:
-    - boundless-test
 services:
-    - docker
+  - docker
+env:
+    global:
+        - DOCKER_VERSION=1.10.1-0~trusty
+        - DOCKER_COMPOSE_VERSION=1.7.1
+
 before_install:
-    - docker pull elpaso/qgis-testing-environment:2.14.2-kartoza
-    - docker tag elpaso/qgis-testing-environment:2.14.2-kartoza qgis-testing-environment
-install:
-    - docker run -d --name qgis-testing-environment -v ${TRAVIS_BUILD_DIR}:/tests_directory -e DISPLAY=:99 qgis-testing-environment
+    # list docker-engine versions
+    - apt-cache madison docker-engine
+
+    # upgrade docker-engine to specific version
+    - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y docker-engine=${DOCKER_VERSION}
+
+    # reinstall docker-compose at specific version
+    - sudo rm /usr/local/bin/docker-compose
+    - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+    - chmod +x docker-compose
+    - sudo mv docker-compose /usr/local/bin
+
+    # Start the dockers
+    - docker-compose up -d
+    - docker-compose ps
     - sleep 10
-    # Set the host name resolution
-    - docker exec -it qgis-testing-environment sh -c "echo '172.17.42.1   boundless-test' >> /etc/hosts"
 
     # Setup qgis and enable the plugin
-    - docker exec -it qgis-testing-environment sh -c "qgis_setup.sh geoserverexplorer"
+    - docker-compose exec qgis-testing-environment sh -c "qgis_setup.sh geoserverexplorer"
 
     # If needd additional steps (for example make or paver setup, place it here)
     # Build the GeoServer plugin
-    - docker exec -it qgis-testing-environment sh -c "pip install paver"
-    - docker exec -it qgis-testing-environment sh -c "cd /tests_directory && paver setup"
+    - docker-compose exec qgis-testing-environment sh -c "pip install paver"
+    - docker-compose exec qgis-testing-environment sh -c "cd /tests_directory && paver setup"
 
     # Link the plugin to the python/plugins directory
-    - docker exec -it qgis-testing-environment sh -c "ln -s /tests_directory/geoserverexplorer /root/.qgis2/python/plugins/geoserverexplorer"
+    - docker-compose exec qgis-testing-environment sh -c "ln -s /tests_directory/geoserverexplorer /root/.qgis2/python/plugins/geoserverexplorer"
 
-    # GeoServer
-    - sudo mkdir /usr/share/geoserver
-    - sudo chown travis /usr/share/geoserver
-    - wget -O /usr/share/geoserver/geoserver.zip http://sourceforge.net/projects/geoserver/files/GeoServer/2.9-RC1/geoserver-2.9-RC1-bin.zip
-    - pushd .
-    - cd /usr/share/geoserver && unzip geoserver.zip
-    - popd
-before_script:
-    - GEOSERVER_HOME=/usr/share/geoserver/geoserver-2.9-RC1 /usr/share/geoserver/geoserver-2.9-RC1/bin/startup.sh&
-    # Wait for GS to start
-    - sleep 20
 script:
-    # Test that GeoServer is listening
-    - wget -O - http://boundless-test:8080/geoserver/web/|grep GeoServer
-    # Test that GeoServer is accessible from the container
-    - docker exec -it qgis-testing-environment sh -c "ping -W 1 -c 1 boundless-test"
-    - docker exec -it qgis-testing-environment sh -c "apt-get install -y wget && wget -O - http://boundless-test:8080/geoserver/web/|grep GeoServer"
-
+    - docker version
+    - docker-compose version
     # Start the real tests!
-    - docker exec -it qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.catalogtests"
-    - docker exec -it qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.deletetests"
-    - docker exec -it qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.dragdroptests"
-    - docker exec -it qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.guitests"
+    - docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.catalogtests"
+    - docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.deletetests"
+    - docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.dragdroptests"
+    - docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.guitests"
+
     # Not a real unit test?
     # - docker exec -it qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.integrationtests"
 
     # PKI tests
-    #- docker exec -it qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.pkicatalogtests"
+    - docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.pkicatalogtests"
+    - docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.pkideletetests"
+    - docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.pkidragdroptests"
+    - docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.pkiguitests"
+    - docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.pkiowstests"
