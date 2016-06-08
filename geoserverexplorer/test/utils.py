@@ -186,19 +186,24 @@ def initAuthManager():
     """
     global AUTHM
     if not AUTHM:
-        os.environ['QGIS_AUTH_DB_DIR_PATH'] = AUTHDBDIR
         AUTHM = QgsAuthManager.instance()
-        AUTHM.init(AUTHDBDIR)
-        if AUTHM.authenticationDbPath() == AUTHDBDIR:
-            # that means it is running inside qgis and
-            # authManager has been already initialised =>
-            # there is no way to initialise again
+        # check if QgsAuthManager has been already initialised... a side effect
+        # of the QgsAuthManager.init() is that AuthDbPath is set
+        if AUTHM.authenticationDbPath():
+            # already initilised => we are inside QGIS. Assumed that the
+            # actual qgis_auth.db has the same master pwd as AUTHDB_MASTERPWD
+            if AUTHM.masterPasswordIsSet():
+                msg = 'Auth master password not set from passed string'
+                assert AUTHM.masterPasswordSame(AUTHDB_MASTERPWD)
+            else:
+                msg = 'Master password could not be set'
+                assert AUTHM.setMasterPassword(AUTHDB_MASTERPWD, True), msg
+        else:
+            # outside qgis => setup env var before db init
+            os.environ['QGIS_AUTH_DB_DIR_PATH'] = AUTHDBDIR
             msg = 'Master password could not be set'
             assert AUTHM.setMasterPassword(AUTHDB_MASTERPWD, True), msg
-            msg = 'Auth master password not set from passed string'
-            assert AUTHM.masterPasswordIsSet(), msg
-            assert autm.masterPasswordHashInDb()
-            assert AUTHM.masterPasswordSame(AUTHDB_MASTERPWD)
+            AUTHM.init(AUTHDBDIR)
 
 
 def populatePKITestCerts():
