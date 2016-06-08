@@ -2,13 +2,24 @@ sudo: required
 services:
   - docker
 env:
-  COMPOSE_VERSION: 1.8.1
+    global:
+        - DOCKER_VERSION=1.10.1-0~trusty
+        - DOCKER_COMPOSE_VERSION=1.8.1
 
 before_install:
-    - curl -L https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+    # list docker-engine versions
+    - apt-cache madison docker-engine
+
+    # upgrade docker-engine to specific version
+    - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y docker-engine=${DOCKER_VERSION}
+
+    # reinstall docker-compose at specific version
+    - sudo rm /usr/local/bin/docker-compose
+    - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
     - chmod +x docker-compose
     - sudo mv docker-compose /usr/local/bin
 
+    # Start the dockers
     - docker-compose up -d
     - docker-compose ps
     - sleep 10
@@ -25,6 +36,8 @@ before_install:
     - docke-compose exec qgis-testing-environment sh -c "ln -s /tests_directory/geoserverexplorer /root/.qgis2/python/plugins/geoserverexplorer"
 
 script:
+    - docker version
+    - docker-compose version
     # Start the real tests!
     - docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.catalogtests"
     - docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.deletetests"
