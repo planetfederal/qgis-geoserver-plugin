@@ -40,3 +40,9 @@ This repository uses external repositories as submodules. Therefore in order to 
 Also, to update the submodules whenever there are changes in the remote repositories one should do:
 
 ``git submodule update --remote``
+
+
+Run unit tests
+-----------------------
+
+just execute the script ``rundockertests.sh``
