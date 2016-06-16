@@ -8,7 +8,7 @@ services:
     - "8443:8443"
     - "8432:5432"
   qgis-testing-environment:
-    image: elpaso/qgis-testing-environment:latest
+    image: elpaso/qgis-testing-environment:${QGIS_VERSION_TAG}
     volumes:
         - /tmp/.X11-unix:/tmp/.X11-unix
         - ./:/tests_directory
