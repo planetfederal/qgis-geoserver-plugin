@@ -46,6 +46,14 @@ class GeoServerExplorerPlugin:
         if processingOk:
             Processing.removeProvider(self.provider)
         layerwatcher.disconnectLayerWasAdded()
+        try:
+            from qgistester.tests import removeTestModule
+            from geoserverexplorer.test import testplugin
+            from geoserverexplorer.test import testpkiplugin
+            removeTestModule(testplugin, "GeoServer")
+            removeTestModule(testpkiplugin, "PKI GeoServer")
+        except Exception as ex:
+            pass
 
     def initGui(self):
         icon = QtGui.QIcon(os.path.dirname(__file__) + "/images/geoserver.png")
