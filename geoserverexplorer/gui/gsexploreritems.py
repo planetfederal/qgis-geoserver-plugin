@@ -7,7 +7,7 @@ import os
 from collections import defaultdict
 from qgis.core import *
 from qgis.gui import *
-from PyQt4 import QtGui,QtCore
+from PyQt4 import QtGui, QtCore
 from geoserverexplorer.qgis import layers as qgislayers
 from geoserver.store import DataStore
 from geoserver.resource import Coverage, FeatureType
@@ -280,12 +280,15 @@ class GsCatalogsItem(GsTreeItem):
         if dlg.ok:
             try:
                 QtGui.QApplication.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
-                if dlg.authid: # Other auth method
+                if not QGis.QGIS_VERSION_INT < 21200 and dlg.authid:
+                    # For QGIS >= 2.12, use the new AuthCatalog and QgsNetworkAccessManager
+                    self.catalog = AuthCatalog(dlg.url, dlg.authid)
                     cat = AuthCatalog(dlg.url, dlg.authid)
-                elif dlg.username and dlg.password:
+                elif dlg.certfile is not None:
+                    cat = PKICatalog(dlg.url, dlg.keyfile, dlg.certfile, dlg.cafile)
+                else:
                     cat = RetryCatalog(dlg.url, dlg.username, dlg.password)
                 cat.authid = dlg.authid
-
                 v = cat.gsversion()
                 try:
                     supported = float(v[:3]) > 2.299
@@ -615,10 +618,11 @@ class GsCatalogItem(GsTreeItem):
         return actions
 
     def editCatalog(self, explorer):
-        dlg = DefineCatalogDialog(explorer.catalogs(), None, self.element, self.name)
+        dlg = DefineCatalogDialog(explorer.catalogs(), explorer, self.catalog, self.name)
         dlg.exec_()
         if dlg.ok:
-            if  dlg.authid:
+            if not QGis.QGIS_VERSION_INT < 21200 and dlg.authid:
+                # For QGIS >= 2.12, use the new AuthCatalog and QgsNetworkAccessManager
                 self.catalog = AuthCatalog(dlg.url, dlg.authid)
             elif getattr(dlg, 'certfile', False):
                 self.catalog = PKICatalog(dlg.url, dlg.keyfile, dlg.certfile, dlg.cafile)
@@ -628,8 +632,8 @@ class GsCatalogItem(GsTreeItem):
             if self.name != dlg.name:
                 if self.name in explorer.catalogs():
                     del explorer.catalogs()[self.name]
-                settings = QSettings()
-                settings.beginGroup("/OpenGeo/GeoServer/" + self.name)
+                settings = QtCore.QSettings()
+                settings.beginGroup("/GeoServer/" + self.name)
                 settings.remove("")
                 settings.endGroup()
                 self.isConnected = False

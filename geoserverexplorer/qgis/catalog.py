@@ -44,18 +44,19 @@ def createGeoServerCatalog(service_url = "http://localhost:8080/geoserver/rest",
     # if not authid use basic auth
     if not authid or not authtype:
         catalog = GSCatalog(service_url, username, password, disable_ssl_certificate_validation)
+    elif QGis.QGIS_VERSION_INT < 21200:
+        # if autcfg, then get certs and ca and create a PKICatalog
+        certfile, keyfile, cafile = pem.getPemPkiPaths(authid, authtype)
+
+        # set connection
+        catalog = PKICatalog(service_url, keyfile, certfile, cafile)
+
+        # set authid parameter used by uri.py functions to manage
+        # uri creation with pki credential
+        catalog.authid = authid
     else:
+        # For QGIS > 2.12, use the new AuthCatalog and QgsNetworkAccessManager
         catalog = AuthCatalog(service_url, authid)
-    # # if autcfg, then get certs and ca and create a PKICatalog
-    # else:
-    #     certfile, keyfile, cafile = pem.getPemPkiPaths(authid, authtype)
-    #
-    #     # set connection
-    #     catalog = PKICatalog(service_url, keyfile, certfile, cafile)
-    #
-    #     # set authid parameter used by uri.py functions to manage
-    #     # uri creation with pki credential
-    #     catalog.authid = authid
 
     return CatalogWrapper(catalog)
 

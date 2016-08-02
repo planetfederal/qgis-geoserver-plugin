@@ -9,17 +9,18 @@ import xml.etree.ElementTree as ET
 from urlparse import urlparse
 from geoserver.support import url
 from geoserverexplorer.geoserver.pki import PKICatalog
+from geoserverexplorer.geoserver.auth import AuthCatalog
 
 class Settings(object):
 
     def __init__(self, catalog):
         self.catalog = catalog
-        if getattr(catalog, 'authid', None) and catalog.authid:
+        if isinstance(catalog, AuthCatalog):
             http = catalog.http
         elif isinstance(catalog, PKICatalog):
             http = httplib2.Http(ca_certs=catalog.ca_cert, disable_ssl_certificate_validation = False)
             http.add_certificate(catalog.key, catalog.cert, '')
-        elif catalog.username and catalog.password:
+        else:
             http = httplib2.Http()
             http.add_credentials(catalog.username, catalog.password)
             netloc = urlparse(self.catalog.service_url).netloc

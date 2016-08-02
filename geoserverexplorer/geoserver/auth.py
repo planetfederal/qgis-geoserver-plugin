@@ -2,7 +2,7 @@
 
 """
 ***************************************************************************
-    An httplib2 replacement that uses QgsNetworkAccessManager
+    A catalog that uses QgsNetworkAccessManager
     ---------------------
     Date                 : August 2016
     Copyright            : (C) 2016 Boundless, http://boundlessgeo.com
@@ -40,7 +40,6 @@ class AuthCatalog(Catalog):
         pass
 
 
-
 class AuthClient(Client):
 
     def __init__(self, url, authid):
@@ -51,6 +50,7 @@ class AuthClient(Client):
         return {'url':cl.service_url, 'authid': cl.authid}
     def __setstate__(self,state):
         self.client = _AuthClient(state['url'], state['authid'])
+
 
 class _AuthClient(_Client):
 

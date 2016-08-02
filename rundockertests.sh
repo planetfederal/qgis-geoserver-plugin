@@ -13,7 +13,7 @@ DOCKER_RUN_COMMAND="docker-compose exec qgis-testing-environment sh -c"
 # Setup
 $DOCKER_RUN_COMMAND "qgis_setup.sh $PLUGIN_NAME"
 $DOCKER_RUN_COMMAND "pip install paver"
-#$DOCKER_RUN_COMMAND "cd /tests_directory && paver setup"
+$DOCKER_RUN_COMMAND "cd /tests_directory && paver setup"
 $DOCKER_RUN_COMMAND "ln -s /tests_directory/$PLUGIN_NAME /root/.qgis2/python/plugins/$PLUGIN_NAME"
 
 # Run the tests
