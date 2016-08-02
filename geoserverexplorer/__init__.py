@@ -9,6 +9,12 @@ import site
 
 site.addsitedir(os.path.abspath(os.path.dirname(__file__) + '/ext-libs'))
 
+# ABP: TORM import gsconfig from here
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + '/ext-src/gsconfig/src'))
+import httplib2
+httplib2.debuglevel = 1
+
+
 from geoserverexplorer.qgis.catalog import *
 
 def classFactory(iface):

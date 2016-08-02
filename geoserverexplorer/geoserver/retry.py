@@ -5,7 +5,7 @@
 #
 from functools import wraps
 from geoserver.catalog import Catalog
-import httplib2 
+import httplib2
 from urlparse import urlparse
 
 def retryMethodDecorator(func):
@@ -24,7 +24,7 @@ class RetryCatalog(Catalog):
 
     def setup_connection(self):
         self.http = RetryConnection(
-            disable_ssl_certificate_validation=self.diable_ssl_cert_validation)
+            disable_ssl_certificate_validation=self.disable_ssl_cert_validation)
         self.http.add_credentials(self.username, self.password)
         netloc = urlparse(self.service_url).netloc
         self.http.authorizations.append(
@@ -46,4 +46,3 @@ class RetryConnection(httplib2.Http):
             if not obj.__name__.startswith('__'):
                 return retryMethodDecorator(obj)
         return obj
-

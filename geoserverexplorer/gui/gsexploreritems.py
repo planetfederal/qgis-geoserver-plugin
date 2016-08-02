@@ -40,6 +40,7 @@ from _ssl import SSLError
 from geoserverexplorer.geoserver import pem
 from geoserverexplorer.gui.gsoperations import *
 from geoserverexplorer.geoserver.retry import RetryCatalog
+from geoserverexplorer.geoserver.auth import AuthCatalog
 from geoserverexplorer.gui.gsoperations import addDraggedStyleToLayer
 
 class GsTreeItem(TreeItem):
@@ -279,11 +280,12 @@ class GsCatalogsItem(GsTreeItem):
         if dlg.ok:
             try:
                 QtGui.QApplication.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
-                if dlg.certfile is not None:
-                    cat = PKICatalog(dlg.url, dlg.keyfile, dlg.certfile, dlg.cafile)
-                else:
+                if dlg.authid: # Other auth method
+                    cat = AuthCatalog(dlg.url, dlg.authid)
+                elif dlg.username and dlg.password:
                     cat = RetryCatalog(dlg.url, dlg.username, dlg.password)
                 cat.authid = dlg.authid
+
                 v = cat.gsversion()
                 try:
                     supported = float(v[:3]) > 2.299
@@ -308,7 +310,7 @@ class GsCatalogsItem(GsTreeItem):
                 explorer.setWarning(e.args[0])
             except SSLError:
                 explorer.setWarning("Cannot connect using the provided certificate/key values")
-            except:
+            except Exception, e:
                 explorer.setError("Could not connect to catalog:\n" + traceback.format_exc())
             finally:
                 QtGui.QApplication.restoreOverrideCursor()
@@ -502,17 +504,18 @@ class GsCatalogItem(GsTreeItem):
                     authtype = QgsAuthManager.instance().configAuthMethodKey(authid)
                     if not authtype or authtype == '':
                         raise Exception("Cannot restore catalog. Invalid or missing auth information")
-                    if authtype == 'Basic':
-                        amconfig = QgsAuthMethodConfig()
-                        QgsAuthManager.instance().loadAuthenticationConfig(authid, amconfig, True)
-                        password = amconfig.config('username')
-                        username = amconfig.config('password')
-                        self.catalog = RetryCatalog(url, username, password)
-                    elif authtype in pem.nonBasicAuthTypes():
-                        certfile, keyfile, cafile = pem.getPemPkiPaths(authid, authtype)
-                        self.catalog = PKICatalog(url, keyfile, certfile, cafile)
-                    else:
-                        raise Exception("The selected authentication type is not supported")
+                    self.catalog = AuthCatalog(url, authid)
+                    # if authtype == 'Basic':
+                    #     amconfig = QgsAuthMethodConfig()
+                    #     QgsAuthManager.instance().loadAuthenticationConfig(authid, amconfig, True)
+                    #     password = amconfig.config('username')
+                    #     username = amconfig.config('password')
+                    #     self.catalog = RetryCatalog(url, username, password)
+                    # elif authtype in pem.nonBasicAuthTypes():
+                    #     certfile, keyfile, cafile = pem.getPemPkiPaths(authid, authtype)
+                    #     self.catalog = PKICatalog(url, keyfile, certfile, cafile)
+                    # else:
+                    #     raise Exception("Cannot restore catalog. Invalid auth information")
             else:
                 password, ok = QtGui.QInputDialog.getText(None, "Catalog connection",
                                           "Enter catalog password (user:%s)" % username ,
@@ -615,9 +618,11 @@ class GsCatalogItem(GsTreeItem):
         dlg = DefineCatalogDialog(explorer.catalogs(), None, self.element, self.name)
         dlg.exec_()
         if dlg.ok:
-            if dlg.certfile is not None:
+            if  dlg.authid:
+                self.catalog = AuthCatalog(dlg.url, dlg.authid)
+            elif getattr(dlg, 'certfile', False):
                 self.catalog = PKICatalog(dlg.url, dlg.keyfile, dlg.certfile, dlg.cafile)
-            else:
+            elif dlg.username and dlg.password:
                 self.catalog = RetryCatalog(dlg.url, dlg.username, dlg.password)
             self.catalog.authid = dlg.authid
             if self.name != dlg.name:
@@ -1391,4 +1396,3 @@ class GsSettingItem(GsTreeItem):
         GsTreeItem.__init__(self, None, None, name)
         self.setText(1, value)
         self.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
-

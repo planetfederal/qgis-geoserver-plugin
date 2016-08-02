@@ -14,10 +14,12 @@ class Settings(object):
 
     def __init__(self, catalog):
         self.catalog = catalog
-        if isinstance(catalog, PKICatalog):
+        if getattr(catalog, 'authid', None) and catalog.authid:
+            http = catalog.http
+        elif isinstance(catalog, PKICatalog):
             http = httplib2.Http(ca_certs=catalog.ca_cert, disable_ssl_certificate_validation = False)
             http.add_certificate(catalog.key, catalog.cert, '')
-        else:
+        elif catalog.username and catalog.password:
             http = httplib2.Http()
             http.add_credentials(catalog.username, catalog.password)
             netloc = urlparse(self.catalog.service_url).netloc

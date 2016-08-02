@@ -206,7 +206,7 @@ class DefineCatalogDialog(QtGui.QDialog):
                     QtGui.QMessageBox.warning(self, "Unsupported authentication",
                                       "The selected authentication type is not supported")
                     return
-            else:
+            else: # QGis.QGIS_VERSION_INT >= 21200:
                 authtype = QgsAuthManager.instance().configAuthMethodKey(self.authid)
                 if not authtype or authtype == '':
                     QtGui.QMessageBox.warning(self, "Authentication needed",
@@ -220,9 +220,11 @@ class DefineCatalogDialog(QtGui.QDialog):
                 elif authtype in pem.nonBasicAuthTypes():
                     self.certfile, self.keyfile, self.cafile = pem.getPemPkiPaths(self.authid, authtype)
                 else:
-                    QtGui.QMessageBox.warning(self, "Unsupported authentication",
-                                              "The selected authentication type is not supported")
-                    return
+                    #QtGui.QMessageBox.warning(self, "Unsupported authentication",
+                    #                          "The selected authentication type is not supported")
+                    #return
+                    self.password = ''
+                    self.username = ''
 
         nametxt = unicode(self.nameBox.text())
         # increment only when adding a new connection or if editing a saved

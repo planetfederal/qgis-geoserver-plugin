@@ -10,6 +10,8 @@ from gsimporter.client import Client, _Client
 class PKICatalog(Catalog):
 
     def __init__(self, service_url, key, cert, ca_cert):
+        # We don't want to use this! Fail
+        assert False
         self.key = key
         self.cert = cert
         self.service_url = service_url
@@ -41,4 +43,3 @@ class _PKIClient(_Client):
         self.ca_cert = ca_cert
         self.http = httplib2.Http(ca_certs = self.ca_cert, disable_ssl_certificate_validation = False)
         self.http.add_certificate(key, cert, '')
-

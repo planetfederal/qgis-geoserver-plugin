@@ -72,6 +72,7 @@ def setup(options):
                 if localpath.exists():
                     cwd = os.getcwd()
                     os.chdir(localpath)
+                    print(localpath)
                     sh('git pull')
                     os.chdir(cwd)
                 else:

@@ -16,7 +16,9 @@ class Gwc(object):
     def __init__(self, catalog):
         self.catalog = catalog
         self.url = catalog.gs_base_url + 'gwc/rest/'
-        if isinstance(catalog, PKICatalog):
+        if getattr(catalog, 'authid', None) and catalog.authid:
+            http = catalog.http
+        elif isinstance(catalog, PKICatalog):
             http = httplib2.Http(ca_certs=catalog.ca_cert, disable_ssl_certificate_validation = False)
             http.add_certificate(catalog.key, catalog.cert, '')
         else:

@@ -3,7 +3,7 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
-from PyQt4 import QtGui,QtCore
+from PyQt4 import QtGui, QtCore
 from geoserverexplorer.gui.dialogs.gwclayer import EditGwcLayerDialog, SeedGwcLayerDialog
 from geoserverexplorer.geoserver.gwc import Gwc, GwcLayer, SeedingStatusParsingError
 from geoserver.catalog import FailedRequestError
