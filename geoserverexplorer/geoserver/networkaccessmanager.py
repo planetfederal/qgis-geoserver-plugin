@@ -32,10 +32,10 @@ DEFAULT_MAX_REDIRECTS = 4
 class RequestsException(Exception):
     pass
 
-class RequestsExceptionsTimeout(RequestsException):
+class RequestsExceptionTimeout(RequestsException):
     pass
 
-class RequestsExceptionsConnectionError(RequestsException):
+class RequestsExceptionConnectionError(RequestsException):
     pass
 
 class Map(dict):
@@ -205,9 +205,9 @@ class NetworkAccessManager():
             self.http_call_result.ok = False
             self.msg_log(msg)
             if err == QNetworkReply.TimeoutError:
-                self.http_call_result.exception = RequestsExceptionsTimeout(msg)
+                self.http_call_result.exception = RequestsExceptionTimeout(msg)
             elif err == QNetworkReply.ConnectionRefusedError:
-                self.http_call_result.exception = RequestsExceptionsConnectionError(msg)
+                self.http_call_result.exception = RequestsExceptionConnectionError(msg)
             else:
                 self.http_call_result.exception = RequestsException(msg)
         else:
