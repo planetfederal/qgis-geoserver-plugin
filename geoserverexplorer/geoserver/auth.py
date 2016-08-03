@@ -23,7 +23,7 @@ __date__ = 'August 2016'
 from geoserver.catalog import Catalog
 from gsimporter.client import Client, _Client
 from .networkaccessmanager import NetworkAccessManager
-
+from geoserver.catalog import FailedRequestError
 
 class AuthCatalog(Catalog):
 
@@ -32,7 +32,7 @@ class AuthCatalog(Catalog):
         self.service_url = service_url
         self._cache = dict()
         self._version = None
-        self.http = NetworkAccessManager(self.authid)
+        self.http = NetworkAccessManager(self.authid, exception_class=FailedRequestError)
         self.username = ''
         self.password = ''
 
@@ -59,4 +59,4 @@ class _AuthClient(_Client):
         self.authid = authid
         if self.service_url.endswith("/"):
             self.service_url = self.service_url.strip("/")
-        self.http = NetworkAccessManager(self.authid)
+        self.http = NetworkAccessManager(self.authid, exception_class=FailedRequestError)

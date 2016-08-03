@@ -24,16 +24,18 @@ from PyQt4.QtCore import QUrl
 from PyQt4.QtCore import pyqtSlot, QEventLoop
 from PyQt4.QtNetwork import *
 from qgis.core import QgsNetworkAccessManager, QgsAuthManager, QgsMessageLog
-from geoserver.catalog import FailedRequestError
 
 
 # FIXME: ignored
 DEFAULT_MAX_REDIRECTS = 4
 
-class RequestsExceptionsTimeout(Exception):
+class RequestsException(Exception):
     pass
 
-class RequestsExceptionsConnectionError(Exception):
+class RequestsExceptionsTimeout(RequestsException):
+    pass
+
+class RequestsExceptionsConnectionError(RequestsException):
     pass
 
 class Map(dict):
@@ -81,19 +83,33 @@ class NetworkAccessManager():
     The return value is a tuple of (response, content), the first being and
     instance of the Response class, the second being a string that contains
     the response entity body.
+
+    Parameters
+    ----------
+    debug : bool
+        verbose logging if True
+    exception_class : Exception
+        Custom exception class
+
+
     """
 
-    def __init__(self, authid=None, disable_ssl_certificate_validation=False, debug=True, raise_exceptions=False):
+    def __init__(self, authid=None, disable_ssl_certificate_validation=False, exception_class=None, debug=True):
         self.disable_ssl_certificate_validation = disable_ssl_certificate_validation
         self.authid = authid
         self.reply = None
         self.debug = debug
-        self.raise_exceptions = raise_exceptions
+        self.exception_class = exception_class
 
     def msg_log(self, msg):
-        QgsMessageLog.logMessage(msg, "NetworkAccessManager")
+        if self.debug:
+            QgsMessageLog.logMessage(msg, "NetworkAccessManager")
 
     def request(self, url, method="GET", body=None, headers=None, redirections=DEFAULT_MAX_REDIRECTS, connection_type=None):
+        """
+        Make a network request by calling QgsNetworkAccessManager.
+        redirections argument is ignored and is here only for httplib2 compatibility.
+        """
         self.msg_log(u'http_call request: {0}'.format(url))
         self.http_call_result = Response({
             'status': 0,
@@ -103,11 +119,13 @@ class NetworkAccessManager():
             'ok': False,
             'headers': {},
             'reason': '',
+            'exception': None,
         })
         req = QNetworkRequest()
         req.setUrl(QUrl(url))
         if headers is not None:
             for k, v in headers.items():
+                self.msg_log("Setting header %s to %s" % (k, v))
                 req.setRawHeader(k, v)
         if self.authid:
             QgsAuthManager.instance().updateNetworkRequest(req, self.authid)
@@ -119,11 +137,10 @@ class NetworkAccessManager():
             func = getattr(QgsNetworkAccessManager.instance(), method.lower())
         # Calling the server ...
         # Let's log the whole call for debugging purposes:
-        if self.debug:
-            self.msg_log("Sending %s request to %s" % (method.upper(), req.url().toString()))
-            headers = {str(h): str(req.rawHeader(h)) for h in req.rawHeaderList()}
-            for k, v in headers.items():
-                self.msg_log("%s: %s" % (k, v))
+        self.msg_log("Sending %s request to %s" % (method.upper(), req.url().toString()))
+        headers = {str(h): str(req.rawHeader(h)) for h in req.rawHeaderList()}
+        for k, v in headers.items():
+            self.msg_log("%s: %s" % (k, v))
         if method.lower() in ['post', 'put']:
             if isinstance(body, file):
                 body = body.read()
@@ -131,9 +148,10 @@ class NetworkAccessManager():
         else:
             self.reply = func(req)
         if self.authid:
-            self.msg_log("update reply w/ authid: {0}".format(self.authid))
+            self.msg_log("Update reply w/ authid: {0}".format(self.authid))
             QgsAuthManager.instance().updateNetworkReply(self.reply, self.authid)
 
+        self.reply.sslErrors.connect(self.sslErrors)
         self.reply.finished.connect(self.replyFinished)
 
         # Call and block
@@ -144,18 +162,17 @@ class NetworkAccessManager():
         try:
             self.el.exec_()
             # Let's log the whole response for debugging purposes:
-            if self.debug:
-                self.msg_log("Got response %s %s from %s" % \
-                            (self.http_call_result.status_code,
-                             self.http_call_result.status_message,
-                             self.reply.url().toString()))
-                headers = {str(h): str(self.reply.rawHeader(h)) for h in self.reply.rawHeaderList()}
-                for k, v in headers.items():
-                    self.msg_log("%s: %s" % (k, v))
-                if len(self.http_call_result.text) < 1024:
-                    self.msg_log("Payload :\n%s" % self.http_call_result.text)
-                else:
-                    self.msg_log("Payload is > 1 KB ...")
+            self.msg_log("Got response %s %s from %s" % \
+                        (self.http_call_result.status_code,
+                         self.http_call_result.status_message,
+                         self.reply.url().toString()))
+            headers = {str(h): str(self.reply.rawHeader(h)) for h in self.reply.rawHeaderList()}
+            for k, v in headers.items():
+                self.msg_log("%s: %s" % (k, v))
+            if len(self.http_call_result.text) < 1024:
+                self.msg_log("Payload :\n%s" % self.http_call_result.text)
+            else:
+                self.msg_log("Payload is > 1 KB ...")
         except Exception, e:
             raise e
         finally:
@@ -164,7 +181,10 @@ class NetworkAccessManager():
             self.reply.deleteLater()
             self.reply = None
         if not self.http_call_result.ok:
-            raise FailedRequestError(self.http_call_result.reason)
+            if self.http_call_result.exception and not self.exception_class:
+                raise self.http_call_result.exception
+            else:
+                raise self.exception_class(self.http_call_result.reason)
         return (self.http_call_result, self.http_call_result.text)
 
     @pyqtSlot()
@@ -184,16 +204,24 @@ class NetworkAccessManager():
             self.http_call_result.reason = msg
             self.http_call_result.ok = False
             self.msg_log(msg)
-            if self.raise_exceptions:
-                if err == QNetworkReply.TimeoutError:
-                    raise RequestsExceptionsTimeout(msg)
-                if err == QNetworkReply.ConnectionRefusedError:
-                    raise RequestsExceptionsConnectionError(msg)
-                else:
-                    raise Exception(msg)
+            if err == QNetworkReply.TimeoutError:
+                self.http_call_result.exception = RequestsExceptionsTimeout(msg)
+            elif err == QNetworkReply.ConnectionRefusedError:
+                self.http_call_result.exception = RequestsExceptionsConnectionError(msg)
             else:
-                self.http_call_result.ok = False
-                self.http_call_result.reason = msg
+                self.http_call_result.exception = RequestsException(msg)
         else:
             self.http_call_result.text = str(self.reply.readAll())
             self.http_call_result.ok = True
+
+    @pyqtSlot()
+    def sslErrors(self, reply, ssl_errors):
+        """
+        Handle SSL errors, logging them if debug is on and ignoring them
+        if disable_ssl_certificate_validation is set.
+        """
+        if ssl_errors:
+            for v in ssl_errors:
+                self.msg_log("SSL Error: %s" % v)
+        if self.disable_ssl_certificate_validation:
+            reply.ignoreSslErrors()
