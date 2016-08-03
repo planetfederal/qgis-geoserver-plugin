@@ -128,6 +128,7 @@ class NetworkAccessManager():
                 self.msg_log("Setting header %s to %s" % (k, v))
                 req.setRawHeader(k, v)
         if self.authid:
+            self.msg_log("Update request w/ authid: {0}".format(self.authid))
             QgsAuthManager.instance().updateNetworkRequest(req, self.authid)
         if self.reply is not None and self.reply.isRunning():
             self.reply.close()
