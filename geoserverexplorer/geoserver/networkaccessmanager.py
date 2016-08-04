@@ -124,6 +124,16 @@ class NetworkAccessManager():
         req = QNetworkRequest()
         req.setUrl(QUrl(url))
         if headers is not None:
+            # This fixes a wierd error with compressed content not being correctly
+            # inflated.
+            # If you set the header on the QNetworkRequest you are basically telling
+            # QNetworkAccessManager "I know what I'm doing, please don't do any content
+            # encoding processing".
+            # See: https://bugs.webkit.org/show_bug.cgi?id=63696#c1
+            try:
+                del headers['Accept-Encoding']
+            except KeyError:
+                pass
             for k, v in headers.items():
                 self.msg_log("Setting header %s to %s" % (k, v))
                 req.setRawHeader(k, v)
