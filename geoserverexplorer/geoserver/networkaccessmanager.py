@@ -91,6 +91,16 @@ class NetworkAccessManager():
     exception_class : Exception
         Custom exception class
 
+    Usage
+    -----
+    ::
+        nam = NetworkAccessManager(authcgf)
+        try:
+            (response, content) = nam.request('http://www.example.com')
+        except RequestsException, e:
+            # Handle exception
+            pass
+
 
     """
 
