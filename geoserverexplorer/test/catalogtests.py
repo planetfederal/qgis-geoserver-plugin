@@ -69,6 +69,8 @@ class CatalogTests(unittest.TestCase):
         b = b.replace("\r", "").replace("\n", "").replace(" ", "")
         a = re.sub(r"<sld:StyledLayerDescriptor.*?>", "", a)
         b = re.sub(r"<sld:StyledLayerDescriptor.*?>", "", b)
+        a = re.sub(r"<ogc:Literal>(\d+)\.(\d+)</ogc:Literal>", r"<ogc:Literal>\1</ogc:Literal>", a)
+        b = re.sub(r"<ogc:Literal>(\d+)\.(\d+)</ogc:Literal>", r"<ogc:Literal>\1</ogc:Literal>", b)
         return a == b
 
     def testVectorStylingUpload(self):
