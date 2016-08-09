@@ -6,7 +6,7 @@ env:
     - DOCKER_VERSION=1.10.1-0~trusty
     - DOCKER_COMPOSE_VERSION=1.7.1
   matrix:
-    - QGIS_VERSION_TAG=master
+    - QGIS_VERSION_TAG=master_2
     - QGIS_VERSION_TAG=release
 
 before_install:

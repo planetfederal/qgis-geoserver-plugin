@@ -6,7 +6,6 @@
 import urllib
 from qgis.core import *
 from geoserver.layer import Layer
-from geoserverexplorer.geoserver.pki import PKICatalog
 from geoserver.layergroup import LayerGroup
 
 

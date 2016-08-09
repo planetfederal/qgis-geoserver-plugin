@@ -9,12 +9,15 @@ import xml.etree.ElementTree as ET
 from urlparse import urlparse
 from geoserver.support import url
 from geoserverexplorer.geoserver.pki import PKICatalog
+from geoserverexplorer.geoserver.auth import AuthCatalog
 
 class Settings(object):
 
     def __init__(self, catalog):
         self.catalog = catalog
-        if isinstance(catalog, PKICatalog):
+        if isinstance(catalog, AuthCatalog):
+            http = catalog.http
+        elif isinstance(catalog, PKICatalog):
             http = httplib2.Http(ca_certs=catalog.ca_cert, disable_ssl_certificate_validation = False)
             http.add_certificate(catalog.key, catalog.cert, '')
         else:

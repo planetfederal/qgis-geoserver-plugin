@@ -52,6 +52,6 @@ docs/_build/
 
 # PyBuilder
 target/
-ext-libs
-ext-src
+#ext-libs
+#ext-src
 geoserverexplorer.zip

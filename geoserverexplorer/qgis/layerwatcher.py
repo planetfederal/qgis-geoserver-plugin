@@ -29,9 +29,9 @@ def layerAdded(qgislayer):
                             f.write(sld)
                         msg, ok = qgislayer.loadSldStyle(sldfile)
                         if not ok:
-                            raise Exception("Could not set style for layer")
+                            raise Exception("Could not load style for layer <b>%s</b>" % qgislayer.name())
                     except Exception, e:
-                        _explorer.setWarning("Could not set style for layer")
+                        _explorer.setWarning("Could not set style for layer <b>%s</b>" % qgislayer.name())
                     break
 
 def connectLayerWasAdded(explorer):

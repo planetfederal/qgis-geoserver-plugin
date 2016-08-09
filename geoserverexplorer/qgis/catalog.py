@@ -14,6 +14,7 @@ from geoserverexplorer.qgis.sldadapter import adaptGsToQgs,\
 from geoserverexplorer.qgis import uri as uri_utils
 from gsimporter.client import Client
 from geoserverexplorer.geoserver.pki import PKICatalog, PKIClient
+from geoserverexplorer.geoserver.auth import AuthCatalog, AuthClient
 from geoserverexplorer.geoserver import pem
 from geoserverexplorer.geoserver.util import groupsWithLayer, removeLayerFromGroups, \
     addLayerToGroups
@@ -37,23 +38,25 @@ except Exception, e:
 def createGeoServerCatalog(service_url = "http://localhost:8080/geoserver/rest",
                            username="admin",
                            password="geoserver",
-                           authcfg=None,
+                           authid=None,
                            authtype=None,
                            disable_ssl_certificate_validation=False):
-    # if not authcfg use basic auth
-    if not authcfg or not authtype:
+    # if not authid use basic auth
+    if not authid or not authtype:
         catalog = GSCatalog(service_url, username, password, disable_ssl_certificate_validation)
-
-    # if autcfg, then get certs and ca and create a PKICatalog
-    else:
-        certfile, keyfile, cafile = pem.getPemPkiPaths(authcfg, authtype)
+    elif QGis.QGIS_VERSION_INT < 21200:
+        # if autcfg, then get certs and ca and create a PKICatalog
+        certfile, keyfile, cafile = pem.getPemPkiPaths(authid, authtype)
 
         # set connection
         catalog = PKICatalog(service_url, keyfile, certfile, cafile)
 
-        # set authcfg parameter used by uri.py functions to manage
+        # set authid parameter used by uri.py functions to manage
         # uri creation with pki credential
-        catalog.authcfg = authcfg
+        catalog.authid = authid
+    else:
+        # For QGIS > 2.12, use the new AuthCatalog and QgsNetworkAccessManager
+        catalog = AuthCatalog(service_url, authid)
 
     return CatalogWrapper(catalog)
 
@@ -66,7 +69,9 @@ class CatalogWrapper(object):
     def __init__(self, catalog):
         self.catalog = catalog
         #we also create a Client object pointing to the same url
-        if isinstance(catalog, PKICatalog):
+        if isinstance(catalog, AuthCatalog):
+            self.client = AuthClient(catalog.service_url, catalog.authid)
+        elif isinstance(catalog, PKICatalog):
             self.client = PKIClient(catalog.service_url, catalog.key, catalog.cert, catalog.ca_cert)
         else:
             self.client = Client(str(catalog.service_url), catalog.username, catalog.password)
@@ -642,5 +647,3 @@ def createPGFeatureStore(catalog, name, workspace=None, overwrite=False,
             raise ConflictingDataError(msg)
     else:
         return None
-
-

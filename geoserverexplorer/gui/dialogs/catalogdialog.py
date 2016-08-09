@@ -8,11 +8,12 @@ from qgis.gui import *
 from qgis.core import *
 from geoserverexplorer.geoserver import pem
 from geoserverexplorer.geoserver.pki import PKICatalog
+from geoserverexplorer.geoserver.auth import AuthCatalog
 from PyQt4.QtCore import QSettings
 
 class DefineCatalogDialog(QtGui.QDialog):
 
-    def __init__(self, catalogs, parent = None, catalog = None, name = None):
+    def __init__(self, catalogs, parent=None, catalog=None, name=None):
         super(DefineCatalogDialog, self).__init__(parent)
         self.catalogs = catalogs
         self.ok = False
@@ -27,14 +28,21 @@ class DefineCatalogDialog(QtGui.QDialog):
         if self.name is not None:
             if self.catalog is None:
                 settings = QSettings()
-                settings.beginGroup("/OpenGeo/GeoServer/" + self.name)
+                settings.beginGroup("/GeoServer/Catalogs/" + self.name)
                 url = unicode(settings.value("url"))
                 username = settings.value("username")
                 authid = settings.value("authid")
                 settings.endGroup()
+            elif isinstance(self.catalog, AuthCatalog):
+                settings = QSettings()
+                settings.beginGroup("/GeoServer/Catalogs/" + self.name)
+                username = ""
+                authid = self.catalog.authid
+                url = self.catalog.service_url
+                settings.endGroup()
             elif isinstance(self.catalog, PKICatalog):
                 settings = QSettings()
-                settings.beginGroup("/OpenGeo/GeoServer/" + self.name)
+                settings.beginGroup("/GeoServer/Catalogs/" + self.name)
                 username = ""
                 authid = settings.value("authid")
                 url = self.catalog.service_url
@@ -46,7 +54,7 @@ class DefineCatalogDialog(QtGui.QDialog):
         else:
             settings = QSettings()
             username = ""
-            url = settings.value('/OpenGeo/LastCatalogUrl', 'http://localhost:8080/geoserver')
+            url = settings.value('/LastCatalogUrl', 'http://localhost:8080/geoserver')
 
         if url.endswith("/rest"):
             url = url[:-5]
@@ -206,22 +214,12 @@ class DefineCatalogDialog(QtGui.QDialog):
                     QtGui.QMessageBox.warning(self, "Unsupported authentication",
                                       "The selected authentication type is not supported")
                     return
-            else:
+            else: # QGis.QGIS_VERSION_INT >= 21200:
                 authtype = QgsAuthManager.instance().configAuthMethodKey(self.authid)
+                self.username = ''
                 if not authtype or authtype == '':
                     QtGui.QMessageBox.warning(self, "Authentication needed",
                                               "Please specify a valid authentication for connecting to the catalog")
-                    return
-                if authtype == 'Basic':
-                    amconfig = QgsAuthMethodConfig()
-                    QgsAuthManager.instance().loadAuthenticationConfig(self.authid, amconfig, True)
-                    self.password = amconfig.config('username')
-                    self.username = amconfig.config('password')
-                elif authtype in pem.nonBasicAuthTypes():
-                    self.certfile, self.keyfile, self.cafile = pem.getPemPkiPaths(self.authid, authtype)
-                else:
-                    QtGui.QMessageBox.warning(self, "Unsupported authentication",
-                                              "The selected authentication type is not supported")
                     return
 
         nametxt = unicode(self.nameBox.text())
