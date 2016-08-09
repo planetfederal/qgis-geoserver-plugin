@@ -2,7 +2,7 @@
 # Run docker tests on your local machine
 
 PLUGIN_NAME="geoserverexplorer"
-export QGIS_VERSION_TAG="release"
+export QGIS_VERSION_TAG="master"
 
 docker-compose down -v
 docker-compose up -d
