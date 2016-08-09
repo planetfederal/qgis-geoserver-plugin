@@ -8,7 +8,7 @@ import os
 import sys
 from geoserverexplorer.qgis import layers, catalog
 from qgis.core import *
-from qgis.utils import iface
+from qgis.utils import iface, QGis
 from PyQt4.QtCore import *
 from geoserverexplorer.test import utils
 from geoserverexplorer.test.utils import PT1, DEM, DEM2, PT1JSON, DEMASCII,\
@@ -71,16 +71,20 @@ class CatalogTests(unittest.TestCase):
         b = re.sub(r"<sld:StyledLayerDescriptor.*?>", "", b)
         a = re.sub(r"<ogc:Literal>(\d+)\.(\d+)</ogc:Literal>", r"<ogc:Literal>\1</ogc:Literal>", a)
         b = re.sub(r"<ogc:Literal>(\d+)\.(\d+)</ogc:Literal>", r"<ogc:Literal>\1</ogc:Literal>", b)
-        return a == b
+        self.assertEqual(a, b, "SLD compare failes: %s %s" % (a, b))
 
     def testVectorStylingUpload(self):
         self.cat.publishLayer(PT1, self.ws, name = PT1)
         self.assertIsNotNone(self.cat.catalog.get_layer(PT1))
-        sldfile = os.path.join(os.path.dirname(__file__), "resources", "vector.sld")
+        # OGC filter has some fixes in 2.16
+        if QGis.QGIS_VERSION_INT >= 21600:
+            sldfile = os.path.join(os.path.dirname(__file__), "resources", "vector.2.16.sld")
+        else:
+            sldfile = os.path.join(os.path.dirname(__file__), "resources", "vector.sld")
         with open(sldfile, 'r') as f:
             sld = f.read()
         gssld = self.cat.catalog.get_style(PT1).sld_body
-        self.assertTrue(self.compareSld(sld, gssld))
+        self.compareSld(sld, gssld)
         self.cat.catalog.delete(self.cat.catalog.get_layer(PT1), recurse = True)
 
     def testRasterStylingUpload(self):
@@ -90,7 +94,7 @@ class CatalogTests(unittest.TestCase):
         with open(sldfile, 'r') as f:
             sld = f.read()
         gssld = self.cat.catalog.get_style(DEM).sld_body
-        self.assertTrue(self.compareSld(sld, gssld))
+        self.compareSld(sld, gssld)
         self.cat.catalog.delete(self.cat.catalog.get_layer(DEM), recurse = True)
 
     def testGroup(self):
