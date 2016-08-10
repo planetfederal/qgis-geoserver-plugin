@@ -242,6 +242,7 @@ class DefineCatalogDialog(QtGui.QDialog):
             if self.authid is not None:
                 settings.setValue("authid", self.authid)
             else:
+                settings.setValue("authid", '')
                 settings.setValue("username", self.username)
             settings.endGroup()
         self.ok = True
