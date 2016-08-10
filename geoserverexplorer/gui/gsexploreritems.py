@@ -979,7 +979,7 @@ class GsLayerItem(GsTreeItem):
             return explorer.run(
                 cat.save,
                 "Add style '" + dlg.style.name + "' to layer '" + layer.name + "'",
-                [self],
+                [self.parent()],
                 layer)
         else:
             return False
