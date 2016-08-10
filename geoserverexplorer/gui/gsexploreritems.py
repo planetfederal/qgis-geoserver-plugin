@@ -212,17 +212,18 @@ class GsTreeItem(TreeItem):
                             break
                 catItem = tree.findAllItems(element.catalog)[0];
                 gwcItem = catItem.gwcItem
-                possibleGwcLayers = []
-                for idx in xrange(gwcItem.childCount()):
-                    gwcLayerItem = gwcItem.child(idx)
-                    gwcLayer = gwcLayerItem.element
-                    if gwcLayer.name.split(":")[-1] == element.name:
-                        possibleGwcLayers.append(gwcLayer)
-                if len(possibleGwcLayers) == 1:
-                    #Since layers have no workspace, we cannot fully compare with gwc layer names.
-                    #We only delete if we are sure that the gwc layer is the only one with that name,
-                    #not considering namespaces
-                    dependent.append(possibleGwcLayers[0])
+                if gwcItem.isValid:
+                    possibleGwcLayers = []
+                    for idx in xrange(gwcItem.childCount()):
+                        gwcLayerItem = gwcItem.child(idx)
+                        gwcLayer = gwcLayerItem.element
+                        if gwcLayer.name.split(":")[-1] == element.name:
+                            possibleGwcLayers.append(gwcLayer)
+                    if len(possibleGwcLayers) == 1:
+                        #Since layers have no workspace, we cannot fully compare with gwc layer names.
+                        #We only delete if we are sure that the gwc layer is the only one with that name,
+                        #not considering namespaces
+                        dependent.append(possibleGwcLayers[0])
             elif isinstance(element, (FeatureType, Coverage)):
                 layers = element.catalog.get_layers()
                 for layer in layers:
@@ -562,8 +563,10 @@ class GsCatalogItem(GsTreeItem):
         self.addChild(self.stylesItem)
         self.stylesItem.populate()
         self.gwcItem = GwcLayersItem(self.catalog)
-        self.addChild(self.gwcItem)
         self.gwcItem.populate()
+        self.addChild(self.gwcItem)
+        if not self.gwcItem.isValid:
+            self.gwcItem.setDisabled(True)
         self.wpsItem = GsProcessesItem(self.catalog)
         self.addChild(self.wpsItem)
         self.wpsItem.populate()

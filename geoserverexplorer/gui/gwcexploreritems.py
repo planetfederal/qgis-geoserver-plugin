@@ -24,46 +24,60 @@ class GwcLayersItem(GwcTreeItem):
         self.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDropEnabled)
 
     def populate(self):
-        catalog = self.catalog
-        self.element = Gwc(catalog)
-        layers = self.element.layers()
-        for layer in layers:
-            item = GwcLayerItem(layer)
-            self.addChild(item)
+        try:
+            catalog = self.catalog
+            self.element = Gwc(catalog)
+            layers = self.element.layers()
+            for layer in layers:
+                item = GwcLayerItem(layer)
+                self.addChild(item)
+            self.isValid = True
+        except:
+            self.takeChildren()
+            self.isValid = False
 
     def acceptDroppedItem(self, tree, explorer, item):
-        from geoserverexplorer.gui.gsexploreritems import GsLayerItem
-        if isinstance(item, GsLayerItem):
-            if createGwcLayer(explorer, item.element):
-                return [self]
+        if self.isValid:
+            from geoserverexplorer.gui.gsexploreritems import GsLayerItem
+            if isinstance(item, GsLayerItem):
+                if createGwcLayer(explorer, item.element):
+                    return [self]
+            else:
+                return []
         else:
             return []
 
     def contextMenuActions(self, tree, explorer):
-        icon = QtGui.QIcon(os.path.dirname(__file__) + "/../images/add.png")
-        addGwcLayerAction = QtGui.QAction(icon, "New GWC layer...", explorer)
-        addGwcLayerAction.triggered.connect(lambda: self.addGwcLayer(tree, explorer))
-        return [addGwcLayerAction]
+        if self.isValid:
+            icon = QtGui.QIcon(os.path.dirname(__file__) + "/../images/add.png")
+            addGwcLayerAction = QtGui.QAction(icon, "New GWC layer...", explorer)
+            addGwcLayerAction.triggered.connect(lambda: self.addGwcLayer(tree, explorer))
+            return [addGwcLayerAction]
+        else:
+            return []
 
 
     def addGwcLayer(self, tree, explorer):
         cat = self.catalog
         layers = cat.get_layers()
-        dlg = EditGwcLayerDialog(layers, None)
-        dlg.exec_()
-        if dlg.gridsets is not None:
-            layer = dlg.layer
-            gwc = Gwc(layer.catalog)
+        if layers:
+            dlg = EditGwcLayerDialog(layers, None)
+            dlg.exec_()
+            if dlg.gridsets is not None:
+                layer = dlg.layer
+                gwc = Gwc(layer.catalog)
 
-            #TODO: this is a hack that assumes the layer belongs to the same workspace
-            typename = layer.resource.workspace.name + ":" + layer.name
+                #TODO: this is a hack that assumes the layer belongs to the same workspace
+                typename = layer.resource.workspace.name + ":" + layer.name
 
-            gwclayer = GwcLayer(gwc, typename, dlg.formats, dlg.gridsets, dlg.metaWidth, dlg.metaHeight)
-            catItem = tree.findAllItems(cat)[0]
-            explorer.run(gwc.addLayer,
-                              "Create GWC layer '" + layer.name + "'",
-                              [catItem.gwcItem],
-                              gwclayer)
+                gwclayer = GwcLayer(gwc, typename, dlg.formats, dlg.gridsets, dlg.metaWidth, dlg.metaHeight)
+                catItem = tree.findAllItems(cat)[0]
+                explorer.run(gwc.addLayer,
+                                  "Create GWC layer '" + layer.name + "'",
+                                  [catItem.gwcItem],
+                                  gwclayer)
+        else:
+            QtGui.QMessageBox.warning(None, "Create GWC layer", "There are no layers in the catalog")
 
 
 
