@@ -178,6 +178,7 @@ class NetworkAccessManager():
         # Call and block
         self.el = QEventLoop()
         self.reply.finished.connect(self.el.quit)
+        self.reply.downloadProgress.connect(self.downloadProgress)
 
         # Catch all exceptions (and clean up requests)
         try:
@@ -207,6 +208,12 @@ class NetworkAccessManager():
             else:
                 raise self.exception_class(self.http_call_result.reason)
         return (self.http_call_result, self.http_call_result.text)
+
+    @pyqtSlot()
+    def downloadProgress(self, bytesReceived, bytesTotal):
+        """Keep track of the download progress"""
+        #self.msg_log("downloadProgress %s of %s ..." % (bytesReceived, bytesTotal))
+        pass
 
     @pyqtSlot()
     def replyFinished(self):
