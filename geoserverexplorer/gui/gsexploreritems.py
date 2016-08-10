@@ -283,8 +283,8 @@ class GsCatalogsItem(GsTreeItem):
                 QtGui.QApplication.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
                 if not QGis.QGIS_VERSION_INT < 21200 and dlg.authid:
                     # For QGIS >= 2.12, use the new AuthCatalog and QgsNetworkAccessManager
-                    self.catalog = AuthCatalog(dlg.url, dlg.authid)
                     cat = AuthCatalog(dlg.url, dlg.authid)
+                    self.catalog = cat
                 elif dlg.certfile is not None:
                     cat = PKICatalog(dlg.url, dlg.keyfile, dlg.certfile, dlg.cafile)
                 else:
@@ -531,7 +531,8 @@ class GsCatalogItem(GsTreeItem):
             QtGui.QApplication.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
         try:
             dlg = QtGui.QProgressDialog("Retrieving catalog information", None, 0, 0  , config.iface.mainWindow())
-            dlg.setWindowModality(QtCore.Qt.WindowModal);
+            # Avoid the modal dialog to block the master password request dialog.
+            #dlg.setWindowModality(QtCore.Qt.WindowModal);
             dlg.setMinimumDuration(1000)
             dlg.setMaximum(100)
             dlg.setValue(0)
