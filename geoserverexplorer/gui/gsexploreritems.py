@@ -283,7 +283,9 @@ class GsCatalogsItem(GsTreeItem):
                 QtGui.QApplication.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
                 if not QGis.QGIS_VERSION_INT < 21200 and dlg.authid:
                     # For QGIS >= 2.12, use the new AuthCatalog and QgsNetworkAccessManager
-                    cat = AuthCatalog(dlg.url, dlg.authid)
+                    settings = QtCore.QSettings()
+                    cache_time = int(settings.value("/GeoServer/Settings/GeoServer/AuthCatalogXMLCacheTime", 180, int))
+                    cat = AuthCatalog(dlg.url, dlg.authid, cache_time)
                     self.catalog = cat
                 elif dlg.certfile is not None:
                     cat = PKICatalog(dlg.url, dlg.keyfile, dlg.certfile, dlg.cafile)
@@ -508,7 +510,9 @@ class GsCatalogItem(GsTreeItem):
                     authtype = QgsAuthManager.instance().configAuthMethodKey(authid)
                     if not authtype or authtype == '':
                         raise Exception("Cannot restore catalog. Invalid or missing auth information")
-                    self.catalog = AuthCatalog(url, authid)
+                    settings = QtCore.QSettings()
+                    cache_time = int(settings.value("/GeoServer/Settings/GeoServer/AuthCatalogXMLCacheTime", 180, int))
+                    self.catalog = AuthCatalog(url, authid, cache_time)
                     # if authtype == 'Basic':
                     #     amconfig = QgsAuthMethodConfig()
                     #     QgsAuthManager.instance().loadAuthenticationConfig(authid, amconfig, True)
@@ -627,7 +631,9 @@ class GsCatalogItem(GsTreeItem):
         if dlg.ok:
             if not QGis.QGIS_VERSION_INT < 21200 and dlg.authid:
                 # For QGIS >= 2.12, use the new AuthCatalog and QgsNetworkAccessManager
-                self.catalog = AuthCatalog(dlg.url, dlg.authid)
+                settings = QtCore.QSettings()
+                cache_time = int(settings.value("/GeoServer/Settings/GeoServer/AuthCatalogXMLCacheTime", 180, int))
+                self.catalog = AuthCatalog(dlg.url, dlg.authid, cache_time)
             elif getattr(dlg, 'certfile', False):
                 self.catalog = PKICatalog(dlg.url, dlg.keyfile, dlg.certfile, dlg.cafile)
             elif dlg.username and dlg.password:

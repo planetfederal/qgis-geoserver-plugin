@@ -56,7 +56,9 @@ def createGeoServerCatalog(service_url = "http://localhost:8080/geoserver/rest",
         catalog.authid = authid
     else:
         # For QGIS > 2.12, use the new AuthCatalog and QgsNetworkAccessManager
-        catalog = AuthCatalog(service_url, authid)
+        settings = QtCore.QSettings()
+        cache_time = int(settings.value("/GeoServer/Settings/GeoServer/AuthCatalogXMLCacheTime", 180, int))
+        catalog = AuthCatalog(service_url, authid, cache_time)
 
     return CatalogWrapper(catalog)
 

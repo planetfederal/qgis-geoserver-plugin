@@ -20,15 +20,22 @@
 __author__ = 'Alessandro Pasotti'
 __date__ = 'August 2016'
 
-from geoserver.catalog import Catalog
+from datetime import timedelta, datetime
+import logging
+from xml.etree.ElementTree import XML
+from xml.parsers.expat import ExpatError
+from geoserver.catalog import Catalog, FailedRequestError
 from gsimporter.client import Client, _Client
 from .networkaccessmanager import NetworkAccessManager
-from geoserver.catalog import FailedRequestError
+
+
+logger = logging.getLogger("auth.authcatalog")
 
 class AuthCatalog(Catalog):
 
-    def __init__(self, service_url, authid):
+    def __init__(self, service_url, authid, cache_time):
         self.authid = authid
+        self.cache_time = cache_time
         self.service_url = service_url
         self._cache = dict()
         self._version = None
@@ -39,6 +46,33 @@ class AuthCatalog(Catalog):
     def setup_connection(self):
         pass
 
+    def get_xml(self, rest_url):
+        """Read cached time from settings"""
+        logger.debug("GET %s", rest_url)
+
+        cached_response = self._cache.get(rest_url)
+
+        def is_valid(cached_response):
+            return cached_response is not None and datetime.now() - cached_response[0] < timedelta(seconds=self.cache_time)
+
+        def parse_or_raise(xml):
+            try:
+                return XML(xml)
+            except (ExpatError, SyntaxError), e:
+                msg = "GeoServer gave non-XML response for [GET %s]: %s"
+                msg = msg % (rest_url, xml)
+                raise Exception(msg, e)
+
+        if is_valid(cached_response):
+            raw_text = cached_response[1]
+            return parse_or_raise(raw_text)
+        else:
+            response, content = self.http.request(rest_url)
+            if response.status == 200:
+                self._cache[rest_url] = (datetime.now(), content)
+                return parse_or_raise(content)
+            else:
+                raise FailedRequestError("Tried to make a GET request to %s but got a %d status code: \n%s" % (rest_url, response.status, content))
 
 class AuthClient(Client):
 

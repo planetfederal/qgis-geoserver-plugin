@@ -81,6 +81,7 @@ class ConfigDialog(QtGui.QDialog):
                     ("DeleteStyle", "Delete style when deleting layer", True),
                     ("Recurse", "Delete resource when deleting layer", True),
                     ("OverwriteGroupLayers", "Overwrite layers when uploading group", True),
+                    ("AuthCatalogXMLCacheTime", "AuthCatalog XML cache time in seconds", 180),
                     ]
         try:
             import processing.tools.dataobjects
@@ -140,4 +141,3 @@ class TreeSettingItem(QtGui.QTreeWidgetItem):
         else:
             self.value = self.text(1)
         QtCore.QSettings().setValue(self.name, self.value)
-
