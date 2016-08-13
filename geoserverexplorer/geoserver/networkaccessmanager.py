@@ -198,7 +198,8 @@ class NetworkAccessManager():
         except Exception, e:
             raise e
         finally:
-            self.reply.close()
+            if self.reply is not None and self.reply.isRunning():
+                self.reply.close()
             self.msg_log("Deleting reply ...")
             self.reply.deleteLater()
             self.reply = None
