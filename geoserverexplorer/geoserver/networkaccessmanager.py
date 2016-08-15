@@ -198,11 +198,14 @@ class NetworkAccessManager():
         except Exception, e:
             raise e
         finally:
-            if self.reply is not None and self.reply.isRunning():
-                self.reply.close()
-            self.msg_log("Deleting reply ...")
-            self.reply.deleteLater()
-            self.reply = None
+            if self.reply is not None:
+                if self.reply.isRunning():
+                    self.reply.close()
+                self.msg_log("Deleting reply ...")
+                self.reply.deleteLater()
+                self.reply = None
+            else:
+                self.msg_log("Reply was already deleted ...")
         if not self.http_call_result.ok:
             if self.http_call_result.exception and not self.exception_class:
                 raise self.http_call_result.exception
@@ -242,6 +245,7 @@ class NetworkAccessManager():
         else:
             self.http_call_result.text = str(self.reply.readAll())
             self.http_call_result.ok = True
+        self.reply.deleteLater()
 
     @pyqtSlot()
     def sslErrors(self, reply, ssl_errors):
