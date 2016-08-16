@@ -74,6 +74,30 @@ class AuthCatalog(Catalog):
             else:
                 raise FailedRequestError("Tried to make a GET request to %s but got a %d status code: \n%s" % (rest_url, response.status, content))
 
+    def get_layers(self, resource=None):
+        """Prefix the layer name with ws name in case of layers with the same name"""
+        lyrs = super(AuthCatalog, self).get_layers(resource)
+        layers = {}
+        for l in lyrs:
+            try:
+                layers[l.name].append(l)
+            except KeyError:
+                layers[l.name] = [l]
+        lyrs = [l[0] for l in layers.values() if len(l) == 1]
+        # Prefix all duplicated names
+        for name, ls in layers.items():
+            if len(ls) > 1:
+                prefixed_names = ["%s:%s" % (r.workspace.name, name) for
+                                  r in self.get_resources() if r.name == name]
+                i = 0
+                for l in ls:
+                    l.name = prefixed_names[i]
+                    i += 1
+                    lyrs.append(l)
+        return lyrs
+
+
+
 class AuthClient(Client):
 
     def __init__(self, url, authid):

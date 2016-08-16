@@ -34,6 +34,14 @@ def addAuth(_params, catalog):
         _params['USERNAME'] = catalog.username
 
 def layerUri(layer):
+
+    def _get_namespaced_name(ws_name, layer_name):
+        """Prefix ws name in case it is not alreay there"""
+        if layer_name.find(':') != -1:
+            return layer_name
+        return ws_name + ":" + layer_name
+
+
     resource = layer.resource
     catalog = layer.catalog
     if resource.resource_type == 'featureType':
@@ -41,14 +49,14 @@ def layerUri(layer):
             'SERVICE': 'WFS',
             'VERSION': '1.0.0',
             'REQUEST': 'GetFeature',
-            'TYPENAME': resource.workspace.name + ":" + layer.name,
+            'TYPENAME': _get_namespaced_name(resource.workspace.name, layer.name),
             'SRSNAME': resource.projection,
         }
         addAuth(params, catalog)
         uri = layer.catalog.gs_base_url + 'wfs?' + urllib.unquote(urllib.urlencode(params))
     elif resource.resource_type == 'coverage':
         params = {
-            'identifier': resource.workspace.name + ":" + resource.name,
+            'identifier':  _get_namespaced_name(resource.workspace.name, resource.name),
             'format': 'GeoTIFF',
             'url': layer.catalog.gs_base_url + 'wcs',
             'cache': 'PreferNetwork'
@@ -57,7 +65,7 @@ def layerUri(layer):
         uri = urllib.unquote(urllib.urlencode(params))
     else:
         params = {
-            'layers': resource.workspace.name + ":" + resource.name,
+            'layers': _get_namespaced_name(resource.workspace.name, resource.name),
             'format': 'image/png',
             'url': layer.catalog.gs_base_url + 'wms',
             'styles': '',
