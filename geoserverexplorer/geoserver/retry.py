@@ -3,8 +3,7 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
-from functools import wraps
-from geoserver.catalog import Catalog
+from .basecatalog import BaseCatalog
 import httplib2
 from urlparse import urlparse
 
@@ -20,7 +19,7 @@ def retryMethodDecorator(func):
         return result
     return decorator
 
-class RetryCatalog(Catalog):
+class RetryCatalog(BaseCatalog):
 
     def setup_connection(self):
         self.http = RetryConnection(

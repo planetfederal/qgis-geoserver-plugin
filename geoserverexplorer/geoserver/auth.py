@@ -24,16 +24,17 @@ from datetime import timedelta, datetime
 import logging
 from xml.etree.ElementTree import XML
 from xml.parsers.expat import ExpatError
-from geoserver.catalog import Catalog, FailedRequestError
+from geoserver.catalog import FailedRequestError
 from gsimporter.client import Client, _Client
 from .networkaccessmanager import NetworkAccessManager
-
+from .basecatalog import BaseCatalog
 
 logger = logging.getLogger("auth.authcatalog")
 
-class AuthCatalog(Catalog):
+class AuthCatalog(BaseCatalog):
 
     def __init__(self, service_url, authid, cache_time):
+        # Do not call parent constructor, this is a patching class
         self.authid = authid
         self.cache_time = cache_time
         self.service_url = service_url
@@ -73,29 +74,6 @@ class AuthCatalog(Catalog):
                 return parse_or_raise(content)
             else:
                 raise FailedRequestError("Tried to make a GET request to %s but got a %d status code: \n%s" % (rest_url, response.status, content))
-
-    def get_layers(self, resource=None):
-        """Prefix the layer name with ws name in case of layers with the same name"""
-        lyrs = super(AuthCatalog, self).get_layers(resource)
-        layers = {}
-        for l in lyrs:
-            try:
-                layers[l.name].append(l)
-            except KeyError:
-                layers[l.name] = [l]
-        lyrs = [l[0] for l in layers.values() if len(l) == 1]
-        # Prefix all duplicated names
-        for name, ls in layers.items():
-            if len(ls) > 1:
-                prefixed_names = ["%s:%s" % (r.workspace.name, name) for
-                                  r in self.get_resources() if r.name == name]
-                i = 0
-                for l in ls:
-                    l.name = prefixed_names[i]
-                    i += 1
-                    lyrs.append(l)
-        return lyrs
-
 
 
 class AuthClient(Client):
