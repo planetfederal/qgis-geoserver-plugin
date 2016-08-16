@@ -145,7 +145,7 @@ def populateCatalog(cat):
     with open(sldfile, 'r') as f:
         sld = f.read()
     cat.create_style(STYLE, sld, True)
-    group = cat.create_layergroup(GROUP, [PT2])
+    group = cat.create_layergroup(GROUP, [PT2], workspace=WORKSPACE)
     cat.save(group)
     cat.create_workspace(WORKSPACEB, "http://testb.com")
     cat.set_default_workspace(WORKSPACE)

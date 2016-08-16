@@ -9,7 +9,7 @@ import sys
 from PyQt4.QtCore import *
 from qgis.core import *
 from qgis.utils import iface
-from geoserverexplorer.test.utils import PT1, safeName, PT2, WORKSPACE, shapefile_and_friends
+from geoserverexplorer.test.utils import PT1, safeName, PT2, WORKSPACE, WORKSPACEB, shapefile_and_friends
 from geoserverexplorer.test.integrationtest import ExplorerIntegrationTest
 from geoserverexplorer.qgis import layers
 
@@ -23,7 +23,7 @@ class DeleteTests(ExplorerIntegrationTest):
 
         cls.ws = cls.cat.get_workspace(WORKSPACE)
         assert cls.ws is not None
-        
+
         # load project
         projectFile = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "test.qgs")
         if os.path.normcase(projectFile) != os.path.normcase(QgsProject.instance().fileName()):
@@ -50,8 +50,9 @@ class DeleteTests(ExplorerIntegrationTest):
         # step 2: set flag to remove also style
         deleteStyle = bool(settings.value("/GeoServer/Settings/GeoServer/DeleteStyle"))
         settings.setValue("/GeoServer/Settings/GeoServer/DeleteStyle", True)
-        # step 3: then remove layer and style 
+        # step 3: then remove layer and style
         layerItem = self.getLayerItem(PT1)
+        self.assertIsNotNone(layerItem)
         layerItem.deleteLayer(self.tree, self.explorer)
         layerItem = self.getLayerItem(PT1)
         self.assertIsNone(layerItem)
@@ -81,6 +82,39 @@ class DeleteTests(ExplorerIntegrationTest):
         # step 8: set flag in original mode
         settings.setValue("/GeoServer/Settings/GeoServer/DeleteStyle", deleteStyle)
 
+    def testDeleteLayersWithSameName(self):
+        """
+        Test that when there are more than one layer with
+        the same name they can be deleted
+        """
+        wsb = self.catWrapper.catalog.get_workspace(WORKSPACEB)
+        self.assertIsNotNone(wsb)
+
+        # Need to use prefixed names when retrieving
+        pt1 = self.ws.name + ':' + PT1
+        pt1b = wsb.name + ':' + PT1
+        self.catWrapper.publishLayer(PT1, self.ws, name=PT1)
+        self.assertIsNotNone(self.catWrapper.catalog.get_layer(pt1))
+
+        # Add second layer with the same name
+        self.catWrapper.publishLayer(PT1, wsb, name=PT1)
+        self.assertIsNotNone(self.catWrapper.catalog.get_layer(pt1b))
+
+        self.getLayersItem().refreshContent(self.explorer)
+
+        # step 3: then remove layers
+        layerItem = self.getLayerItem(pt1)
+        self.assertIsNotNone(layerItem)
+        layerItem.deleteLayer(self.tree, self.explorer)
+        layerItem = self.getLayerItem(pt1)
+        self.assertIsNone(layerItem)
+
+        layerItem = self.getLayerItem(pt1b)
+        self.assertIsNotNone(layerItem)
+        layerItem.deleteLayer(self.tree, self.explorer)
+        layerItem = self.getLayerItem(pt1b)
+        self.assertIsNone(layerItem)
+
 
     def testDeleteWorkspace(self):
         wsname = safeName("another_workspace")
@@ -101,13 +135,13 @@ class DeleteTests(ExplorerIntegrationTest):
         item.deleteLayer(self.explorer)
         item = self.getGWCLayerItem(name)
         self.assertIsNone(item)
-    
+
     def testDeleteStyle(self):
         ''' TODO: test deleting only style.
             delete only if not used in other layers
         '''
         pass
-        
+
 ##################################################################################################
 
 def suiteSubset():

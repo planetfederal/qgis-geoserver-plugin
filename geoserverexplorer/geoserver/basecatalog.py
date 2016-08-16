@@ -24,7 +24,7 @@ from geoserver.catalog import Catalog
 
 class BaseCatalog(Catalog):
 
-    def get_layers(self, resource=None):
+    def __get_layers(self, resource=None):
         """Prefix the layer name with ws name in case of layers with the same name"""
         lyrs = super(BaseCatalog, self).get_layers(resource)
         layers = {}
@@ -39,6 +39,36 @@ class BaseCatalog(Catalog):
             if len(ls) > 1:
                 prefixed_names = ["%s:%s" % (r.workspace.name, name) for
                                   r in self.get_resources() if r.name == name]
+                i = 0
+                for l in ls:
+                    l.name = prefixed_names[i]
+                    i += 1
+                    lyrs.append(l)
+        return lyrs
+
+
+    def get_layers(self, resource=None):
+        """Prefix the layer name with ws name"""
+
+        def _get_res(name):
+            return [r for r in self.get_resources() if r.name == name]
+
+        lyrs = super(BaseCatalog, self).get_layers(resource)
+        layers = {}
+        for l in lyrs:
+            try:
+                layers[l.name].append(l)
+            except KeyError:
+                layers[l.name] = [l]
+        # Prefix all names
+        for name, ls in layers.items():
+            if len(ls) == 1:
+                l = ls[0]
+                l.name = "%s:%s" % (_get_res(l.name)[0].workspace.name, l.name)
+                lyrs.append(l)
+            else:
+                prefixed_names = ["%s:%s" % (r.workspace.name, name) for
+                                  r in _get_res(name)]
                 i = 0
                 for l in ls:
                     l.name = prefixed_names[i]

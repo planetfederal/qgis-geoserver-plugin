@@ -40,10 +40,22 @@ class ExplorerIntegrationTest(unittest.TestCase):
         utils.cleanCatalog(cls.cat)
 
     def _getItemUnder(self, parent, name):
-        for idx in range(parent.childCount()):
-            item = parent.child(idx)
-            if item.text(0) == name:
-                return item
+        
+        def _get_item(name, parent):
+            for idx in range(parent.childCount()):
+                item = parent.child(idx)
+                try:
+                    if item.element.name == name:
+                        return item
+                except:
+                    if item.text(0) == name:
+                        return item
+            return None
+
+        result = _get_item(name, parent)
+        if result is None and name.find(':') != -1:
+            result = _get_item(name.split(':')[1], parent)
+        return result
 
     def getStoreItem(self, ws, name):
         return self._getItemUnder(self.getWorkspaceItem(ws), name)
@@ -77,4 +89,3 @@ class ExplorerIntegrationTest(unittest.TestCase):
 
     def getGWCLayerItem(self, name):
         return self._getItemUnder(self.getGWCLayersItem(), name)
-

@@ -50,8 +50,7 @@ class CatalogTests(unittest.TestCase):
     def testDuplicatedLayerNamesInDifferentWorkSpaces(self):
         """
         Test that when there are more than one layer with
-        the same name they can be listed in the tree and the
-        operations on those layers work as expected.
+        the same name they can be both added to QGIS
         """
         self.cat.catalog.create_workspace(WORKSPACEB, "http://testb.com")
         wsb = self.cat.catalog.get_workspace(WORKSPACEB)
@@ -74,6 +73,9 @@ class CatalogTests(unittest.TestCase):
         self.assertNotEqual(layer, layerb)
         # Check uris
         self.assertNotEqual(layer.publicSource(), layerb.publicSource())
+
+        self.assertNotEqual(QgsMapLayerRegistry.instance().mapLayersByName(layer.name()), [])
+        self.assertNotEqual(QgsMapLayerRegistry.instance().mapLayersByName(layerb.name()), [])
 
         QgsMapLayerRegistry.instance().removeMapLayer(layer.id())
         QgsMapLayerRegistry.instance().removeMapLayer(layerb.id())

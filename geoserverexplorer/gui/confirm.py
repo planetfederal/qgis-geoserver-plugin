@@ -13,6 +13,8 @@ from geoserverexplorer.gui.gsnameutils import isNameValid, xmlNameRegex
 def publishLayer(catalog, layer, workspace=None, overwrite=False):
     name = layer.name()
     gslayers = [lyr.name for lyr in catalog.catalog.get_layers()]
+    # TODO: remove when duplicate names on different workspaces are supported
+    #       we shoud check for unique names only on a given workspace
     if (name in gslayers and not overwrite) or not isNameValid(name, gslayers, 0, xmlNameRegex()):
         name = getGSLayerName(name=name, names=gslayers, unique=False)
     catalog.publishLayer(layer, workspace, True, name)

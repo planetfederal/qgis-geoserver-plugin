@@ -548,7 +548,8 @@ class GsCatalogItem(GsTreeItem):
         except Exception, e:
             if catalogIsNone:
                 self.catalog = None
-            raise e
+            var = traceback.format_exc()
+            raise Exception(var)
         finally:
             self.element = self.catalog
             dlg.reset()
@@ -1018,8 +1019,9 @@ class GsGroupItem(GsTreeItem):
             return
         for layer in groupLayers:
             if layer is not None:
-                if ':' in layer:
-                    layer = layer.split(':')[1]
+                # We do support namespaced layers now
+                #if ':' in layer:
+                #    layer = layer.split(':')[1]
                 layerItem = GsLayerItem(layersDict[layer])
                 self.addChild(layerItem)
 
