@@ -24,29 +24,6 @@ from geoserver.catalog import Catalog
 
 class BaseCatalog(Catalog):
 
-    def __get_layers(self, resource=None):
-        """Prefix the layer name with ws name in case of layers with the same name"""
-        lyrs = super(BaseCatalog, self).get_layers(resource)
-        layers = {}
-        for l in lyrs:
-            try:
-                layers[l.name].append(l)
-            except KeyError:
-                layers[l.name] = [l]
-        lyrs = [l[0] for l in layers.values() if len(l) == 1]
-        # Prefix all duplicated names
-        for name, ls in layers.items():
-            if len(ls) > 1:
-                prefixed_names = ["%s:%s" % (r.workspace.name, name) for
-                                  r in self.get_resources() if r.name == name]
-                i = 0
-                for l in ls:
-                    l.name = prefixed_names[i]
-                    i += 1
-                    lyrs.append(l)
-        return lyrs
-
-
     def get_namespaced_name(self, layer_name):
         """
         Prefix the layer name with the workspace by querying all the resources
@@ -81,12 +58,13 @@ class BaseCatalog(Catalog):
         for name, ls in layers.items():
             if len(ls) == 1:
                 l = ls[0]
-                l.name = "%s:%s" % (_get_res(l.name)[0].workspace.name, l.name)
+                l.name = self.get_namespaced_name(l.name)
                 result.append(l)
             else:
                 i = 0
+                res = _get_res(ls[0].name)
                 for l in ls:
-                    l.name = self.get_namespaced_name(l.name)
+                    l.name = "%s:%s" % (res[i].workspace.name, l.name)
                     i += 1
                     result.append(l)
         return result
