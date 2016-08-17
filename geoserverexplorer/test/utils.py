@@ -97,11 +97,16 @@ def getGeoServerCatalog(authcfgid=None, authtype=None):
 def cleanCatalog(cat):
 
     for groupName in [GROUP, GEOLOGY_GROUP]:
-        group = cat.get_layergroup(groupName)
-        if group is not None:
-            cat.delete(group)
+        def _del_group(groupName, cat):
             group = cat.get_layergroup(groupName)
-            assert group is None
+            if group is not None:
+                cat.delete(group)
+                group = cat.get_layergroup(groupName)
+                assert group is None
+
+        _del_group(groupName, cat)
+        # Try with namespaced
+        _del_group("%s:%s" % (WORKSPACE, groupName), cat)
 
     toDelete = []
     for layer in cat.get_layers():
@@ -112,7 +117,12 @@ def cleanCatalog(cat):
             toDelete.append(style)
 
     for e in toDelete:
-        cat.delete(e, purge=True)
+        try:
+            cat.delete(e, purge=True)
+        except:
+            from PyQt4.QtCore import QCoreApplication
+            while 1:
+                QCoreApplication.instance().processEvents()
 
     for ws in cat.get_workspaces():
         if not ws.name.startswith(PREFIX):
@@ -145,7 +155,7 @@ def populateCatalog(cat):
     with open(sldfile, 'r') as f:
         sld = f.read()
     cat.create_style(STYLE, sld, True)
-    group = cat.create_layergroup(GROUP, [PT2], workspace=WORKSPACE)
+    group = cat.create_layergroup(GROUP, [PT2])
     cat.save(group)
     cat.create_workspace(WORKSPACEB, "http://testb.com")
     cat.set_default_workspace(WORKSPACE)

@@ -13,12 +13,16 @@ from qgis.utils import iface
 from qgis.core import *
 from geoserverexplorer.test.utils import AUTHCFGID, AUTHTYPE
 
+SETTINGS_CACHE_TIME = "/GeoServer/Settings/GeoServer/AuthCatalogXMLCacheTime"
 
 class ExplorerIntegrationTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
         cls.explorer = GeoServerExplorer()
+        # Disable cache
+        cls.cache_time = QSettings().value(SETTINGS_CACHE_TIME)
+        QSettings().setValue(SETTINGS_CACHE_TIME, 1)
         # check if context is a PKI auth context
         if hasattr(cls, 'authm') and cls.authm:
             cls.catWrapper = utils.getGeoServerCatalog(authcfgid=AUTHCFGID, authtype=AUTHTYPE)
@@ -38,9 +42,10 @@ class ExplorerIntegrationTest(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         utils.cleanCatalog(cls.cat)
+        QSettings().setValue(SETTINGS_CACHE_TIME, cls.cache_time)
 
     def _getItemUnder(self, parent, name):
-        
+
         def _get_item(name, parent):
             for idx in range(parent.childCount()):
                 item = parent.child(idx)
@@ -64,6 +69,7 @@ class ExplorerIntegrationTest(unittest.TestCase):
         return self._getItemUnder(self.getWorkspacesItem(), name)
 
     def getLayerItem(self, name):
+        name = self.cat.get_namespaced_name(name)
         return self._getItemUnder(self.getLayersItem(), name)
 
     def getGroupItem(self, name):

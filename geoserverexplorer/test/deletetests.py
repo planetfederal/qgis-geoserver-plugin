@@ -40,7 +40,7 @@ class DeleteTests(ExplorerIntegrationTest):
     def testDeleteLayerAndStyle(self):
         settings = QSettings()
         # step 1: publish a layer. publish load layer and style
-        self.catWrapper.publishLayer(PT1, self.ws, name = PT1)
+        self.catWrapper.publishLayer(PT1, self.ws, name=PT1)
         layer = self.cat.get_layer(PT1)
         self.assertIsNotNone(layer)
         style = self.cat.get_style(PT1)
@@ -59,7 +59,7 @@ class DeleteTests(ExplorerIntegrationTest):
         styleItem = self.getStyleItem(PT1)
         self.assertIsNone(styleItem)
         # step 4: republish PT1 and it's style
-        self.catWrapper.publishLayer(PT1, self.ws, name = PT1)
+        self.catWrapper.publishLayer(PT1)
         layer = self.cat.get_layer(PT1)
         self.assertIsNotNone(layer)
         style = self.cat.get_style(PT1)
