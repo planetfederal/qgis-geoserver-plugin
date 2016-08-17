@@ -47,9 +47,9 @@ class BaseCatalog(Catalog):
         return lyrs
 
 
-    def get_layer_fqn(self, layer_name):
+    def get_namespaced_name(self, layer_name):
         """
-        Prefix the layer name with the worspace by querying all the resources
+        Prefix the layer name with the workspace by querying all the resources
         and finding the workspace from the one that matches the layer name.
         If the layer exists in several workspaces, the first match is returned.
         Return layer_name if the layer resource does not exists.
@@ -86,7 +86,7 @@ class BaseCatalog(Catalog):
             else:
                 i = 0
                 for l in ls:
-                    l.name = self.get_layer_fqn(l.name)
+                    l.name = self.get_namespaced_name(l.name)
                     i += 1
                     result.append(l)
         return result
