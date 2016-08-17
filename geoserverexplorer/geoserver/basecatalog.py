@@ -21,8 +21,26 @@ __author__ = 'Alessandro Pasotti'
 __date__ = 'August 2016'
 
 from geoserver.catalog import Catalog
+from geoserver.support import url
+from geoserver.layer import Layer
+
+class BaseLayer(Layer):
+    """Patched to get correct resources from workspaces"""
+
+    @property
+    def resource(self):
+        if self.dom is None:
+            self.fetch()
+        name = self.dom.find("resource/name").text
+        if self.name.find(':') != -1:
+            return self.catalog.get_resource(name, workspace=self.name.split(':')[0])
+        return self.catalog.get_resource(name)
+
 
 class BaseCatalog(Catalog):
+
+    def _get_res(self, name):
+        return [r for r in self.get_resources() if r.name == name]
 
     def get_namespaced_name(self, layer_name):
         """
@@ -33,7 +51,7 @@ class BaseCatalog(Catalog):
         """
         if layer_name.find(':') != -1:
             return layer_name
-        res = [r for r in self.get_resources() if r.name == layer_name]
+        res = self._get_res(layer_name)
         try:
             return "%s:%s" % (res[0].workspace.name, layer_name)
         except IndexError:
@@ -42,11 +60,16 @@ class BaseCatalog(Catalog):
 
     def get_layers(self, resource=None):
         """Prefix the layer name with ws name"""
+        # Original code from gsconfig
+        if isinstance(resource, basestring):
+            resource = self.get_resource(resource)
+        layers_url = url(self.service_url, ["layers.xml"])
+        description = self.get_xml(layers_url)
+        lyrs = [BaseLayer(self, l.find("name").text) for l in description.findall("layer")]
+        if resource is not None:
+            lyrs = [l for l in lyrs if l.resource.href == resource.href]
 
-        def _get_res(name):
-            return [r for r in self.get_resources() if r.name == name]
-
-        lyrs = super(BaseCatalog, self).get_layers(resource)
+        # Start patch:
         layers = {}
         result = []
         for l in lyrs:
@@ -62,7 +85,7 @@ class BaseCatalog(Catalog):
                 result.append(l)
             else:
                 i = 0
-                res = _get_res(ls[0].name)
+                res = self._get_res(ls[0].name)
                 for l in ls:
                     l.name = "%s:%s" % (res[i].workspace.name, l.name)
                     i += 1
