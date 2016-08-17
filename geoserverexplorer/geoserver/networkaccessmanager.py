@@ -184,7 +184,7 @@ class NetworkAccessManager():
 
         # Catch all exceptions (and clean up requests)
         try:
-            self.el.exec_()
+            self.el.exec_(QEventLoop.ExcludeUserInputEvents)
             # Let's log the whole response for debugging purposes:
             self.msg_log("Got response %s %s from %s" % \
                         (self.http_call_result.status_code,
