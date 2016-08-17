@@ -189,9 +189,9 @@ class NetworkAccessManager():
             self.msg_log("Got response %s %s from %s" % \
                         (self.http_call_result.status_code,
                          self.http_call_result.status_message,
-                         self.reply.url().toString()))
-            headers = {str(h): str(self.reply.rawHeader(h)) for h in self.reply.rawHeaderList()}
-            for k, v in headers.items():
+                         url))
+
+            for k, v in self.http_call_result.headers.items():
                 self.msg_log("%s: %s" % (k, v))
             if len(self.http_call_result.text) < 1024:
                 self.msg_log("Payload :\n%s" % self.http_call_result.text)
