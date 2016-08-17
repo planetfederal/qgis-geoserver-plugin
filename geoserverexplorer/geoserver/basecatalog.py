@@ -47,6 +47,22 @@ class BaseCatalog(Catalog):
         return lyrs
 
 
+    def get_layer_fqn(self, layer_name):
+        """
+        Prefix the layer name with the worspace by querying all the resources
+        and finding the workspace from the one that matches the layer name.
+        If the layer exists in several workspaces, the first match is returned.
+        Return layer_name if the layer resource does not exists.
+        """
+        if layer_name.find(':') != -1:
+            return layer_name
+        res = [r for r in self.get_resources() if r.name == layer_name]
+        try:
+            return "%s:%s" % (res[0].workspace.name, layer_name)
+        except IndexError:
+            return layer_name
+
+
     def get_layers(self, resource=None):
         """Prefix the layer name with ws name"""
 
@@ -55,6 +71,7 @@ class BaseCatalog(Catalog):
 
         lyrs = super(BaseCatalog, self).get_layers(resource)
         layers = {}
+        result = []
         for l in lyrs:
             try:
                 layers[l.name].append(l)
@@ -65,13 +82,11 @@ class BaseCatalog(Catalog):
             if len(ls) == 1:
                 l = ls[0]
                 l.name = "%s:%s" % (_get_res(l.name)[0].workspace.name, l.name)
-                lyrs.append(l)
+                result.append(l)
             else:
-                prefixed_names = ["%s:%s" % (r.workspace.name, name) for
-                                  r in _get_res(name)]
                 i = 0
                 for l in ls:
-                    l.name = prefixed_names[i]
+                    l.name = self.get_layer_fqn(l.name)
                     i += 1
-                    lyrs.append(l)
-        return lyrs
+                    result.append(l)
+        return result
