@@ -203,6 +203,11 @@ class NetworkAccessManager():
                 if self.reply.isRunning():
                     self.reply.close()
                 self.msg_log("Deleting reply ...")
+                # Disconnect all slots
+                self.reply.sslErrors.disconnect(self.sslErrors)
+                self.reply.finished.disconnect(self.replyFinished)
+                self.reply.finished.disconnect(self.el.quit)
+                self.reply.downloadProgress.disconnect(self.downloadProgress)
                 self.reply.deleteLater()
                 self.reply = None
             else:
