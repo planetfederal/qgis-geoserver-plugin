@@ -247,7 +247,6 @@ class NetworkAccessManager():
         else:
             self.http_call_result.text = str(self.reply.readAll())
             self.http_call_result.ok = True
-        self.reply.deleteLater()
 
     @pyqtSlot()
     def sslErrors(self, reply, ssl_errors):
