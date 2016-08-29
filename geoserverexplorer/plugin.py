@@ -90,7 +90,7 @@ class GeoServerExplorerPlugin:
         settings.setValue("/GeoServer/Settings/General/ExplorerVisible", visible)
 
     def showHelp(self):
-        HELP_URL = "https://github.com/boundlessgeo/qgis-geoserver-plugin/blob/master/doc/source/intro.rst"
+        HELP_URL = "https://github.com/boundlessgeo/qgis-geoserver-plugin/blob/master/docs/source/intro.rst"
         webbrowser.open(HELP_URL)
 
     def openExplorer(self):
