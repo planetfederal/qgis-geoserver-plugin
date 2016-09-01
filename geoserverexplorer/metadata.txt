@@ -6,10 +6,10 @@ category=Web
 qgisMinimumVersion=2.0
 version=0.1.1
 
-author=Victor Olaya (Boundless)
-email=volaya@boundlessgeo.com
+author=Boundless (Victor Olaya)
+email=info@boundlessgeo.com
 
-icon=images/geoserver.png
+icon=images/desktop.png
 tags=boundless,geoserver
 
 homepage=https://connect.boundlessgeo.com/docs/desktop/plugins/geoserver/
