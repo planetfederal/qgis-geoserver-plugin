@@ -1,10 +1,10 @@
 [general]
 name=GeoServer Explorer
 description=Configure and manage GeoServer from QGIS
-about=<p>Easily configure GeoServer through QGIS. Prepare data and styling or publish directly to a catalog directly from the QGIS interface, or add a service from GeoServer into your QGIS project. The plugin integrates with other QGIS plugins--use the processing framework, for example, to automate tasks.</p><p>This plugin is available with a Boundless Desktop&nbsp;&mdash; Enterprise Subscription <a href="https://connect.boundlessgeo.com/UserLogin?returnurl=%2fPurchase-Boundless-Desktop" style="font: bold; text-decoration: none; background-color: #edd400; color: #333333; padding: 2px 6px 2px 6px; border-top: 1px solid #c4a000; border-right: 1px solid #c4a000; border-bottom: 1px solid #c4a000; border-left: 1px solid #c4a000;">Get&nbsp;access</a></p>
+about=Easily configure GeoServer through QGIS. Prepare data and styling or publish directly to a catalog directly from the QGIS interface, or add a service from GeoServer into your QGIS project. The plugin integrates with the processing framework, so this tasks can beautomated or used as part of a workflow.
 category=Web
-qgisMinimumVersion=2.0
-version=0.1.1
+qgisMinimumVersion=2.14
+version=0.5
 
 author=Boundless (Victor Olaya)
 email=info@boundlessgeo.com
@@ -12,7 +12,7 @@ email=info@boundlessgeo.com
 icon=images/desktop.png
 tags=boundless,geoserver
 
-homepage=https://connect.boundlessgeo.com/docs/desktop/plugins/geoserver/
+homepage=https://github.com/boundlessgeo/qgis-geoserver-plugin
 tracker=https://github.com/boundlessgeo/qgis-geoserver-plugin/issues
 repository=https://github.com/boundlessgeo/qgis-geoserver-plugin
 
