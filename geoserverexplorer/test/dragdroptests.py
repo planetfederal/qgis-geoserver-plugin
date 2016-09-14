@@ -88,4 +88,3 @@ def run_all():
 # run a subset of tests using unittest skipping nose or testplugin
 def run_subset():
     unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suiteSubset())
-

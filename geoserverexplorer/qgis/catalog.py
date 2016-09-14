@@ -8,13 +8,13 @@ from qgis.core import *
 from PyQt4 import QtCore
 from geoserverexplorer.qgis import layers, exporter, utils
 from geoserver.catalog import ConflictingDataError, UploadError, FailedRequestError
-from geoserver.catalog import Catalog as GSCatalog
 from geoserverexplorer.qgis.sldadapter import adaptGsToQgs,\
     getGsCompatibleSld
 from geoserverexplorer.qgis import uri as uri_utils
 from gsimporter.client import Client
 from geoserverexplorer.geoserver.pki import PKICatalog, PKIClient
 from geoserverexplorer.geoserver.auth import AuthCatalog, AuthClient
+from geoserverexplorer.geoserver.basecatalog import BaseCatalog
 from geoserverexplorer.geoserver import pem
 from geoserverexplorer.geoserver.util import groupsWithLayer, removeLayerFromGroups, \
     addLayerToGroups
@@ -43,7 +43,7 @@ def createGeoServerCatalog(service_url = "http://localhost:8080/geoserver/rest",
                            disable_ssl_certificate_validation=False):
     # if not authid use basic auth
     if not authid or not authtype:
-        catalog = GSCatalog(service_url, username, password, disable_ssl_certificate_validation)
+        catalog = BaseCatalog(service_url, username, password, disable_ssl_certificate_validation)
     elif QGis.QGIS_VERSION_INT < 21200:
         # if autcfg, then get certs and ca and create a PKICatalog
         certfile, keyfile, cafile = pem.getPemPkiPaths(authid, authtype)

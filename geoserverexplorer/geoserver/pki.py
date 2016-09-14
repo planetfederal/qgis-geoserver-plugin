@@ -3,12 +3,12 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
-from geoserver.catalog import Catalog
+from .basecatalog import BaseCatalog
 import httplib2
 from gsimporter.client import Client, _Client
 from qgis.core import QGis
 
-class PKICatalog(Catalog):
+class PKICatalog(BaseCatalog):
 
     def __init__(self, service_url, key, cert, ca_cert):
         assert QGis.QGIS_VERSION_INT < 21200, "For QGIS > 2.12 we want to use AuthCatalog!"

@@ -548,7 +548,8 @@ class GsCatalogItem(GsTreeItem):
         except Exception, e:
             if catalogIsNone:
                 self.catalog = None
-            raise e
+            var = traceback.format_exc()
+            raise Exception(var)
         finally:
             self.element = self.catalog
             dlg.reset()
@@ -805,7 +806,7 @@ class GsLayerItem(GsTreeItem):
     def contextMenuActions(self, tree, explorer):
         actions = []
         if isinstance(self.parent(), GsGroupItem):
-            layers = self.parent().element.layers
+            layers = self.parent().get_layers_namespaced_name()
             count = len(layers)
             idx = layers.index(self.element.name)
             icon = QtGui.QIcon(os.path.dirname(__file__) + "/../images/delete.gif")
@@ -886,12 +887,12 @@ class GsLayerItem(GsTreeItem):
 
     def removeLayerFromGroup(self, explorer):
         group = self.parent().element
-        layers = group.layers
+        layers = [self.catalog.get_namespaced_name(ln) for ln in group.layers]
         styles = group.styles
-        idx = group.layers.index(self.element.name)
+        idx = layers.index(self.element.name)
         del layers[idx]
         del styles[idx]
-        group.dirty.update(layers = layers, styles = styles)
+        group.dirty.update(layers=layers, styles=styles)
         explorer.run(self.parentCatalog().save,
                  "Remove layer '" + self.element.name + "' from group '" + group.name +"'",
                  [self.parent()],
@@ -1010,17 +1011,24 @@ class GsGroupItem(GsTreeItem):
         self.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
                       | QtCore.Qt.ItemIsDropEnabled)
 
+    def get_layers_namespaced_name(self):
+        """
+        Return fqn layers list
+        """
+        return [self.catalog.get_namespaced_name(ln) for ln in self.element.layers]
+
     def populate(self):
         layers = self.element.catalog.get_layers()
-        layersDict = dict([ (layer.name, layer) for layer in layers])
+        layersDict = dict([(layer.name, layer) for layer in layers])
         groupLayers = self.element.layers
         if groupLayers is None:
             return
         for layer in groupLayers:
             if layer is not None:
-                if ':' in layer:
-                    layer = layer.split(':')[1]
-                layerItem = GsLayerItem(layersDict[layer])
+                # We do support namespaced layers now
+                #if ':' in layer:
+                #    layer = layer.split(':')[1]
+                layerItem = GsLayerItem(layersDict[self.element.catalog.get_namespaced_name(layer)])
                 self.addChild(layerItem)
 
 

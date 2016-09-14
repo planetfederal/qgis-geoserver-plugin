@@ -184,14 +184,13 @@ class NetworkAccessManager():
 
         # Catch all exceptions (and clean up requests)
         try:
-            self.el.exec_()
+            self.el.exec_(QEventLoop.ExcludeUserInputEvents)
             # Let's log the whole response for debugging purposes:
             self.msg_log("Got response %s %s from %s" % \
                         (self.http_call_result.status_code,
                          self.http_call_result.status_message,
-                         self.reply.url().toString()))
-            headers = {str(h): str(self.reply.rawHeader(h)) for h in self.reply.rawHeaderList()}
-            for k, v in headers.items():
+                         req.url().toString()))
+            for k, v in self.http_call_result.headers.items():
                 self.msg_log("%s: %s" % (k, v))
             if len(self.http_call_result.text) < 1024:
                 self.msg_log("Payload :\n%s" % self.http_call_result.text)
@@ -204,6 +203,11 @@ class NetworkAccessManager():
                 if self.reply.isRunning():
                     self.reply.close()
                 self.msg_log("Deleting reply ...")
+                # Disconnect all slots
+                self.reply.sslErrors.disconnect(self.sslErrors)
+                self.reply.finished.disconnect(self.replyFinished)
+                self.reply.finished.disconnect(self.el.quit)
+                self.reply.downloadProgress.disconnect(self.downloadProgress)
                 self.reply.deleteLater()
                 self.reply = None
             else:
@@ -247,7 +251,6 @@ class NetworkAccessManager():
         else:
             self.http_call_result.text = str(self.reply.readAll())
             self.http_call_result.ok = True
-        self.reply.deleteLater()
 
     @pyqtSlot()
     def sslErrors(self, reply, ssl_errors):

@@ -24,16 +24,17 @@ from datetime import timedelta, datetime
 import logging
 from xml.etree.ElementTree import XML
 from xml.parsers.expat import ExpatError
-from geoserver.catalog import Catalog, FailedRequestError
+from geoserver.catalog import FailedRequestError
 from gsimporter.client import Client, _Client
 from .networkaccessmanager import NetworkAccessManager
-
+from .basecatalog import BaseCatalog
 
 logger = logging.getLogger("auth.authcatalog")
 
-class AuthCatalog(Catalog):
+class AuthCatalog(BaseCatalog):
 
     def __init__(self, service_url, authid, cache_time):
+        # Do not call parent constructor, this is a patching class
         self.authid = authid
         self.cache_time = cache_time
         self.service_url = service_url
@@ -73,6 +74,7 @@ class AuthCatalog(Catalog):
                 return parse_or_raise(content)
             else:
                 raise FailedRequestError("Tried to make a GET request to %s but got a %d status code: \n%s" % (rest_url, response.status, content))
+
 
 class AuthClient(Client):
 

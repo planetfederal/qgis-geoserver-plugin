@@ -12,7 +12,7 @@ from qgis.utils import iface, QGis
 from PyQt4.QtCore import *
 from geoserverexplorer.test import utils
 from geoserverexplorer.test.utils import PT1, DEM, DEM2, PT1JSON, DEMASCII,\
-    GEOLOGY_GROUP, GEOFORMS, LANDUSE, HOOK, WORKSPACE
+    GEOLOGY_GROUP, GEOFORMS, LANDUSE, HOOK, WORKSPACE, WORKSPACEB
 import re
 
 class CatalogTests(unittest.TestCase):
@@ -38,13 +38,50 @@ class CatalogTests(unittest.TestCase):
 
 
     def testVectorLayerRoundTrip(self):
-        self.cat.publishLayer(PT1, self.ws, name = PT1)
+        self.cat.publishLayer(PT1, self.ws, name=PT1)
         self.assertIsNotNone(self.cat.catalog.get_layer(PT1))
         self.cat.addLayerToProject(PT1, PT1)
         layer = layers.resolveLayer(PT1)
         QgsMapLayerRegistry.instance().removeMapLayer(layer.id())
-        self.cat.catalog.delete(self.cat.catalog.get_layer(PT1), recurse = True)
+        self.cat.catalog.delete(self.cat.catalog.get_layer(PT1), recurse=True)
         #TODO: more checking to ensure that the layer in the project is correct
+
+
+    def testDuplicatedLayerNamesInDifferentWorkSpaces(self):
+        """
+        Test that when there are more than one layer with
+        the same name they can be both added to QGIS
+        """
+        self.cat.catalog.create_workspace(WORKSPACEB, "http://testb.com")
+        wsb = self.cat.catalog.get_workspace(WORKSPACEB)
+        self.assertIsNotNone(wsb)
+
+        # Need to use prefixed names when retrieving
+        pt1 = self.ws.name + ':' + PT1
+        pt1b = wsb.name + ':' + PT1
+        self.cat.publishLayer(PT1, self.ws, name=PT1)
+        self.assertIsNotNone(self.cat.catalog.get_layer(pt1))
+        self.cat.addLayerToProject(pt1, pt1)
+        layer = layers.resolveLayer(pt1)
+
+        # Add second layer with the same name
+        self.cat.publishLayer(PT1, wsb, name=PT1)
+        self.assertIsNotNone(self.cat.catalog.get_layer(pt1b))
+        self.cat.addLayerToProject(pt1b, pt1b)
+        layerb = layers.resolveLayer(pt1b)
+
+        self.assertNotEqual(layer, layerb)
+        # Check uris
+        self.assertNotEqual(layer.publicSource(), layerb.publicSource())
+
+        self.assertNotEqual(QgsMapLayerRegistry.instance().mapLayersByName(layer.name()), [])
+        self.assertNotEqual(QgsMapLayerRegistry.instance().mapLayersByName(layerb.name()), [])
+
+        QgsMapLayerRegistry.instance().removeMapLayer(layer.id())
+        QgsMapLayerRegistry.instance().removeMapLayer(layerb.id())
+        self.cat.catalog.delete(self.cat.catalog.get_layer(pt1), recurse=True)
+        self.cat.catalog.delete(self.cat.catalog.get_layer(pt1b), recurse=True)
+
 
     def testRasterLayerRoundTrip(self):
         self.cat.publishLayer(DEM, self.ws, name = DEM)
