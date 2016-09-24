@@ -28,7 +28,7 @@
                 </sld:Fill>
                 <sld:Stroke/>
               </sld:Mark>
-              <sld:Size>8.000000</sld:Size>
+              <sld:Size>28.000000</sld:Size>
             </sld:Graphic>
           </sld:PointSymbolizer>
         </sld:Rule>
@@ -55,7 +55,7 @@
                 </sld:Fill>
                 <sld:Stroke/>
               </sld:Mark>
-              <sld:Size>8.000000</sld:Size>
+              <sld:Size>28.000000</sld:Size>
             </sld:Graphic>
           </sld:PointSymbolizer>
         </sld:Rule>
@@ -82,7 +82,7 @@
                 </sld:Fill>
                 <sld:Stroke/>
               </sld:Mark>
-              <sld:Size>8.000000</sld:Size>
+              <sld:Size>28.000000</sld:Size>
             </sld:Graphic>
           </sld:PointSymbolizer>
         </sld:Rule>
@@ -109,7 +109,7 @@
                 </sld:Fill>
                 <sld:Stroke/>
               </sld:Mark>
-              <sld:Size>8.000000</sld:Size>
+              <sld:Size>28.000000</sld:Size>
             </sld:Graphic>
           </sld:PointSymbolizer>
         </sld:Rule>
@@ -136,7 +136,7 @@
                 </sld:Fill>
                 <sld:Stroke/>
               </sld:Mark>
-              <sld:Size>8.000000</sld:Size>
+              <sld:Size>28.000000</sld:Size>
             </sld:Graphic>
           </sld:PointSymbolizer>
         </sld:Rule>
