@@ -421,8 +421,8 @@ def suiteSubset():
 def suite():
     suite = unittest.TestSuite()
     suite.addTests(unittest.makeSuite(CreateCatalogDialogTests, 'test'))
-    suite.addTests(unittest.makeSuite(GroupDialogTests, 'test'))
     suite.addTests(unittest.makeSuite(LayerDialogTests, 'test'))
+    suite.addTests(unittest.makeSuite(GroupDialogTests, 'test'))
     suite.addTests(unittest.makeSuite(GsNameUtilsTest, 'test'))
     suite.addTests(unittest.makeSuite(GSNameDialogTest, 'test'))
     return suite

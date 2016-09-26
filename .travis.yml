@@ -35,8 +35,7 @@ script:
 - docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.catalogtests"
 - docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.deletetests"
 - docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.dragdroptests"
-# Temporarily disabled because the test env does not get any output (false positive)
-#- docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.guitests"
+- docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.guitests"
 - docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.pkicatalogtests"
 - docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.pkideletetests"
 - docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.pkidragdroptests"
