@@ -9,7 +9,6 @@ from qgis.core import *
 from geoserverexplorer.geoserver import pem
 from geoserverexplorer.geoserver.pki import PKICatalog
 from geoserverexplorer.geoserver.auth import AuthCatalog
-from PyQt4.QtCore import QSettings
 
 class DefineCatalogDialog(QtGui.QDialog):
 
@@ -27,21 +26,18 @@ class DefineCatalogDialog(QtGui.QDialog):
         authid = None
         if self.name is not None:
             if self.catalog is None:
-                settings = QSettings()
+                settings = QtCore.QSettings()
                 settings.beginGroup("/GeoServer/Catalogs/" + self.name)
                 url = unicode(settings.value("url"))
                 username = settings.value("username")
                 authid = settings.value("authid")
                 settings.endGroup()
             elif isinstance(self.catalog, AuthCatalog):
-                settings = QSettings()
-                settings.beginGroup("/GeoServer/Catalogs/" + self.name)
                 username = ""
                 authid = self.catalog.authid
                 url = self.catalog.service_url
-                settings.endGroup()
             elif isinstance(self.catalog, PKICatalog):
-                settings = QSettings()
+                settings = QtCore.QSettings()
                 settings.beginGroup("/GeoServer/Catalogs/" + self.name)
                 username = ""
                 authid = settings.value("authid")
@@ -52,7 +48,6 @@ class DefineCatalogDialog(QtGui.QDialog):
                 url = self.catalog.service_url
 
         else:
-            settings = QSettings()
             username = ""
             url = settings.value('/LastCatalogUrl', 'http://localhost:8080/geoserver')
 
@@ -84,7 +79,7 @@ class DefineCatalogDialog(QtGui.QDialog):
         urlLabel = QtGui.QLabel('URL')
         urlLabel.setMinimumWidth(150)
         self.urlBox = QtGui.QLineEdit()
-        url = settings.value('/GeoServer/LastCatalogUrl', 'http://localhost:8080/geoserver')
+        
         self.urlBox.setText(url)
         self.urlBox.setMinimumWidth(250)
         horizontalLayout.addWidget(urlLabel)
@@ -111,7 +106,7 @@ class DefineCatalogDialog(QtGui.QDialog):
         usernameLabel = QtGui.QLabel('User name')
         usernameLabel.setMinimumWidth(150)
         self.usernameBox = QtGui.QLineEdit()
-        self.usernameBox.setText('admin')
+        self.usernameBox.setText(username)
         self.usernameBox.setMinimumWidth(250)
         self.usernameBox.setText(username)
         horizontalLayout.addWidget(usernameLabel)
@@ -159,15 +154,6 @@ class DefineCatalogDialog(QtGui.QDialog):
                 self.usernameBox.setText(self.catalog.username)
         elif authid is not None:
             self.tabWidget.setCurrentIndex(1)
-
-        verticalLayout2 = QtGui.QVBoxLayout()
-        horizontalLayout = QtGui.QHBoxLayout()
-        horizontalLayout.setSpacing(30)
-        horizontalLayout.setMargin(0)
-        urlLabel = QtGui.QLabel('URL')
-        urlLabel.setMinimumWidth(150)
-        horizontalLayout.addWidget(urlLabel)
-        verticalLayout2.addLayout(horizontalLayout)
 
         self.spacer = QtGui.QSpacerItem(20,20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         layout.addItem(self.spacer)
