@@ -90,7 +90,14 @@ def adaptQgsToGs(sld, layer):
         sld = sld.replace("<sld:WellKnownName>%s</sld:WellKnownName>" % key,
                       "<sld:WellKnownName>%s</sld:WellKnownName>" % value)
 
-
+    fontmarkers = re.findall('<sld:OnlineResource xlink:type="simple" xlink:href=".*?"/> <sld:Format>ttf</sld:Format> <sld:MarkIndex>.*?</sld:MarkIndex>', sld)
+    for arr in fontmarkers:
+        police = re.findall('<sld:OnlineResource xlink:type="simple" xlink:href=".*?"/>', arr)
+        policeValue=police[0][52:-3]
+        markerIndex = re.findall('<sld:MarkIndex>.*?</sld:MarkIndex>', arr)
+        markerIndexValue=markerIndex[0][15:-16]
+        sld = sld.replace(arr, '<WellKnownName>'+policeValue+'#0x'+markerIndexValue+'</WellKnownName>')
+        
     icons = []
     renderer = layer.rendererV2()
     if isinstance(renderer, QgsSingleSymbolRendererV2):
