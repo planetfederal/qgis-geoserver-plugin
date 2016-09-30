@@ -33,6 +33,8 @@ class DefineCatalogDialog(QtGui.QDialog):
                 authid = settings.value("authid")
                 settings.endGroup()
             elif isinstance(self.catalog, AuthCatalog):
+                settings = QSettings()
+                settings.beginGroup("/GeoServer/Catalogs/" + self.name)
                 username = ""
                 authid = self.catalog.authid
                 url = self.catalog.service_url
@@ -48,8 +50,9 @@ class DefineCatalogDialog(QtGui.QDialog):
                 url = self.catalog.service_url
 
         else:
+            settings = QtCore.QSettings()
             username = ""
-            url = settings.value('/LastCatalogUrl', 'http://localhost:8080/geoserver')
+            url = settings.value('/GeoServer/LastCatalogUrl', 'http://localhost:8080/geoserver')
 
         if url.endswith("/rest"):
             url = url[:-5]

@@ -39,7 +39,7 @@ WORKSPACE = safeName("workspace")
 WORKSPACEB = safeName("workspaceb")
 
 # envs that can be override by os.environ envs
-GSHOSTNAME = 'boundless-test'
+GSHOSTNAME = 'localhost'
 GSPORT = '8080'
 GSSSHPORT = '8443'
 GSUSER = 'admin'
