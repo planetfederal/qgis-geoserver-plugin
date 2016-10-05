@@ -45,6 +45,11 @@ def unitTests():
     _tests.extend(guiSuite())
     return _tests
 
+def settings():
+    return  {"URL":utils.serverLocationBasicAuth()+'/rest',
+            "USER":utils.GSUSER,
+            "PASSWORD":utils.GSPASSWORD}
+
 def runAllUnitTests():
     ''' run all unittests - No funcgtional test managed only by Tester Plugin '''
     suite = unittest.TestSuite()

@@ -57,6 +57,10 @@ def unitTests():
     _tests.extend(pkiOwsSuite())
     return _tests
 
+def settings():
+    return  {"URL":utils.serverLocationPkiAuth()+'/rest',
+            "USER":None,
+            "PASSWORD":None}
 
 def runAllUnitTests():
     """run all unittests: No funcgtional test managed only by Tester Plugin."""
