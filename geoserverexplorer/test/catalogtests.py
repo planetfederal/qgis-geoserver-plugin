@@ -126,22 +126,6 @@ class CatalogTests(unittest.TestCase):
         self.compareSld(sld, gssld)
         self.cat.catalog.delete(self.cat.catalog.get_layer(PT1), recurse = True)
 
-    def testVectorFontStylingUpload(self):
-        projectFile = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "test_font.qgs")
-        iface.addProject(projectFile)
-        layer = layers.resolveLayer(PT1)
-
-        sld, icons = getGsCompatibleSld(layer)
-        #QgsMessageLog.logMessage("sld:" + sld, level=QgsMessageLog.WARNING)
-        sldfile = os.path.join(os.path.dirname(__file__), "resources", "font.sld")
-        with open(sldfile, 'r') as f:
-            sldref = f.read()
-        self.compareSld(sldref, sld)
-
-        #reload test project
-        projectFile = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "test.qgs")
-        iface.addProject(projectFile)
-
     def testRasterStylingUpload(self):
         self.cat.publishLayer(DEM, self.ws, name = DEM)
         self.assertIsNotNone(self.cat.catalog.get_layer(DEM))
