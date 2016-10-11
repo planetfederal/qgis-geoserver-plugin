@@ -9,7 +9,7 @@
 <sld:PointSymbolizer> 
 <sld:Graphic> 
 	<sld:Mark> 
-		<WellKnownName>ttf://DejaVu Sans#0x70</WellKnownName> 
+		<WellKnownName>ttf://DejaVu Sans#0x46</WellKnownName> 
 		<sld:Fill> 
 			<CssParameter name="fill">#570cd7</CssParameter> 
 		</sld:Fill> 
