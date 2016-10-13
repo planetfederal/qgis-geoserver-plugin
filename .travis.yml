@@ -28,7 +28,6 @@ before_install:
 - docker-compose exec qgis-testing-environment sh -c "qgis_setup.sh ${PLUGIN_NAME}"
 - docker-compose exec qgis-testing-environment sh -c "pip install paver"
 - docker-compose exec qgis-testing-environment sh -c "cd /tests_directory && paver setup && paver package --tests"
-- docker-compose exec qgis-testing-environment sh -c "ln -s /tests_directory/${PLUGIN_NAME} /root/.qgis2/python/plugins/${PLUGIN_NAME}"
 script:
 - docker version
 - docker-compose version
