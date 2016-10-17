@@ -93,20 +93,30 @@ def read_requirements():
     return not_comments(0, idx), not_comments(idx+1, None)
 
 
-@task
-def install(options):
-    """Install plugin to QGIS plugin directory"""
+def _install(folder):
+    '''install plugin to qgis'''
     plugin_name = options.plugin.name
     src = path(__file__).dirname() / plugin_name
-    dst = path('~').expanduser() / '.qgis2' / 'python' / 'plugins' / plugin_name
+    dst = path('~').expanduser() / folder / 'python' / 'plugins' / plugin_name
     src = src.abspath()
     dst = dst.abspath()
-    if hasattr(src, 'symlink'):
-        src.symlink(dst)
-    else:
+    if not hasattr(os, 'symlink'):
         dst.rmtree()
         src.copytree(dst)
+    elif not dst.exists():
+        src.symlink(dst)
 
+@task
+def install(options):
+    _install(".qgis2")
+
+@task
+def installdev(options):
+    _install(".qgis-dev")
+
+@task
+def install3(options):
+    _install(".qgis3")
 
 @task
 @cmdopts([
