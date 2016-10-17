@@ -43,7 +43,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'GeoServer QGIS plugin'
+project = u'GeoServer Explorer'
 copyright = u'2015 Boundless Spatial, Inc.'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -109,7 +109,7 @@ html_theme_path = ['../themes']
 #html_title = None
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
-#html_short_title = None
+html_short_title = project
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
