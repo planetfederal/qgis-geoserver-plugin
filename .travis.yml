@@ -27,8 +27,8 @@ before_install:
 - sleep 10
 - docker-compose exec qgis-testing-environment sh -c "qgis_setup.sh ${PLUGIN_NAME}"
 - docker-compose exec qgis-testing-environment sh -c "pip install paver"
-- docker-compose exec qgis-testing-environment sh -c "cd /tests_directory && paver setup && paver package --tests"
 script:
+- docker-compose exec qgis-testing-environment sh -c "cd /tests_directory && paver setup && paver package --tests"
 - docker version
 - docker-compose version
 - docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.catalogtests"
