@@ -4,7 +4,9 @@
 # This code is licensed under the GPL 2.0 license.
 #
 import os
+import re
 import tempfile
+import unittest
 from geoserver.util import shapefile_and_friends
 from geoserverexplorer.qgis.catalog import createGeoServerCatalog
 
@@ -413,3 +415,36 @@ def layerFromName(name):
     for layer in layers:
         if layer.name() == name:
             return layer
+
+
+class UtilsTestCase(unittest.TestCase):
+
+    RE_ATTRIBUTES = b'[^>\s]+=[^>\s]+'
+
+    def assertXMLEqual(self, response, expected, msg=''):
+        """Compare XML line by line and sorted attributes"""
+        # Ensure we have newlines
+        if response.count('\n') < 2:
+            response = re.sub('(</[^>]+>)', '\\1\n', response)
+            expected = re.sub('(</[^>]+>)', '\\1\n', expected)
+        response_lines = response.splitlines()
+        expected_lines = expected.splitlines()
+        line_no = 1
+        for expected_line in expected_lines:
+            expected_line = expected_line.strip()
+            response_line = response_lines[line_no - 1].strip()
+            # Compare tag
+            try:
+                self.assertEqual(re.findall(b'<([^>\s]+)[ >]', expected_line)[0],
+                                 re.findall(b'<([^>\s]+)[ >]', response_line)[0], msg=msg + "\nTag mismatch on line %s: %s != %s" % (line_no, expected_line, response_line))
+            except IndexError:
+                self.assertEqual(expected_line, response_line, msg=msg + "\nTag line mismatch %s: %s != %s" % (line_no, expected_line, response_line))
+            #print("---->%s\t%s == %s" % (line_no, expected_line, response_line))
+            # Compare attributes
+            if re.match(self.RE_ATTRIBUTES, expected_line): # has attrs
+                expected_attrs = re.findall(self.RE_ATTRIBUTES, expected_line)
+                expected_attrs.sort()
+                response_attrs = re.findall(self.RE_ATTRIBUTES, response_line)
+                response_attrs.sort()
+                self.assertEqual(expected_attrs, response_attrs, msg=msg + "\nXML attributes differ at line {0}: {1} != {2}".format(line_no, expected_attrs, response_attrs))
+            line_no += 1

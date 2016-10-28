@@ -14,8 +14,10 @@ from geoserverexplorer.test import utils
 from geoserverexplorer.test.utils import PT1, DEM, DEM2, PT1JSON, DEMASCII,\
     GEOLOGY_GROUP, GEOFORMS, LANDUSE, HOOK, WORKSPACE, WORKSPACEB
 import re
+from .utils import UtilsTestCase
 
-class CatalogTests(unittest.TestCase):
+
+class CatalogTests(UtilsTestCase):
     '''
     Tests for the CatalogWrapper class that provides additional capabilities to a gsconfig catalog
     Requires a Geoserver catalog running on localhost:8080 with default credentials
@@ -108,16 +110,15 @@ class CatalogTests(unittest.TestCase):
         b = re.sub(r"<sld:StyledLayerDescriptor.*?>", "", b)
         a = re.sub(r"<ogc:Literal>(\d+)\.(\d+)</ogc:Literal>", r"<ogc:Literal>\1</ogc:Literal>", a)
         b = re.sub(r"<ogc:Literal>(\d+)\.(\d+)</ogc:Literal>", r"<ogc:Literal>\1</ogc:Literal>", b)
-        self.assertEqual(a, b, "SLD compare failes: %s %s" % (a, b))
+        self.assertXMLEqual(a, b, "SLD compare failed %s\n%s" % (a, b))
 
     def testVectorStylingUpload(self):
         self.cat.publishLayer(PT1, self.ws, name = PT1)
         self.assertIsNotNone(self.cat.catalog.get_layer(PT1))
         # OGC filter has some fixes in 2.16
-        if QGis.QGIS_VERSION_INT >= 21600:
-            sldfile = os.path.join(os.path.dirname(__file__), "resources", "vector.2.16.sld")
-        else:
-            sldfile = os.path.join(os.path.dirname(__file__), "resources", "vector.sld")
+        # but it seems that they are now in Boundless 21408 too, so I removed the
+        # check for QGIS version and test against latest reference SLD
+        sldfile = os.path.join(os.path.dirname(__file__), "resources", "vector.2.16.sld")
         with open(sldfile, 'r') as f:
             sld = f.read()
         gssld = self.cat.catalog.get_style(PT1).sld_body
