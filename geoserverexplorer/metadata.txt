@@ -8,7 +8,7 @@ version=0.5
 
 author=Boundless (Victor Olaya)
 email=info@boundlessgeo.com
-roles=desktop-qgis-plugin-geoserver-ex
+#roles=desktop-qgis-plugin-geoserver-ex
 
 icon=images/desktop.png
 tags=boundless,geoserver
