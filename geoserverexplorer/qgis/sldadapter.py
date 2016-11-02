@@ -55,6 +55,7 @@ def adaptQgsToGs(sld, layer):
         s = getLabelingAsSld(layer)
         sld = sld.replace("<se:Rule>", "<se:Rule>" + s)
     sld = sld.replace("se:", "sld:")
+    dasharrays = re.findall('<CssParameter name="stroke-dasharray">.*?</CssParameter>', sld)
     for arr in dasharrays:
         newpattern = " ".join([str(int(math.floor(float(i) * SIZE_FACTOR))) for i in arr[38:-15].strip().split(" ")])
         newdasharrays='<CssParameter name="stroke-dasharray">%s</CssParameter>' % newpattern
