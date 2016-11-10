@@ -58,9 +58,9 @@ def unitTests():
     return _tests
 
 def settings():
-    return  {"URL":utils.serverLocationPkiAuth()+'/rest',
-            "USER":None,
-            "PASSWORD":None}
+    return  {"GSURL":utils.serverLocationPkiAuth()+'/rest',
+            "GSUSER":None,
+            "GSPASSWORD":None}
 
 def runAllUnitTests():
     """run all unittests: No funcgtional test managed only by Tester Plugin."""
