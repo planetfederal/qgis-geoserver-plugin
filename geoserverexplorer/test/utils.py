@@ -205,9 +205,8 @@ def initAuthManager():
             # already initilised => we are inside QGIS. Assumed that the
             # actual qgis_auth.db has the same master pwd as AUTHDB_MASTERPWD
             if AUTHM.masterPasswordIsSet():
-                msg = 'Auth master password have to be set to: ' +
-                      AUTHDB_MASTERPWD
-                assert AUTHM.masterPasswordSame(AUTHDB_MASTERPWD), msg
+                msg = 'Auth master password not set from passed string'
+                assert AUTHM.masterPasswordSame(AUTHDB_MASTERPWD)
             else:
                 msg = 'Master password could not be set'
                 assert AUTHM.setMasterPassword(AUTHDB_MASTERPWD, True), msg
