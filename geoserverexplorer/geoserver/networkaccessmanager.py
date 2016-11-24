@@ -94,7 +94,7 @@ class NetworkAccessManager():
     Usage
     -----
     ::
-        nam = NetworkAccessManager(authcgf)
+        nam = NetworkAccessManager(authcfg)
         try:
             (response, content) = nam.request('http://www.example.com')
         except RequestsException, e:
