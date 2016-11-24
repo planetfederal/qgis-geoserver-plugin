@@ -104,9 +104,9 @@ class NetworkAccessManager():
 
     """
 
-    def __init__(self, authid=None, disable_ssl_certificate_validation=False, exception_class=None, debug=True):
+    def __init__(self, authcfg=None, disable_ssl_certificate_validation=False, exception_class=None, debug=True):
         self.disable_ssl_certificate_validation = disable_ssl_certificate_validation
-        self.authid = authid
+        self.authcfg = authcfg
         self.reply = None
         self.debug = debug
         self.exception_class = exception_class
@@ -149,9 +149,9 @@ class NetworkAccessManager():
             for k, v in headers.items():
                 self.msg_log("Setting header %s to %s" % (k, v))
                 req.setRawHeader(k, v)
-        if self.authid:
-            self.msg_log("Update request w/ authid: {0}".format(self.authid))
-            QgsAuthManager.instance().updateNetworkRequest(req, self.authid)
+        if self.authcfg:
+            self.msg_log("Update request w/ authcfg: {0}".format(self.authcfg))
+            QgsAuthManager.instance().updateNetworkRequest(req, self.authcfg)
         if self.reply is not None and self.reply.isRunning():
             self.reply.close()
         if method.lower() == 'delete':
@@ -170,9 +170,9 @@ class NetworkAccessManager():
             self.reply = func(req, body)
         else:
             self.reply = func(req)
-        if self.authid:
-            self.msg_log("Update reply w/ authid: {0}".format(self.authid))
-            QgsAuthManager.instance().updateNetworkReply(self.reply, self.authid)
+        if self.authcfg:
+            self.msg_log("Update reply w/ authcfg: {0}".format(self.authcfg))
+            QgsAuthManager.instance().updateNetworkReply(self.reply, self.authcfg)
 
         self.reply.sslErrors.connect(self.sslErrors)
         self.reply.finished.connect(self.replyFinished)
