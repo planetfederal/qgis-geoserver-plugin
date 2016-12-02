@@ -10,6 +10,7 @@ from geoserverexplorer.test.catalogtests import suite as catalogSuite
 from geoserverexplorer.test.deletetests import suite as deleteSuite
 from geoserverexplorer.test.dragdroptests import suite as dragdropSuite
 from geoserverexplorer.test.guitests import suite as guiSuite
+from geoserverexplorer.test.symbologytests import suite as symbologySuite
 
 # Tests for the QGIS Tester plugin. To know more see
 # https://github.com/boundlessgeo/qgis-tester-plugin
@@ -43,6 +44,7 @@ def unitTests():
     _tests.extend(deleteSuite())
     _tests.extend(dragdropSuite())
     _tests.extend(guiSuite())
+    _tests.extend(symbologySuite())
     return _tests
 
 def settings():
@@ -57,4 +59,5 @@ def runAllUnitTests():
     suite.addTest(deleteSuite())
     suite.addTest(dragdropSuite())
     suite.addTest(guiSuite())
+    suite.addTest(symbologySuite())
     unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suite)

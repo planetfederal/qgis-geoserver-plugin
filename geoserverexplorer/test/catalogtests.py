@@ -7,6 +7,8 @@ import unittest
 import os
 import sys
 from geoserverexplorer.qgis import layers, catalog
+from geoserverexplorer.qgis.sldadapter import adaptGsToQgs,\
+    getGsCompatibleSld
 from qgis.core import *
 from qgis.utils import iface, QGis
 from PyQt4.QtCore import *

@@ -173,13 +173,13 @@ class CatalogWrapper(object):
 
 
     def uploadIcons(self, icons):
-        url = self.catalog.gs_base_url + "app/api/icons"
+        url = self.catalog.gs_base_url + "rest/resource/styles"
         for icon in icons:
-            files = {'file': (icon[1], icon[2])}
+            url = self.catalog.gs_base_url + "rest/resource/styles/"+icon[1]
             if isinstance(self.catalog, PKICatalog):
-                r = requests.post(url, files=files, cert=(self.catalog.cert, self.catalog.key), verify=self.catalog.ca_cert)
+                r = requests.put(url, data=icon[2], cert=(self.catalog.cert, self.catalog.key), verify=self.catalog.ca_cert)
             else:
-                r = requests.post(url, files=files, auth=(self.catalog.username, self.catalog.password))
+                r = requests.put(url, data=icon[2], auth=(self.catalog.username, self.catalog.password))
             try:
                 r.raise_for_status()
             except Exception, e:
