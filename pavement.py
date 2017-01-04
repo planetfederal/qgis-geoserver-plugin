@@ -93,8 +93,9 @@ def read_requirements():
     return not_comments(0, idx), not_comments(idx+1, None)
 
 
-def _install(folder):
+def _install(folder, options):
     '''install plugin to qgis'''
+    builddocs(options)
     plugin_name = options.plugin.name
     src = path(__file__).dirname() / plugin_name
     dst = path('~').expanduser() / folder / 'python' / 'plugins' / plugin_name
@@ -108,15 +109,15 @@ def _install(folder):
 
 @task
 def install(options):
-    _install(".qgis2")
+    _install(".qgis2", options)
 
 @task
 def installdev(options):
-    _install(".qgis-dev")
+    _install(".qgis-dev", options)
 
 @task
 def install3(options):
-    _install(".qgis3")
+    _install(".qgis3", options)
 
 @task
 @cmdopts([
@@ -239,7 +240,7 @@ def _make_zip(zipFile, options):
         for f in files:
             relpath = os.path.join(options.plugin.name, "docs", os.path.relpath(root, options.sphinx.builddir))
             zipFile.write(path(root) / f, path(relpath) / f)
- 
+
 @task
 def builddocs(options):
     sh("git submodule init")
