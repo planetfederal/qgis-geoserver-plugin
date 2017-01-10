@@ -9,6 +9,8 @@ from geoserverexplorer.gui.gsexploreritems import *
 from geoserverexplorer.qgis.layers import *
 from geoserverexplorer.qgis import uri as uri_utils
 from PyQt4 import QtGui, QtCore, QtXml
+from PyQt4.QtGui import QMessageBox
+from geoserver.catalog import FailedRequestError
 
 class ExplorerTreeWidget(QtGui.QTreeWidget):
 
@@ -72,7 +74,13 @@ class ExplorerTreeWidget(QtGui.QTreeWidget):
 
         self.lastClicked = item
         if hasattr(item, 'descriptionWidget'):
-            widget = item.descriptionWidget(self, self.explorer)
+            try:
+                widget = item.descriptionWidget(self, self.explorer)
+            except FailedRequestError:
+                QMessageBox.warning(self, "Error retrieving element description",
+                                    "The element description cannot be retrieved.\nThe selected element might have been deleted.")
+                self.explorer.refreshContent()
+                return
             if widget is not None:
                 self.explorer.setDescriptionWidget(widget)
         actions = item.contextMenuActions(self, self.explorer)
