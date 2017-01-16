@@ -488,10 +488,10 @@ class CatalogWrapper(object):
 
         '''
 
-        addTrackedLayer(layer, self.catalog.service_url)
-
         if isinstance(layer, basestring):
             layer = layers.resolveLayer(layer)
+
+        addTrackedLayer(layer, self.catalog.service_url)
 
         name = xmlNameFixUp(name) if name is not None \
             else xmlNameFixUp(layer.name())
