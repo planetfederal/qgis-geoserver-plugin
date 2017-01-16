@@ -67,7 +67,11 @@ def isWindows():
 tracked = []
 
 def formatSource(source):
-    return os.path.normcase(source)
+    if isinstance(source, QgsRasterLayer):
+        return None
+    if isinstance(source, QgsVectorLayer):
+        source = source.source()
+    source = os.path.normcase(source)
 
 def addTrackedLayer(layer, catalogUrl):
     global tracked
