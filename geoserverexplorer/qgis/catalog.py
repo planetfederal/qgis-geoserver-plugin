@@ -20,6 +20,7 @@ from geoserverexplorer.geoserver.util import groupsWithLayer, removeLayerFromGro
     addLayerToGroups
 from geoserverexplorer.gui.gsnameutils import xmlNameFixUp, xmlNameIsValid
 import requests
+from geoserverexplorer.qgis.utils import addTrackedLayer
 
 try:
     from processing.modeler.ModelerAlgorithm import ModelerAlgorithm
@@ -486,6 +487,8 @@ class CatalogWrapper(object):
         not passed or None
 
         '''
+
+        addTrackedLayer(layer, self.catalog.service_url)
 
         if isinstance(layer, basestring):
             layer = layers.resolveLayer(layer)
