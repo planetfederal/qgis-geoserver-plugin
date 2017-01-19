@@ -19,7 +19,10 @@ from geoserverexplorer.qgis.catalog import CatalogWrapper
 _explorer = None
 
 def layerAdded(qgislayer):
-    qgislayer.styleChanged.connect(partial(updatePublishedStyle, qgislayer))
+    try:
+        qgislayer.styleChanged.connect(partial(updatePublishedStyle, qgislayer))
+    except: #styleChanged only available for QGIS >2.16
+        pass
 
     try:
         if qgislayer.providerType().lower() != "wfs":
