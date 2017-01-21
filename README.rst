@@ -16,7 +16,9 @@ The plugin is available through QGIS official plugin repository. Nevertheless, t
 	$ paver setup
 	$ paver install
 
-The first command will fetch the dependencies required by the plugin. The second one will install the plugin in your local QGIS plugins folder. Open QGIS and you should already see the GeoServer Explorer plugin available in your QGIS plugin manager.
+The first command will fetch the dependencies required by the plugin. 
+The second one will install the plugin in your local QGIS plugins folder. In case you have already downloadd the GeoServer Explorer plugin, this second step will silently fail, in order to make it work go to your local plugin directory (e.g., "$HOME/.qgis2/python/plugins" and remove the "geoserverexplorer" folder, then run ``paver install`` again).
+Open QGIS and you should already see the GeoServer Explorer plugin available in your QGIS plugin manager.
 
 Documentation
 -------------
