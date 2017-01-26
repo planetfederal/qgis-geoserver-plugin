@@ -68,6 +68,22 @@ If the catalog uses basic authentication and username and password are introduce
 
 To delete a catalog from the list of previous connections, use the *Remove* option of the catalog item in the Explorer tree.
 
+Automatically updating styles
+------------------------------
+
+If the corresponding property is enabled, the GeoServer Explorer plugin will take care of updating styles on the server whenever a layer that has been previously uploaded changes its simbology.
+
+When a layer is uploaded to a GeoServer catalog, the plugin will start tracking it. If the simbology of a layer changes, you will see a message like the following one in the message bar.
+
+.. figure:: img/intro/tracking.png
+  :align: center
+
+Select *Update* to upload the new style. Click on *Stop tracking this layer* to avoid seeing more messages like that when the layer changes its simbology.
+
+The style update works as well if the GeoServer Explorer is not open, or if the corresponding catalog is not active or not even listed in the Explorer tree.
+
+Layer tracking is based on the source property of the layer (the filepath in the case of file-based layers), so renaming or moving the layer will deactivate the tracking mechanism for that layer. Layer tracking persist between QGIS sessions and is not linked to the QGIS project the layer might belong to.
+
 Using the GeoServer Importer API
 --------------------------------
 

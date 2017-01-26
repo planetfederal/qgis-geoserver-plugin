@@ -20,6 +20,7 @@ from geoserverexplorer.geoserver.util import groupsWithLayer, removeLayerFromGro
     addLayerToGroups
 from geoserverexplorer.gui.gsnameutils import xmlNameFixUp, xmlNameIsValid
 import requests
+from geoserverexplorer.qgis.utils import addTrackedLayer
 
 try:
     from processing.modeler.ModelerAlgorithm import ModelerAlgorithm
@@ -490,6 +491,8 @@ class CatalogWrapper(object):
         if isinstance(layer, basestring):
             layer = layers.resolveLayer(layer)
 
+        addTrackedLayer(layer, self.catalog.service_url)
+
         name = xmlNameFixUp(name) if name is not None \
             else xmlNameFixUp(layer.name())
 
@@ -591,6 +594,7 @@ class CatalogWrapper(object):
             except Exception, e:
                 ok = False
             QgsMapLayerRegistry.instance().addMapLayers([qgslayer])
+            addTrackedLayer(qgslayer, self.catalog.service_url)
             if not ok:
                 raise Exception ("Layer was added, but style could not be set (maybe GeoServer layer is missing default style)")
         elif resource.resource_type == "coverage":
@@ -598,11 +602,13 @@ class CatalogWrapper(object):
             if not qgslayer.isValid():
                 raise Exception ("Layer at %s is not a valid layer" % uri)
             QgsMapLayerRegistry.instance().addMapLayers([qgslayer])
+            addTrackedLayer(qgslayer, self.catalog.service_url)
         elif resource.resource_type == "wmsLayer":
             qgslayer = QgsRasterLayer(uri, destName or resource.title, "wms")
             if not qgslayer.isValid():
                 raise Exception ("Layer at %s is not a valid layer" % uri)
             QgsMapLayerRegistry.instance().addMapLayers([qgslayer])
+            addTrackedLayer(qgslayer, self.catalog.service_url)
         else:
             raise Exception("Cannot add layer. Unsupported layer type.")
 
