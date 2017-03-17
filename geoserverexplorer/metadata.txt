@@ -4,11 +4,10 @@ description=Configure and manage GeoServer from QGIS
 about=Easily configure GeoServer through QGIS. Prepare data and styling or publish directly to a catalog directly from the QGIS interface, or add a service from GeoServer into your QGIS project. The plugin integrates with the Processing framework, so this tasks can beautomated or used as part of a workflow.
 category=Web
 qgisMinimumVersion=2.14
-version=0.5
+version=0.5.1
 
 author=Boundless (Victor Olaya)
 email=info@boundlessgeo.com
-#roles=desktop-qgis-plugin-geoserver-ex
 
 icon=images/desktop.png
 tags=boundless,geoserver
