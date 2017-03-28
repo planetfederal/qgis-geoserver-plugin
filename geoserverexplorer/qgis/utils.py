@@ -46,6 +46,12 @@ def tempFilenameInTempFolder(basename):
     filename =  os.path.join(folder, basename)
     return filename
 
+def tempFolderInTempFolder():
+    path = tempFolder()
+    folder = os.path.join(path, str(uuid.uuid4()).replace("-",""))
+    mkdir(folder)
+    return folder
+
 def mkdir(newdir):
     if os.path.isdir(newdir):
         pass

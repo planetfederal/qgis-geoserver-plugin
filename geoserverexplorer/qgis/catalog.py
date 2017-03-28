@@ -20,7 +20,8 @@ from geoserverexplorer.geoserver.util import groupsWithLayer, removeLayerFromGro
     addLayerToGroups
 from geoserverexplorer.gui.gsnameutils import xmlNameFixUp, xmlNameIsValid
 import requests
-from geoserverexplorer.qgis.utils import addTrackedLayer
+from geoserverexplorer.qgis.utils import addTrackedLayer, tempFolderInTempFolder
+from mapboxgl import layerToMapbox
 
 try:
     from processing.modeler.ModelerAlgorithm import ModelerAlgorithm
@@ -164,13 +165,59 @@ class CatalogWrapper(object):
 
         if isinstance(layer, basestring):
             layer = layers.resolveLayer(layer)
-        sld, icons = getGsCompatibleSld(layer)
-        if sld is not None:
-            name = name if name is not None else layer.name()
-            name = name.replace(" ", "_")
-            self.uploadIcons(icons)
-            self.catalog.create_style(name, sld, overwrite)
-        return sld
+        name = name if name is not None else layer.name()
+        name = name.replace(" ", "_")
+        toUpload = ["spriteSheet.json", "spriteSheet.png", "spriteSheet@2x.json", "spriteSheet@2x.png"]
+        useMapbox = bool(QtCore.QSettings().value("/GeoServer/Settings/Geoerver/UseMapboxgl", True, bool))
+        if useMapbox:
+            url = self.catalog.gs_base_url 
+            folder = tempFolderInTempFolder()
+            layerToMapbox(layer, folder)
+            styledef = "<style><name>%s</name><format>mbstyle</format><filename>mapbox.json</filename></style>" % name
+            try:
+                headers = {"Content-type": "application/vnd.geoserver.mbstyle+json"}
+                if isinstance(self.catalog, PKICatalog):
+                    r = requests.post(url + "rest/styles", data = styledef, 
+                                    cert=(self.catalog.cert, self.catalog.key), 
+                                    verify=self.catalog.ca_cert)
+                    r.raise_for_status()
+                    with open(os.path.join(folder, "mapbox.json")) as f:
+                        r = requests.put(url + "rest/styles/" + name + "?raw=true", data=f.read(), 
+                                     headers=headers, cert=(self.catalog.cert, self.catalog.key), 
+                                     verify=self.catalog.ca_cert)
+                    r.raise_for_status()
+                    for filename in toUpload:
+                        fullPath = os.path.join(folder, filename)
+                        if os.path.exists(fullPath):
+                            with open(os.path.join(folder, filename)) as f:
+                                r = requests.put(url + "rest/resource/styles/" + filename , data=f.read(), 
+                                         auth=(self.catalog.username, self.catalog.password))
+                            r.raise_for_status() 
+                else:
+                    r = requests.post(url + "rest/styles", data = styledef, 
+                                    auth=(self.catalog.username, self.catalog.password))
+                    r.raise_for_status()
+                    with open(os.path.join(folder, "mapbox.json")) as f:
+                        r = requests.put(url + "rest/styles/" + name + "?raw=true", data=f.read(), 
+                                     headers=headers, auth=(self.catalog.username, self.catalog.password))
+                    r.raise_for_status()
+                    for filename in toUpload:
+                        fullPath = os.path.join(folder, filename)
+                        if os.path.exists(fullPath):
+                            with open(fullPath) as f:
+                                r = requests.put(url + "rest/resource/styles/" + filename , data=f.read(), 
+                                             auth=(self.catalog.username, self.catalog.password))
+                                r.raise_for_status() 
+            except Exception, e:
+                raise Exception ("Error uploading layer style to GeoServer:\n" + str(e))
+            return True
+        else:
+            sld, icons = getGsCompatibleSld(layer)
+            if sld is not None:
+                self.uploadIcons(icons)
+                self.catalog.create_style(name, sld, overwrite)
+                return True
+            return False
 
 
     def uploadIcons(self, icons):
@@ -505,7 +552,7 @@ class CatalogWrapper(object):
         layer = self.preprocess(layer)
         self.upload(layer, workspace, overwrite, name)
 
-        if sld is not None or style is not None:
+        if sld or style is not None:
             #assign style to created store
             publishing = self.catalog.get_layer(name)
             publishing.default_style = style or self.catalog.get_style(name)
