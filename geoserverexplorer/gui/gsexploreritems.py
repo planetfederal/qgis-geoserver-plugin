@@ -294,7 +294,9 @@ class GsCatalogsItem(GsTreeItem):
                 cat.authid = dlg.authid
                 v = cat.gsversion()
                 try:
-                    supported = float(v[:3]) > 2.299
+                    major = int(v.split(".")[0])
+                    minor = int(v.split(".")[1])
+                    supported = major > 2 or (major == 2 and minor > 2)
                 except:
                     supported = False
                 if not supported:
@@ -677,7 +679,7 @@ class GsCatalogItem(GsTreeItem):
     def _getDescriptionHtml(self, tree, explorer):
         if self.isConnected:
             try:
-                return self.catalog.about()
+                return "" #return self.catalog.about()
             except:
                 return "<p><b>Could not get information from server. Try refreshing the item to update this description panel</b></p>"
         else:
