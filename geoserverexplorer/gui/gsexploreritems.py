@@ -343,7 +343,12 @@ class GsLayersItem(GsTreeItem):
             if layer.name in items:
                 items[layer.name].markAsDuplicated()
             else:
-                layerItem = GsLayerItem(layer)
+                try:
+                    layerItem = GsLayerItem(layer)
+                except:
+                    config.iface.messageBar().pushMessage("Warning", "Layers %s could not be added" % layer.name,
+                      level = QgsMessageBar.WARNING,
+                      duration = 10)
                 layerItem.populate()
                 self.addChild(layerItem)
                 items[layer.name] = layerItem
@@ -563,12 +568,7 @@ class GsCatalogItem(GsTreeItem):
         self.addChild(self.workspacesItem)
         self.layersItem = GsLayersItem(self.catalog)
         self.addChild(self.layersItem)
-        try:
-            self.layersItem.populate()
-        except UnicodeDecodeError:
-            config.iface.messageBar().pushMessage("Warning", "Some datasores contain non-ascii characters and layers list could not be loaded",
-                      level = QgsMessageBar.WARNING,
-                      duration = 10)
+        self.layersItem.populate()
         self.groupsItem = GsGroupsItem(self.catalog)
         self.addChild(self.groupsItem)
         self.groupsItem.populate()
