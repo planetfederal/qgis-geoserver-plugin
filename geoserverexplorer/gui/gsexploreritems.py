@@ -563,7 +563,12 @@ class GsCatalogItem(GsTreeItem):
         self.addChild(self.workspacesItem)
         self.layersItem = GsLayersItem(self.catalog)
         self.addChild(self.layersItem)
-        self.layersItem.populate()
+        try:
+            self.layersItem.populate()
+        except UnicodeDecodeError:
+            config.iface.messageBar().pushMessage("Warning", "Some datasores contain non-ascii characters and layers list could not be loaded",
+                      level = QgsMessageBar.WARNING,
+                      duration = 10)
         self.groupsItem = GsGroupsItem(self.catalog)
         self.addChild(self.groupsItem)
         self.groupsItem.populate()
@@ -1245,10 +1250,20 @@ class GsWorkspaceItem(GsTreeItem):
 
     def populate(self):
         stores = self.element.catalog.get_stores(self.element)
+        nonAscii = False
         for store in stores:
             storeItem = GsStoreItem(store)
-            storeItem.populate()
+            try:
+                storeItem.populate()
+            except UnicodeDecodeError:
+                nonAscii = True
+                continue
             self.addChild(storeItem)
+
+        if nonAscii:
+            config.iface.messageBar().pushMessage("Warning", "Some datasores contain non-ascii characters and could not be loaded",
+                                  level = QgsMessageBar.WARNING,
+                                  duration = 10)
 
 
     def contextMenuActions(self, tree, explorer):
