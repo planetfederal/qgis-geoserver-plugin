@@ -580,9 +580,11 @@ class GsCatalogItem(GsTreeItem):
         self.addChild(self.gwcItem)
         if not self.gwcItem.isValid:
             self.gwcItem.setDisabled(True)
-        self.wpsItem = GsProcessesItem(self.catalog)
-        self.addChild(self.wpsItem)
-        self.wpsItem.populate()
+        #=======================================================================
+        # self.wpsItem = GsProcessesItem(self.catalog)
+        # self.addChild(self.wpsItem)
+        # self.wpsItem.populate()
+        #=======================================================================
         self.settingsItem = GsSettingsItem(self.catalog)
         self.addChild(self.settingsItem)
         icon = QtGui.QIcon(os.path.dirname(__file__) + "/../images/geoserver.png")
