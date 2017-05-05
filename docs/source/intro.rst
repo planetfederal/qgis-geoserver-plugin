@@ -146,10 +146,15 @@ Even if you are using the correct version of GeoServer, some limitations still e
 
 Another important limitation is due to the different versions of the SLD standard that QGIS and GeoServer support. Read the following section to know more about it.
 
+Naming limitations
+-------------------
+GeoServer explorer has at the moment some known limitations when spaces and special chars are used in names for workspaces, stores, layers and symbology classes. The suggestion at the moment is to not use spaces or special chars when it comes to naming or symbology classes.
+
+
 Styling limitations
 -------------------
 
-The GeoServer explorer allows to edit the style of a GeoServer layer directly from the QGIS interface. It can convert a style defined in QGIS into a style to be uploaded to a GeoServer catalog, and use GeoServer styles for QGIS layers. This bidirectional conversion is, however, limited. This is mainly caused due to the different versions of the SLD standard that are supported by QGIS and GeoServer, and also to some limitations in both GeoServer and QGIS. SLD is used as the common format used by the GeoServer Explorer for describing styles in both QGIS and GeoServer layer, but some incompatibilities exist. To increase compatibility between them, specific routines have been added to the GeoServer explorer. However, in some cases, a style defined in QGIS might not be compatible with the elements supported by GeoServer, and publishing a layer will be done with a modified style, or even using a default one instead if that is not possible.
+GeoServer explorer allows to edit the style of a GeoServer layer directly from the QGIS interface. It can convert a style defined in QGIS into a style to be uploaded to a GeoServer catalog, and use GeoServer styles for QGIS layers. This bidirectional conversion is, however, limited. This is mainly caused due to the different versions of the SLD standard that are supported by QGIS and GeoServer, and also to some limitations in both GeoServer and QGIS. SLD is used as the common format used by the GeoServer Explorer for describing styles in both QGIS and GeoServer layer, but some incompatibilities exist. To increase compatibility between them, specific routines have been added to the GeoServer explorer. However, in some cases, a style defined in QGIS might not be compatible with the elements supported by GeoServer, and publishing a layer will be done with a modified style, or even using a default one instead if that is not possible.
 
 This problem exist even when using the most recent version of GeoServer, but older versions of GeoServer might show more incompatibilities and not validate a large part of the SLD produced by the GeoServer Explorer.
 
