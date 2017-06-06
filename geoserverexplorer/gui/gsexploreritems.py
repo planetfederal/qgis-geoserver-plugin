@@ -686,7 +686,7 @@ class GsCatalogItem(GsTreeItem):
     def _getDescriptionHtml(self, tree, explorer):
         if self.isConnected:
             try:
-                return "" #return self.catalog.about()
+                return self.catalog.about()
             except:
                 return "<p><b>Could not get information from server. Try refreshing the item to update this description panel</b></p>"
         else:
