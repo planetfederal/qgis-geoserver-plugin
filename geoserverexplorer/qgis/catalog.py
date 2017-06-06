@@ -174,7 +174,6 @@ class CatalogWrapper(object):
 
 
     def uploadIcons(self, icons):
-        url = self.catalog.gs_base_url + "rest/resource/styles"
         for icon in icons:
             url = self.catalog.gs_base_url + "rest/resource/styles/"+icon[1]
             if isinstance(self.catalog, PKICatalog):
@@ -184,9 +183,21 @@ class CatalogWrapper(object):
             try:
                 r.raise_for_status()
             except Exception, e:
+                #In case the GeoServer instance is a Suite one with GeoServer 2.9 or earlier
+                self.uploadIconsSuite(icons)
+                
+    def uploadIconsSuite(self, icons):
+        url = self.catalog.gs_base_url + "app/api/icons"
+        for icon in icons:
+            files = {'file': (icon[1], icon[2])}
+            if isinstance(self.catalog, PKICatalog):
+                r = requests.post(url, files=files, cert=(self.catalog.cert, self.catalog.key), verify=self.catalog.ca_cert)
+            else:
+                r = requests.post(url, files=files, auth=(self.catalog.username, self.catalog.password))
+            try:
+                r.raise_for_status()
+            except Exception, e:
                 raise Exception ("Error uploading SVG icon to GeoServer:\n" + str(e))
-            break
-
 
     def getDataFromLayer(self, layer):
         '''
