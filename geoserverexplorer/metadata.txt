@@ -9,7 +9,7 @@ version=0.5.1
 author=Boundless (Victor Olaya)
 email=info@boundlessgeo.com
 
-icon=images/desktop.png
+icon=images/desktop.svg
 tags=boundless,geoserver
 
 homepage=https://github.com/boundlessgeo/qgis-geoserver-plugin
@@ -20,8 +20,8 @@ experimental=False
 deprecated=False
 
 changelog=
-	** General **
-	0.1.1:
-		-fixed wrongly packaged version of requests library
-	0.1:
-		-First version
+    ** General **
+    0.1.1:
+        -fixed wrongly packaged version of requests library
+    0.1:
+        -First version
