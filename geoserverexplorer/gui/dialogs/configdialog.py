@@ -95,7 +95,7 @@ class ConfigDialog(QtGui.QDialog):
         self.tree.addTopLevelItem(gsItem)
 
         # add QGIS relative parameters
-        qgisParams = [("SldUomManaging", "QGIS manage SLD uom correctly", True),
+        qgisParams = [("SldUomManaging", "QGIS manage SLD uom correctly", False),
                     ("SldScaleFactor", "Size scale factor. !Unused if uom is managed!", 4)]
         icon = QtGui.QIcon(os.path.dirname(__file__) + "/../../images/import_into_qgis.png")
         qgisItem = self._getItem("QGIS", icon, qgisParams)

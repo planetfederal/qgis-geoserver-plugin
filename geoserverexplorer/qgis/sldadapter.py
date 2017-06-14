@@ -46,7 +46,7 @@ def setScaleFactor():
     """Manage size scale factor basing if QGIS is able to manage or not SLD unit parameter (uom).
     """
     global SIZE_FACTOR
-    sldUomManaging = bool(QSettings().value("/GeoServer/Settings/QGIS/SldUomManaging", True, bool))
+    sldUomManaging = bool(QSettings().value("/GeoServer/Settings/QGIS/SldUomManaging", False, bool))
     if sldUomManaging:
         SIZE_FACTOR = SIZE_FACTOR_IF_UOM
     else:
