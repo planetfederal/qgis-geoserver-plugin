@@ -94,6 +94,13 @@ class ConfigDialog(QtGui.QDialog):
         gsItem = self._getItem("GeoServer", icon, gsParams)
         self.tree.addTopLevelItem(gsItem)
 
+        # add QGIS relative parameters
+        qgisParams = [("SldUomManaging", "QGIS manage SLD uom correctly", True),
+                    ("SldScaleFactor", "Size scale factor. !Unused if uom is managed!", 4)]
+        icon = QtGui.QIcon(os.path.dirname(__file__) + "/../../images/import_into_qgis.png")
+        qgisItem = self._getItem("QGIS", icon, qgisParams)
+        self.tree.addTopLevelItem(qgisItem)
+
         self.tree.setColumnWidth(0, 400)
 
     def _getItem(self, name, icon, params):
