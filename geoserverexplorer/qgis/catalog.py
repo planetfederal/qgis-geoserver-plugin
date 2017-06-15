@@ -589,6 +589,7 @@ class CatalogWrapper(object):
 
         resource = layer.resource
         uri = uri_utils.layerUri(layer)
+        QgsNetworkAccessManager.instance().cache().clear()
 
         if resource.resource_type == "featureType":
             qgslayer = QgsVectorLayer(uri, destName or resource.title, "WFS")
