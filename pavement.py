@@ -6,6 +6,9 @@
 import os
 import xmlrpclib
 import zipfile
+import requests
+import StringIO
+import shutil
 
 from paver.easy import *
 from paver.doctools import html
@@ -75,6 +78,18 @@ def setup(options):
             'ext_libs' : ext_libs.abspath(),
             'dep' : req
         })
+    get_certs()
+
+def get_certs():
+    print "Downloading and installing test certificates..."
+    certsPath = os.path.abspath("./_certs")
+    if os.path.exists(certsPath):
+        shutil.rmtree(certsPath)
+    r = requests.get("https://github.com/boundlessgeo/boundless-test-certs/archive/master.zip", stream=True)
+    z = zipfile.ZipFile(StringIO.StringIO(r.content))
+    z.extractall(path=certsPath)
+    shutil.copytree(os.path.join(certsPath, "boundless-test-certs-master", "certs-keys"), "./geoserverexplorer/test/resources/auth_system/certs-keys")
+    shutil.rmtree(certsPath)
 
 
 def read_requirements():
