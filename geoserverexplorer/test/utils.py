@@ -171,7 +171,7 @@ def geoserverLocation():
 
 def geoserverLocationSsh():
     host = os.getenv("GSHOSTNAME", GSHOSTNAME)
-    port = os.getenv("GSSHPORT", GSSHPORT)
+    port = os.getenv("GSSSHPORT", GSSSHPORT)
     return '%s:%s' % (host, port)
 
 
