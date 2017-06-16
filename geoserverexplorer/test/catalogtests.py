@@ -174,6 +174,20 @@ class CatalogTests(UtilsTestCase):
             settings.setValue("/GeoServer/Settings/GeoServer/PreuploadVectorHook", oldHookFile)
             self.cat.catalog.delete(self.cat.catalog.get_layer(HOOK), recurse = True)
 
+    def testUploadRenameAndDownload(self):
+        QgsNetworkAccessManager.instance().cache().clear()
+        self.cat.publishLayer(PT1, self.ws, name = PT1)
+        self.assertIsNotNone(self.cat.catalog.get_layer(PT1))
+        self.cat.addLayerToProject(PT1, PT1 + "_fromGeoserver")
+        layer = layers.resolveLayer(PT1 + "_fromGeoserver")
+        self.cat.publishLayer(PT1, self.ws, name = PT1 + "b")
+        self.cat.addLayerToProject(PT1 + "b", PT1 + "b_fromGeoserver")
+        layer = layers.resolveLayer(PT1 + "b_fromGeoserver")
+        self.cat.catalog.delete(self.cat.catalog.get_layer(PT1), recurse = True)
+        self.cat.catalog.delete(self.cat.catalog.get_layer(PT1 + "b"), recurse = True)
+
+
+
 ##################################################################################################
 
 def suiteSubset():
