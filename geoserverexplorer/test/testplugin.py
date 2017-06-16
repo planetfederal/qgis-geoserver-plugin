@@ -48,7 +48,9 @@ def unitTests():
     return _tests
 
 def settings():
-    return  {"GSURL":utils.serverLocationBasicAuth()+'/rest',
+    return  {"GSHOSTNAME": utils.GSHOSTNAME,
+             "GSPORT": utils.GSPORT,
+             "GSSSHPORT": utils.GSSSHPORT,
             "GSUSER":utils.GSUSER,
             "GSPASSWORD":utils.GSPASSWORD}
 

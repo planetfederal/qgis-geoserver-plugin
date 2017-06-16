@@ -70,7 +70,7 @@
         <ymax>45.81130733311931635</ymax>
       </extent>
       <id>pt120130827095302041</id>
-      <datasource>C:/Users/dds/.qgis2/python/plugins/geoserverexplorer/test/data/qgis_plugin_test_pt1.shp</datasource>
+      <datasource>./qgis_plugin_test_pt1.shp</datasource>
       <keywordList>
         <value></value>
       </keywordList>
@@ -326,7 +326,7 @@
         </symbol>
       </SingleCategoryDiagramRenderer>
       <DiagramLayerSettings yPosColumn="-1" showColumn="-1" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
-      <annotationform>C:/Users/dds/.qgis2/python/plugins/geoserverexplorer/test/data</annotationform>
+      <annotationform>.</annotationform>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
       <attributeactions default="-1"/>
@@ -337,10 +337,10 @@
           <column width="-1" hidden="1" type="actions"/>
         </columns>
       </attributetableconfig>
-      <editform>C:/Users/dds/.qgis2/python/plugins/geoserverexplorer/test/data</editform>
+      <editform>.</editform>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
-      <editforminitfilepath>C:/Users/dds/.qgis2/python/plugins/geoserverexplorer/test/data</editforminitfilepath>
+      <editforminitfilepath>.</editforminitfilepath>
       <editforminitcode><![CDATA[# -*- coding: utf-8 -*-
 """
 Les formulaires QGIS peuvent avoir une fonction Python qui sera appelée à l'ouverture du formulaire.
