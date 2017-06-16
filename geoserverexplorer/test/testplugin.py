@@ -50,7 +50,6 @@ def unitTests():
 def settings():
     return  {"GSHOSTNAME": utils.GSHOSTNAME,
              "GSPORT": utils.GSPORT,
-             "GSSSHPORT": utils.GSSSHPORT,
             "GSUSER":utils.GSUSER,
             "GSPASSWORD":utils.GSPASSWORD}
 
