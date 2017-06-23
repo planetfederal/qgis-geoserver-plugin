@@ -1,7 +1,7 @@
 version: '2'
 
 services:
-  boundless-test:
+  suite.boundless.test:
     image: elpaso/suite-trusty:4.8.0
     ports:
     - "8080:8080"
