@@ -4,8 +4,6 @@ services:
 env:
   global:
   - PLUGIN_NAME=geoserverexplorer
-  - DOCKER_VERSION=1.12.6-0~ubuntu-trusty
-  - DOCKER_COMPOSE_VERSION=1.7.1
   - secure: "oy82iDfs5KWE2nmMgwqX/uNZs9frXzb212VpPy8wpz5q3pERQiFLuttXinIZbi9KJq92R2hpmEPCLrpnH4de5s1c8N0pJtBc17Sx28DqJcZIcogpO/zXnQfj/w3s6Gw5p+N0KW4LMruGe+wlu3zJadg0i+Bck2haSkO9C2fO62lnas9Hp86wjKAqxbvYIf3XnFHLyB1ICQEQjbXNyrwdP1dXTeoUbFn8UaKhinxRV6OtutDgRDua3ZkFuPGBDqKX3//9xoGze6r2Xo/Y99C7hJkjRHOz0RkJu0khXsw3TlZlKVo1OfkWh1NsdcuZsm7gKpNqAp77BRLWorSxRxCSjyVhqDlqguwSN7MrT/5xQjn0mj/XDnuzhNzTntxOPpeWmXSNskpxKhwcpRd2jni6Wd5W1/UpoBC2Ueo8YBpE/0wVNMUd1q5XVZjBvBc715OnrvI3Z6i002yWUaj6uQHBWG9IP6lGBTfl/271648KCpVdtj4mCQTsv9aTVgFZbc4cQQfSw6kH1IxdRi+7+ulK/O2eoZcnaihzlyfdoHv1pbuKNQCqkqeUYAQG+RXwez0ckch8cRuOcPxF0Y/5DyVmExjgK7O1DPPDWDFvsmThML+wY3lY/ZAH46Sebhch34TLyopjUoTaumhwcm84T3goxUUJTPbg+iEJkOF0EkdCRTQ="
   - secure: "g1apYRlEgftoThS0apF09OuPICw9pIp6OQKsED/ObyuqA+htP+AX6pprqG517BakJW2WMbTCaG0a3S4d+EnyQ3E/NIRtEivdR6/aVNiLHaOJXlSBKw4gWHX0F3ZyiVRMqRSJ2xVSHlNWqmSmUaUkSUJr9FUNYr/zGHVAg3DjUC7Z8wVVQIwBHrNtcfwsDM3cQOpB4tUAQkxOxF5Nb+jVx/7Cw6QGhsEy66XRWhK8d4R56XaC5uf5pmYZcGZaS69Y3O89dnMmY7A63HliXQpTtYjhZ4FF7WAGzuNFENNYVYo30gRUi1cv7CoWd+RE/3qGMGpcxs/lAU3lD5OLu5O7P/apmfFwKKJ0cS+fXKuI+gYMzpWIM/gBulTnNMzVHzWisy+1dVzsAZxzX4XRCb0rD/W89c770k85F/WNYGpUdSE8J7XDSFHV95FfmKIeAjSo1NSt8xijarz6YmxoktDjIWiogtpiLkOp6vhijbo6GiER+6kQ3JjUXWPbl+EOmsqFHUKMq0osclNqS+NWoqFZ7onQvK3L/uvza72eqM2OSqIXy2ilau4nlVNUl4P6IQmmZWlJmAqtmBO/O1f6NV6FO8czliEW6vQJbu2kojvqrFglYnUXNcJzKf/oH9g1ZY4Cw7qsf8s/NkYTN1wBFr9mTJ4B3ZfUgeQohNNZE1Xo8Ws="
 
@@ -17,11 +15,6 @@ matrix:
   allow_failures:
   - env: QGIS_VERSION_TAG=master
 before_install:
-- apt-cache madison docker-engine
-- sudo apt-get -o Dpkg::Options::="--force-confnew" install -y docker-engine=${DOCKER_VERSION}
-- curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-- chmod +x docker-compose
-- sudo mv docker-compose /usr/local/bin
 - docker-compose up -d
 - docker-compose ps
 - sleep 10
