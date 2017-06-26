@@ -42,6 +42,7 @@ from geoserverexplorer.gui.gsoperations import *
 from geoserverexplorer.geoserver.retry import RetryCatalog
 from geoserverexplorer.geoserver.auth import AuthCatalog
 from geoserverexplorer.gui.gsoperations import addDraggedStyleToLayer
+import xml.dom.minidom
 
 class GsTreeItem(TreeItem):
 
@@ -1170,6 +1171,11 @@ class GsStyleItem(GsTreeItem):
                 QtGui.QMessageBox.warning(explorer, "Edit style", "Editing raster layer styles is currently not supported")
                 return
         sld = self.element.sld_body
+        try:
+            _sld = "\n".join([line for line in
+                              xml.dom.minidom.parseString(self.style.sld_body).toprettyxml().splitlines() if line.strip()])
+        except:
+            self._showSldParsingError()
         sld = adaptGsToQgs(sld)
         sldfile = tempFilename("sld")
         with open(sldfile, 'w') as f:
@@ -1192,9 +1198,17 @@ class GsStyleItem(GsTreeItem):
         if newSld != oldSld:
             explorer.run(self.element.update_body, "Update style", [], newSld)
 
+    def _showSldParsingError(self):
+        config.iface.messageBar().pushMessage("Warning", "Style is not stored as XML and cannot be edited",
+                                              level = QgsMessageBar.WARNING,
+                                              duration = 10)
+
     def editSLD(self, tree, explorer):
-        dlg = SldEditorDialog(self.element, explorer)
-        dlg.exec_()
+        try:
+            dlg = SldEditorDialog(self.element, explorer)
+            dlg.exec_()
+        except:
+            self._showSldParsingError()
 
     def deleteStyle(self, tree, explorer):
         self.deleteElements([self], tree, explorer)
