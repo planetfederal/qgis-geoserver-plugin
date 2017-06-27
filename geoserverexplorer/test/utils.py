@@ -144,7 +144,8 @@ def cleanCatalog(cat):
 
 def populateCatalog(cat):
     cleanCatalog(cat)
-    cat.create_workspace(WORKSPACE, "http://test.com")
+    url = "http://test%s.com" % ''.join(i for i in uid.uuid4() if i.isdigit())
+    cat.create_workspace(WORKSPACE, url)
     ws = cat.get_workspace(WORKSPACE)
     path = os.path.join(os.path.dirname(__file__), "data", PT2)
     data = shapefile_and_friends(path)
@@ -159,7 +160,8 @@ def populateCatalog(cat):
     cat.create_style(STYLE, sld, True)
     group = cat.create_layergroup(GROUP, [PT2])
     cat.save(group)
-    cat.create_workspace(WORKSPACEB, "http://testb.com")
+    url = "http://test%s.com" % ''.join(i for i in uid.uuid4() if i.isdigit())
+    cat.create_workspace(WORKSPACEB, url)
     cat.set_default_workspace(WORKSPACE)
 
 
