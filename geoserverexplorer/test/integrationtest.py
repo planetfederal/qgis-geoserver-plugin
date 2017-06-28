@@ -11,7 +11,6 @@ from geoserverexplorer.gui.gsexploreritems import GsCatalogItem
 import os
 from qgis.utils import iface
 from qgis.core import *
-from geoserverexplorer.test.utils import AUTHCFGID, AUTHTYPE
 
 SETTINGS_CACHE_TIME = "/GeoServer/Settings/GeoServer/AuthCatalogXMLCacheTime"
 
@@ -24,7 +23,10 @@ class ExplorerIntegrationTest(unittest.TestCase):
         cls.cache_time = QSettings().value(SETTINGS_CACHE_TIME)
         QSettings().setValue(SETTINGS_CACHE_TIME, 1)
         # check if context is a PKI auth context
-        if hasattr(cls, 'authm') and cls.authm:
+        # import is doen here to avoid to have the effect to loose module
+        # this fixes https://github.com/boundlessgeo/qgis-geoserver-plugin/issues/85
+        from geoserverexplorer.test.utils import AUTHCFGID, AUTHTYPE, AUTHM
+        if AUTHM:
             cls.catWrapper = utils.getGeoServerCatalog(authcfgid=AUTHCFGID, authtype=AUTHTYPE)
         else:
             cls.catWrapper = utils.getGeoServerCatalog()
