@@ -20,7 +20,7 @@ class ExplorerIntegrationTest(unittest.TestCase):
     def setUpClass(cls):
         cls.explorer = GeoServerExplorer()
         # Disable cache
-        cls.cache_time = QSettings().value(SETTINGS_CACHE_TIME)
+        cls.cache_time = int(QSettings().value(SETTINGS_CACHE_TIME, 180, int))
         QSettings().setValue(SETTINGS_CACHE_TIME, 1)
         # check if context is a PKI auth context
         # import is doen here to avoid to have the effect to loose module
