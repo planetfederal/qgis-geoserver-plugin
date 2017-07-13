@@ -33,6 +33,7 @@ def userFolder():
         os.mkdir(folder)
     except OSError:
         pass
+    return folder
 
 
 def isWindows():
