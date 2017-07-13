@@ -88,7 +88,10 @@ def get_certs():
     r = requests.get("https://github.com/boundlessgeo/boundless-test-certs/archive/master.zip", stream=True)
     z = zipfile.ZipFile(StringIO.StringIO(r.content))
     z.extractall(path=certsPath)
-    shutil.copytree(os.path.join(certsPath, "boundless-test-certs-master", "certs-keys"), "./geoserverexplorer/test/resources/auth_system/certs-keys")
+    dstPath = "./geoserverexplorer/test/resources/auth_system/certs-keys"
+    if os.path.exists(dstPath):
+        shutil.rmtree(dstPath)
+    shutil.copytree(os.path.join(certsPath, "boundless-test-certs-master", "certs-keys"), dstPath)
     shutil.rmtree(certsPath)
 
 
