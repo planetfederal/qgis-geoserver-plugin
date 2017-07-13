@@ -17,7 +17,7 @@ from geoserverexplorer.test.utils import PT1, DEM, DEM2, PT1JSON, DEMASCII,\
     GEOLOGY_GROUP, GEOFORMS, LANDUSE, HOOK, WORKSPACE, WORKSPACEB
 import re
 from .utils import UtilsTestCase
-from qgiscommon.setting import pluginSetting, setPluginSetting
+from qgiscommon.settings import pluginSetting, setPluginSetting
 
 
 class CatalogTests(UtilsTestCase):
