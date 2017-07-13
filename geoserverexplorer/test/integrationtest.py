@@ -11,8 +11,7 @@ from geoserverexplorer.gui.gsexploreritems import GsCatalogItem
 import os
 from qgis.utils import iface
 from qgis.core import *
-
-SETTINGS_CACHE_TIME = "/GeoServer/Settings/GeoServer/AuthCatalogXMLCacheTime"
+from qgiscommons.settings import pluginSetting, setPluginSetting
 
 class ExplorerIntegrationTest(unittest.TestCase):
 
@@ -20,8 +19,8 @@ class ExplorerIntegrationTest(unittest.TestCase):
     def setUpClass(cls):
         cls.explorer = GeoServerExplorer()
         # Disable cache
-        cls.cache_time = int(QSettings().value(SETTINGS_CACHE_TIME, 180, int))
-        QSettings().setValue(SETTINGS_CACHE_TIME, 1)
+        cls.cache_time = pluginSetting("AuthCatalogXMLCacheTime")
+        setPluginSetting("AuthCatalogXMLCacheTime", 1)
         # check if context is a PKI auth context
         # import is doen here to avoid to have the effect to loose module
         # this fixes https://github.com/boundlessgeo/qgis-geoserver-plugin/issues/85
@@ -37,14 +36,14 @@ class ExplorerIntegrationTest(unittest.TestCase):
         cls.catalogItem.populate()
         cls.tree = cls.explorer.tree
         # @TODO - make tests pass using importer
-        cls.useRestApi = QSettings().setValue("/GeoServer/Settings/GeoServer/UseRestApi", True)
+        cls.useRestApi = setPluginSetting("UseRestApi", True)
         projectFile = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "test.qgs")
         iface.addProject(projectFile)
 
     @classmethod
     def tearDownClass(cls):
         utils.cleanCatalog(cls.cat)
-        QSettings().setValue(SETTINGS_CACHE_TIME, cls.cache_time)
+        setPluginSetting("AuthCatalogXMLCacheTime", cls.cache_time)
 
     def _getItemUnder(self, parent, name):
 

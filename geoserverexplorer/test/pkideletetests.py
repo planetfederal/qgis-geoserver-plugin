@@ -13,6 +13,7 @@ from geoserverexplorer.geoserver import pem
 from geoserverexplorer.test import utils
 from geoserverexplorer.test.deletetests import DeleteTests
 from geoserverexplorer.test import utils
+from qgiscommons.settings import pluginSetting, setPluginSetting
 
 class PkiDeleteTests(DeleteTests):
     '''
@@ -26,7 +27,7 @@ class PkiDeleteTests(DeleteTests):
         utils.initAuthManager()
         utils.populatePKITestCerts()
 
-        # do workspace popuplation
+        # do workspace population
         super(PkiDeleteTests, cls).setUpClass()
 
         cls.ws = cls.cat.get_workspace(utils.WORKSPACE)
@@ -37,13 +38,13 @@ class PkiDeleteTests(DeleteTests):
         if os.path.normcase(projectFile) != os.path.normcase(QgsProject.instance().fileName()):
             iface.addProject(projectFile)
         # set flags to instruct GUI interaction
-        cls.confirmDelete = QSettings().value("/GeoServer/Settings/General/ConfirmDelete", True, bool)
-        QSettings().setValue("/GeoServer/Settings/General/ConfirmDelete", False)
+        cls.confirmDelete = pluginSetting("ConfirmDelete")
+        setPluginSetting("ConfirmDelete", False)
 
     @classmethod
     def tearDownClass(cls):
         super(PkiDeleteTests, cls).tearDownClass()
-        QSettings().setValue("/GeoServer/Settings/General/ConfirmDelete", cls.confirmDelete)
+        setPluginSetting("ConfirmDelete", cls.confirmDelete)
         # remove certs
         pem.removeCatalogPkiTempFiles(cls.cat)
         utils.removePKITestCerts()

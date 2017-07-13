@@ -17,6 +17,7 @@ from geoserverexplorer.test.utils import PT1, DEM, DEM2, PT1JSON, DEMASCII,\
     GEOLOGY_GROUP, GEOFORMS, LANDUSE, HOOK, WORKSPACE, WORKSPACEB
 import re
 from .utils import UtilsTestCase
+from qgiscommon.setting import pluginSetting, setPluginSetting
 
 
 class CatalogTests(UtilsTestCase):
@@ -154,12 +155,11 @@ class CatalogTests(UtilsTestCase):
         if not catalog.processingOk:
             print 'skipping testPreuploadVectorHook, processing not installed'
             return
-        settings = QSettings()
-        oldHookFile = str(settings.value("/GeoServer/Settings/GeoServer/PreuploadVectorHook", ""))
+        oldHookFile = pluginSetting("PreuploadVectorHook")
         hookFile = os.path.join(os.path.dirname(__file__), "resources", "vector_hook.py")
-        settings.setValue("/GeoServer/Settings/GeoServer/PreuploadVectorHook", hookFile)
+        setPluginSetting("PreuploadVectorHook", hookFile)
         try:
-            hookFile = str(QSettings().value("/GeoServer/Settings/GeoServer/PreuploadVectorHook", ""))
+            hookFile = pluginSetting("PreuploadVectorHook")
             try:
                 self.cat.getAlgorithmFromHookFile(hookFile)
             except:
@@ -171,7 +171,7 @@ class CatalogTests(UtilsTestCase):
             self.assertEqual(1, layer.featureCount())
             QgsMapLayerRegistry.instance().removeMapLayer(layer.id())
         finally:
-            settings.setValue("/GeoServer/Settings/GeoServer/PreuploadVectorHook", oldHookFile)
+            setPluginSetting("PreuploadVectorHook", oldHookFile)
             self.cat.catalog.delete(self.cat.catalog.get_layer(HOOK), recurse = True)
 
     def testUploadRenameAndDownload(self):

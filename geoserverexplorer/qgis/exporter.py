@@ -14,6 +14,7 @@ import os
 from PyQt4 import QtCore
 from qgis.utils import iface
 from qgis.gui import QgsMessageBar
+from qgiscommons.files import tempFilenameInTempFolder
 
 def exportVectorLayer(layer):
     '''accepts a QgsVectorLayer or a string with a filepath'''
@@ -30,7 +31,7 @@ def exportVectorLayer(layer):
             layer = QgsVectorLayer(filename, "layer", "ogr")
             if not layer.isValid() or layer.type() != QgsMapLayer.VectorLayer:
                 raise Exception ("Error reading file {} or it is not a valid vector layer file".format(filename))
-        output = utils.tempFilenameInTempFolder(destFilename + ".shp")
+        output = tempFilenameInTempFolder(destFilename + ".shp")
         provider = layer.dataProvider()
         writer = QgsVectorFileWriter(output, systemEncoding, layer.pendingFields(), provider.geometryType(), layer.crs() )
         for feat in layer.getFeatures():
@@ -48,7 +49,7 @@ def exportVectorLayer(layer):
 def exportRasterLayer(layer):
     if (not unicode(layer.source()).lower().endswith("tif") ):
         filename = str(layer.name())
-        output = utils.tempFilenameInTempFolder(filename + ".tif")
+        output = tempFilenameInTempFolder(filename + ".tif")
         writer = QgsRasterFileWriter(output)
         writer.setOutputFormat("GTiff");
         writer.writeRaster(layer.pipe(), layer.width(), layer.height(), layer.extent(), layer.crs())

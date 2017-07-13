@@ -43,6 +43,8 @@ from geoserverexplorer.geoserver.retry import RetryCatalog
 from geoserverexplorer.geoserver.auth import AuthCatalog
 from geoserverexplorer.gui.gsoperations import addDraggedStyleToLayer
 import xml.dom.minidom
+from qgiscommons.settings import pluginSetting
+from qgiscommons.files import tempFilename
 
 class GsTreeItem(TreeItem):
 
@@ -119,9 +121,8 @@ class GsTreeItem(TreeItem):
             toUpdate = toUpdate - toDelete
         elif not confirmDelete():
             return
-        settings = QtCore.QSettings()
-        deleteStyle = bool(settings.value("/GeoServer/Settings/GeoServer/DeleteStyle", True, bool))
-        recurse = bool(settings.value("/GeoServer/Settings/GeoServer/Recurse", True, bool))
+        deleteStyle = pluginSetting("DeleteStyle")
+        recurse = pluginSetting("Recurse")
 
         elements[0:0] = dependent
         if recurse:
@@ -260,7 +261,7 @@ class GsCatalogsItem(GsTreeItem):
         icon = QtGui.QIcon(os.path.dirname(__file__) + "/../images/geoserver.png")
         GsTreeItem.__init__(self, None, icon, "Catalogs")
         settings = QtCore.QSettings()
-        saveCatalogs = bool(settings.value("/GeoServer/Settings/GeoServer/SaveCatalogs", True, bool))
+        saveCatalogs = pluginSetting("SaveCatalogs")
         if saveCatalogs:
             settings.beginGroup("/GeoServer/Catalogs")
             for name in settings.childGroups():
@@ -284,8 +285,7 @@ class GsCatalogsItem(GsTreeItem):
                 QtGui.QApplication.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
                 if not QGis.QGIS_VERSION_INT < 21200 and dlg.authid:
                     # For QGIS >= 2.12, use the new AuthCatalog and QgsNetworkAccessManager
-                    settings = QtCore.QSettings()
-                    cache_time = int(settings.value("/GeoServer/Settings/GeoServer/AuthCatalogXMLCacheTime", 180, int))
+                    cache_time = pluginSetting("AuthCatalogXMLCacheTime")
                     cat = AuthCatalog(dlg.url, dlg.authid, cache_time)
                     self.catalog = cat
                 elif dlg.certfile is not None:
@@ -518,8 +518,7 @@ class GsCatalogItem(GsTreeItem):
                     authtype = QgsAuthManager.instance().configAuthMethodKey(authid)
                     if not authtype or authtype == '':
                         raise Exception("Cannot restore catalog. Invalid or missing auth information")
-                    settings = QtCore.QSettings()
-                    cache_time = int(settings.value("/GeoServer/Settings/GeoServer/AuthCatalogXMLCacheTime", 180, int))
+                    cache_time =  pluginSetting("AuthCatalogXMLCacheTime")
                     self.catalog = AuthCatalog(url, authid, cache_time)
                     # if authtype == 'Basic':
                     #     amconfig = QgsAuthMethodConfig()
@@ -642,8 +641,7 @@ class GsCatalogItem(GsTreeItem):
         if dlg.ok:
             if not QGis.QGIS_VERSION_INT < 21200 and dlg.authid:
                 # For QGIS >= 2.12, use the new AuthCatalog and QgsNetworkAccessManager
-                settings = QtCore.QSettings()
-                cache_time = int(settings.value("/GeoServer/Settings/GeoServer/AuthCatalogXMLCacheTime", 180, int))
+                cache_time = pluginSetting("AuthCatalogXMLCacheTime")
                 self.catalog = AuthCatalog(dlg.url, dlg.authid, cache_time)
             elif getattr(dlg, 'certfile', False):
                 self.catalog = PKICatalog(dlg.url, dlg.keyfile, dlg.certfile, dlg.cafile)
