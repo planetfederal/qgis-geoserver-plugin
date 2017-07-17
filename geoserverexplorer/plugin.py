@@ -26,7 +26,7 @@ class GeoServerExplorerPlugin:
         config.iface = iface
         if processingOk:
             self.provider = GeoServerProvider()
-
+        readSettings()
         try:
             from qgistester.tests import addTestModule
             from geoserverexplorer.test import testplugin
@@ -35,7 +35,7 @@ class GeoServerExplorerPlugin:
             addTestModule(testpkiplugin, "PKI GeoServer")
         except Exception as ex:
             pass
-        readSettings()
+
 
     def unload(self):
         pem.removePkiTempFiles(self.explorer.catalogs())
