@@ -11,7 +11,7 @@ from geoserverexplorer.gui.gsexploreritems import GsCatalogItem
 import os
 from qgis.utils import iface
 from qgis.core import *
-from qgiscommons.settings import pluginSetting, setPluginSetting
+from qgiscommons2.settings import pluginSetting, setPluginSetting
 
 class ExplorerIntegrationTest(unittest.TestCase):
 

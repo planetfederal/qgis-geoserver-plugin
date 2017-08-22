@@ -7,7 +7,7 @@ import sys
 import os
 import site
 
-site.addsitedir(os.path.abspath(os.path.dirname(__file__) + '/ext-libs'))
+site.addsitedir(os.path.abspath(os.path.dirname(__file__) + '/extlibs'))
 
 # ABP: TORM import gsconfig from here
 # sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + '/ext-src/gsconfig/src'))

@@ -9,7 +9,7 @@ Routines to ask for confirmation when performing certain operations
 from PyQt4 import QtGui, QtCore
 from geoserverexplorer.gui.dialogs.gsnamedialog import getGSLayerName
 from geoserverexplorer.gui.gsnameutils import isNameValid, xmlNameRegex
-from qgiscommons.settings import pluginSetting
+from qgiscommons2.settings import pluginSetting
 
 def publishLayer(catalog, layer, workspace=None, overwrite=False):
     name = layer.name()

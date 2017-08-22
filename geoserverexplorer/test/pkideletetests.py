@@ -13,7 +13,7 @@ from geoserverexplorer.geoserver import pem
 from geoserverexplorer.test import utils
 from geoserverexplorer.test.deletetests import DeleteTests
 from geoserverexplorer.test import utils
-from qgiscommons.settings import pluginSetting, setPluginSetting
+from qgiscommons2.settings import pluginSetting, setPluginSetting
 
 class PkiDeleteTests(DeleteTests):
     '''

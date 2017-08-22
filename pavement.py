@@ -19,7 +19,7 @@ from collections import defaultdict
 options(
     plugin = Bunch(
         name = 'geoserverexplorer',
-        ext_libs = path('geoserverexplorer/ext-libs'),
+        ext_libs = path('geoserverexplorer/extlibs'),
         ext_src = path('geoserverexplorer/ext-src'),
         source_dir = path('geoserverexplorer'),
         package_dir = path('.'),
@@ -188,7 +188,7 @@ def pep8(args):
     ignore = ['E203', 'E121', 'E122', 'E123', 'E124', 'E125', 'E126', 'E127',
         'E128', 'E402']
     styleguide = pep8.StyleGuide(ignore=ignore,
-                                 exclude=['*/ext-libs/*', '*/ext-src/*'],
+                                 exclude=['*/extlibs/*', '*/ext-src/*'],
                                  repeat=True, max_line_length=79,
                                  parse_argv=args)
     styleguide.input_dir(options.plugin.source_dir)

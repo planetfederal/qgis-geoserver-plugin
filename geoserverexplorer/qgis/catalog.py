@@ -21,8 +21,8 @@ from geoserverexplorer.geoserver.util import groupsWithLayer, removeLayerFromGro
 from geoserverexplorer.gui.gsnameutils import xmlNameFixUp, xmlNameIsValid
 import requests
 from geoserverexplorer.qgis.utils import addTrackedLayer
-from qgiscommons.settings import pluginSetting
-from qgiscommons.files import tempFilename
+from qgiscommons2.settings import pluginSetting
+from qgiscommons2.files import tempFilename
 
 try:
     from processing.modeler.ModelerAlgorithm import ModelerAlgorithm
