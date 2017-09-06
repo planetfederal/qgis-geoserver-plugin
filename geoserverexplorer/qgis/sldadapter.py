@@ -11,7 +11,7 @@ This is a quick and dirty solution until both programs support the same specific
 import re
 import os
 from PyQt4.QtXml import *
-from PyQt4.QtCore import QSettings
+from qgiscommons2.settings import pluginSetting
 from qgis.core import *
 import math
 
@@ -46,11 +46,12 @@ def setScaleFactor():
     """Manage size scale factor basing if QGIS is able to manage or not SLD unit parameter (uom).
     """
     global SIZE_FACTOR
-    sldUomManaging = bool(QSettings().value("/GeoServer/Settings/QGIS/SldUomManaging", False, bool))
-    if sldUomManaging:
+    if pluginSetting("SldUomManaging"):
         SIZE_FACTOR = SIZE_FACTOR_IF_UOM
     else:
-        SIZE_FACTOR = int(QSettings().value("/GeoServer/Settings/QGIS/SldScaleFactor", 4, int))
+        SIZE_FACTOR = SIZE_FACTOR_IF_NO_UOM
+        if pluginSetting("SldScaleFactor"):
+            SIZE_FACTOR = pluginSetting("SldScaleFactor")
 
 def adaptQgsToGs(sld, layer):
     if layer.type() != QgsMapLayer.VectorLayer:
