@@ -13,6 +13,7 @@ from geoserverexplorer import config
 import traceback
 from geoserverexplorer.gui.explorertree import ExplorerTreeWidget
 from geoserverexplorer.qgis.utils import UserCanceledOperation
+from qgiscommons2.settings import pluginSetting
 
 class GeoServerExplorer(QtGui.QDockWidget):
 
@@ -31,7 +32,7 @@ class GeoServerExplorer(QtGui.QDockWidget):
         self.splitter.setOrientation(QtCore.Qt.Vertical)
         self.subwidget = QtGui.QWidget()
         self.explorerTree = self.tree = ExplorerTreeWidget(self)
-        showToolbar = QtCore.QSettings().value("/GeoServer/Settings/General/ShowToolbar", True, bool)
+        showToolbar = pluginSetting("ShowToolbar")
         self.toolbar = QtGui.QToolBar()
         self.toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
         self.toolbar.setVisible(showToolbar)
@@ -45,7 +46,7 @@ class GeoServerExplorer(QtGui.QDockWidget):
         self.description.setLayout(self.descriptionLayout)
         self.splitter.addWidget(self.description)
         self.setDescriptionWidget()
-        showDescription = QtCore.QSettings().value("/GeoServer/Settings/General/ShowDescription", True, bool)
+        showDescription = pluginSetting("ShowDescription")
         self.description.setVisible(showDescription)
         self.progress = None
         self.layout = QtGui.QVBoxLayout()
@@ -83,9 +84,9 @@ class GeoServerExplorer(QtGui.QDockWidget):
         self.toolbar.update()
 
     def refreshContent(self):
-        showDescription = QtCore.QSettings().value("/GeoServer/Settings/General/ShowDescription", True, bool)
+        showDescription = pluginSetting("ShowDescription")
         self.description.setVisible(showDescription)
-        showToolbar = QtCore.QSettings().value("/GeoServer/Settings/General/ShowToolbar", True, bool)
+        showToolbar = pluginSetting("ShowToolbar")
         self.toolbar.setVisible(showToolbar)
         self.refreshDescription()
 

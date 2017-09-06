@@ -26,40 +26,15 @@ def checkLayers():
         return False
     return True
 
-def tempFolder():
-    tempDir = os.path.join(unicode(QtCore.QDir.tempPath()), "geoserverplugin")
-    if not QtCore.QDir(tempDir).exists():
-        QtCore.QDir().mkpath(tempDir)
-    return unicode(os.path.abspath(tempDir))
-
-def tempFilename(ext):
-    path = tempFolder()
-    ext = "" if ext is None else ext
-    filename = path + os.sep + str(time.time())  + "." + ext
-    return filename
-
-def tempFilenameInTempFolder(basename):
-    '''returns a temporary filename for a given file, putting it into a temp folder but not changing its basename'''
-    path = tempFolder()
-    folder = os.path.join(path, str(uuid.uuid4()).replace("-",""))
-    mkdir(folder)
-    filename =  os.path.join(folder, basename)
-    return filename
-
-def mkdir(newdir):
-    if os.path.isdir(newdir):
-        pass
-    else:
-        head, tail = os.path.split(newdir)
-        if head and not os.path.isdir(head):
-            mkdir(head)
-        if tail:
-            os.mkdir(newdir)
 
 def userFolder():
     folder = os.path.join(QgsApplication.qgisSettingsDirPath(), 'geoserver')
-    mkdir(folder)
+    try:
+        os.mkdir(folder)
+    except OSError:
+        pass
     return folder
+
 
 def isWindows():
     return os.name == 'nt'

@@ -4,10 +4,8 @@
 # This code is licensed under the GPL 2.0 license.
 #
 import os
-import webbrowser
 import config
 from geoserverexplorer.gui.explorer import GeoServerExplorer
-from geoserverexplorer.gui.dialogs.configdialog import ConfigDialog
 from geoserverexplorer.geoserver import pem
 from PyQt4 import QtGui, QtCore
 try:
@@ -18,7 +16,9 @@ except:
     processingOk = False
 from geoserverexplorer.qgis.sldadapter import adaptGsToQgs
 from geoserverexplorer.qgis import layerwatcher
-
+from qgiscommons2.settings import pluginSetting, setPluginSetting, readSettings
+from qgiscommons2.gui import addHelpMenu, removeHelpMenu, addAboutMenu, removeAboutMenu
+from qgiscommons2.gui.settings import addSettingsMenu, removeSettingsMenu
 
 class GeoServerExplorerPlugin:
 
@@ -27,7 +27,7 @@ class GeoServerExplorerPlugin:
         config.iface = iface
         if processingOk:
             self.provider = GeoServerProvider()
-
+        readSettings()
         try:
             from qgistester.tests import addTestModule
             from geoserverexplorer.test import testplugin
@@ -37,12 +37,14 @@ class GeoServerExplorerPlugin:
         except Exception as ex:
             pass
 
+
     def unload(self):
         pem.removePkiTempFiles(self.explorer.catalogs())
         self.explorer.deleteLater()
+        removeSettingsMenu("GeoServer", self.iface.removePluginWebMenu)
+        removeHelpMenu("GeoServer", self.iface.removePluginWebMenu)
+        removeAboutMenu("GeoServer", self.iface.removePluginWebMenu)
         self.iface.removePluginWebMenu(u"GeoServer", self.explorerAction)
-        self.iface.removePluginWebMenu(u"GeoServer", self.configAction)
-        self.iface.removePluginWebMenu(u"GeoServer", self.helpAction)
         if processingOk:
             Processing.removeProvider(self.provider)
         layerwatcher.disconnectLayerWasAdded()
@@ -61,41 +63,24 @@ class GeoServerExplorerPlugin:
         self.explorerAction.triggered.connect(self.openExplorer)
         self.iface.addPluginToWebMenu(u"GeoServer", self.explorerAction)
 
-        settings = QtCore.QSettings()
         self.explorer = GeoServerExplorer()
         self.iface.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.explorer)
-        if not settings.value("/GeoServer/Settings/General/ExplorerVisible", False, bool):
+        if not pluginSetting("ExplorerVisible"):
             self.explorer.hide()
         self.explorer.visibilityChanged.connect(self._explorerVisibilityChanged)
 
-
-        icon = QtGui.QIcon(os.path.dirname(__file__) + "/images/config.png")
-        self.configAction = QtGui.QAction(icon, "GeoServer Explorer settings", self.iface.mainWindow())
-        self.configAction.triggered.connect(self.openSettings)
-        self.iface.addPluginToWebMenu(u"GeoServer", self.configAction)
-
-        icon = QtGui.QIcon(os.path.dirname(__file__) + "/images/help.png")
-        self.helpAction = QtGui.QAction(icon, "GeoServer Explorer help", self.iface.mainWindow())
-        self.helpAction.triggered.connect(self.showHelp)
-        self.iface.addPluginToWebMenu(u"GeoServer", self.helpAction)
+        addSettingsMenu("GeoServer", self.iface.addPluginToWebMenu)
+        addHelpMenu("GeoServer", self.iface.addPluginToWebMenu)
+        addAboutMenu("GeoServer", self.iface.addPluginToWebMenu)
 
         if processingOk:
             Processing.addProvider(self.provider)
 
         layerwatcher.connectLayerWasAdded(self.explorer)
 
-
     def _explorerVisibilityChanged(self, visible):
-        settings = QtCore.QSettings()
-        settings.setValue("/GeoServer/Settings/General/ExplorerVisible", visible)
-
-    def showHelp(self):
-        webbrowser.open_new(
-                        "file://" + os.path.join(os.path.dirname(__file__), "docs", "html", "index.html"))
+        setPluginSetting("ExplorerVisible", visible)
 
     def openExplorer(self):
         self.explorer.show()
 
-    def openSettings(self):
-        dlg = ConfigDialog(self.explorer)
-        dlg.exec_()

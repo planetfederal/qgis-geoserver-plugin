@@ -100,7 +100,7 @@ class EditGwcLayerDialog(QtGui.QDialog):
         self.groupBoxFormats.setTitle("Tile image formats")
         self.checkBoxPng.setText("png")
         self.checkBoxPng8.setText("png8")
-        self.checkBoxJpg.setText("jpg")
+        self.checkBoxJpg.setText("jpeg")
         self.checkBoxGif.setText("gif")
         self.groupBoxGridsets.setTitle("Gridsets")
         self.checkBox4326.setText("EPSG:4326")

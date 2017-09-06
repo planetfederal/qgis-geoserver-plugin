@@ -25,7 +25,7 @@ from geoserverexplorer.gui.gsnameutils import GSNameWidget, xmlNameRegex, \
 from geoserverexplorer.gui.dialogs.gsnamedialog import GSNameDialog
 from geoserverexplorer.gui.contextualhelp import InfoIcon
 from geoserverexplorer.gui.gsnameutils import xmlNameEmptyRegex
-from geoserverexplorer.test.utils import geoserverLocation, AUTHCFGID, AUTHTYPE
+from geoserverexplorer.test.utils import geoserverLocation
 
 class CreateCatalogDialogTests(unittest.TestCase):
 
@@ -33,14 +33,20 @@ class CreateCatalogDialogTests(unittest.TestCase):
 
     def setUp(self):
         # reasize if in PKI auth context
-        if hasattr(self, 'authm') and self.authm:
+        # import is doen here to avoid to have the effect to loose module
+        # this fixes https://github.com/boundlessgeo/qgis-geoserver-plugin/issues/85
+        from geoserverexplorer.test.utils import AUTHCFGID, AUTHTYPE, AUTHM
+        if AUTHM:
             self.cat = getGeoServerCatalog(authcfgid=AUTHCFGID, authtype=AUTHTYPE)
         else:
             self.cat = getGeoServerCatalog()
 
     def tearDown(self):
         # reasize if in PKI auth context
-        if hasattr(self, 'authm') and self.authm:
+        # import is doen here to avoid to have the effect to loose module
+        # this fixes https://github.com/boundlessgeo/qgis-geoserver-plugin/issues/85
+        from geoserverexplorer.test.utils import AUTHM
+        if AUTHM:
             # remove certs
             pem.removeCatalogPkiTempFiles(self.cat)
 
@@ -161,7 +167,10 @@ class LayerDialogTests(unittest.TestCase):
         cls.explorer = GeoServerExplorer()
 
         # reasize if in PKI auth context
-        if hasattr(cls, 'authm') and cls.authm:
+        # import is doen here to avoid to have the effect to loose module
+        # this fixes https://github.com/boundlessgeo/qgis-geoserver-plugin/issues/85
+        from geoserverexplorer.test.utils import AUTHCFGID, AUTHTYPE, AUTHM
+        if AUTHM:
             cls.catWrapper = getGeoServerCatalog(authcfgid=AUTHCFGID, authtype=AUTHTYPE)
         else:
             cls.catWrapper = getGeoServerCatalog()

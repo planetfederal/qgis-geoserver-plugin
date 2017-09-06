@@ -21,6 +21,8 @@ from geoserverexplorer.geoserver.util import groupsWithLayer, removeLayerFromGro
 from geoserverexplorer.gui.gsnameutils import xmlNameFixUp, xmlNameIsValid
 import requests
 from geoserverexplorer.qgis.utils import addTrackedLayer
+from qgiscommons2.settings import pluginSetting
+from qgiscommons2.files import tempFilename
 
 try:
     from processing.modeler.ModelerAlgorithm import ModelerAlgorithm
@@ -57,8 +59,7 @@ def createGeoServerCatalog(service_url = "http://localhost:8080/geoserver/rest",
         catalog.authid = authid
     else:
         # For QGIS > 2.12, use the new AuthCatalog and QgsNetworkAccessManager
-        settings = QtCore.QSettings()
-        cache_time = int(settings.value("/GeoServer/Settings/GeoServer/AuthCatalogXMLCacheTime", 180, int))
+        cache_time = pluginSetting("AuthCatalogXMLCacheTime")
         catalog = AuthCatalog(service_url, authid, cache_time)
 
     return CatalogWrapper(catalog)
@@ -185,7 +186,7 @@ class CatalogWrapper(object):
             except Exception, e:
                 #In case the GeoServer instance is a Suite one with GeoServer 2.9 or earlier
                 self.uploadIconsSuite(icons)
-                
+
     def uploadIconsSuite(self, icons):
         url = self.catalog.gs_base_url + "app/api/icons"
         for icon in icons:
@@ -352,8 +353,7 @@ class CatalogWrapper(object):
         title = name
         name = name.replace(" ", "_")
 
-        settings = QtCore.QSettings()
-        restApi = bool(settings.value("/GeoServer/Settings/GeoServer/UseRestApi", True, bool))
+        restApi = pluginSetting("UseRestApi")
 
         if layer.type() not in (layer.RasterLayer, layer.VectorLayer):
             msg = layer.name() + ' is not a valid raster or vector layer'
@@ -532,7 +532,7 @@ class CatalogWrapper(object):
 
         if layer.type() == layer.RasterLayer:
             try:
-                hookFile = str(QtCore.QSettings().value("/GeoServer/Settings/GeoServer/PreuploadRasterHook", ""))
+                hookFile = pluginSetting("PreuploadRasterHook")
                 if hookFile:
                     alg = self.getAlgorithmFromHookFile(hookFile)
                     if (len(alg.parameters) == 1 and isinstance(alg.parameters[0], ParameterRaster)
@@ -548,7 +548,7 @@ class CatalogWrapper(object):
                 return layer
         elif layer.type() == layer.VectorLayer:
             try:
-                hookFile = str(QtCore.QSettings().value("/GeoServer/Settings/GeoServer/PreuploadVectorHook", ""))
+                hookFile = pluginSetting("PreuploadVectorHook")
                 if hookFile:
                     alg = self.getAlgorithmFromHookFile(hookFile)
                     if (len(alg.parameters) == 1 and isinstance(alg.parameters[0], ParameterVector)
@@ -589,6 +589,7 @@ class CatalogWrapper(object):
 
         resource = layer.resource
         uri = uri_utils.layerUri(layer)
+        QgsNetworkAccessManager.instance().cache().clear()
 
         if resource.resource_type == "featureType":
             qgslayer = QgsVectorLayer(uri, destName or resource.title, "WFS")
@@ -598,7 +599,7 @@ class CatalogWrapper(object):
             try:
                 sld = layer.default_style.sld_body
                 sld = adaptGsToQgs(sld)
-                sldfile = utils.tempFilename("sld")
+                sldfile = tempFilename("sld")
                 with open(sldfile, 'w') as f:
                     f.write(sld)
                 msg, ok = qgslayer.loadSldStyle(sldfile)

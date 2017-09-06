@@ -33,7 +33,7 @@ class DefineCatalogDialog(QtGui.QDialog):
                 authid = settings.value("authid")
                 settings.endGroup()
             elif isinstance(self.catalog, AuthCatalog):
-                settings = QSettings()
+                settings = QtCore.QSettings()
                 settings.beginGroup("/GeoServer/Catalogs/" + self.name)
                 username = ""
                 authid = self.catalog.authid
@@ -82,7 +82,7 @@ class DefineCatalogDialog(QtGui.QDialog):
         urlLabel = QtGui.QLabel('URL')
         urlLabel.setMinimumWidth(150)
         self.urlBox = QtGui.QLineEdit()
-        
+
         self.urlBox.setText(url)
         self.urlBox.setMinimumWidth(250)
         horizontalLayout.addWidget(urlLabel)

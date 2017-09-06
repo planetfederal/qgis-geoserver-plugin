@@ -42,8 +42,8 @@ class SymbologyTests(unittest.TestCase):
 
 
     def compareSld(self, a, b):
-        a = a.replace("\r", "").replace("\n", "").replace(" ", "")
-        b = b.replace("\r", "").replace("\n", "").replace(" ", "")
+        a = a.replace("\r", "").replace("\n", "").replace(" ", "").replace("\t", "")
+        b = b.replace("\r", "").replace("\n", "").replace(" ", "").replace("\t", "")
         a = re.sub(r"<sld:StyledLayerDescriptor.*?>", "", a)
         b = re.sub(r"<sld:StyledLayerDescriptor.*?>", "", b)
         a = re.sub(r"<ogc:Literal>(\d+)\.(\d+)</ogc:Literal>", r"<ogc:Literal>\1</ogc:Literal>", a)

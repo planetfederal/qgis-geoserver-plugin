@@ -3,7 +3,7 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
-from geoserverexplorer.qgis.utils import tempFilename, isTrackedLayer
+from geoserverexplorer.qgis.utils import isTrackedLayer
 from geoserverexplorer.qgis import uri as uri_utils
 from geoserverexplorer.qgis.sldadapter import adaptGsToQgs
 from qgis.core import *
@@ -15,6 +15,8 @@ from PyQt4 import QtCore, QtGui
 from geoserverexplorer.qgis.utils import getTrackingInfo, removeTrackedLayer
 from geoserver.catalog import Catalog
 from geoserverexplorer.qgis.catalog import CatalogWrapper
+from qgiscommons2.settings import pluginSetting
+from qgiscommons2.files import tempFilename
 
 _explorer = None
 
@@ -57,8 +59,7 @@ def _resetCurrentMessageBarLayer():
 
 def updatePublishedStyle(layer):
     global _currentMessageBarLayer
-    settings = QtCore.QSettings()
-    track = bool(settings.value("/GeoServer/Settings/GeoServer/TrackLayers", True, bool))
+    track = pluginSetting("TrackLayers")
     if track and isTrackedLayer(layer):
         if iface.messageBar().currentItem() is None:
             _resetCurrentMessageBarLayer()

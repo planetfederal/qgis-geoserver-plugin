@@ -58,12 +58,13 @@ def unitTests():
     return _tests
 
 def settings():
-    return  {"URL":utils.serverLocationPkiAuth()+'/rest',
-            "USER":None,
-            "PASSWORD":None}
+    return  {"GSHOSTNAME": utils.GSHOSTNAME,
+             "GSSSHPORT": utils.GSSSHPORT,
+            "GSUSER":None,
+            "GSPASSWORD":None}
 
 def runAllUnitTests():
-    """run all unittests: No funcgtional test managed only by Tester Plugin."""
+    """run all unittests: No functional test managed only by Tester Plugin."""
     suite = unittest.TestSuite()
     suite.addTest(pkiCatalogSuite())
     suite.addTest(pkiDeleteSuite())

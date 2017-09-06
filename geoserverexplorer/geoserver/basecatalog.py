@@ -75,6 +75,8 @@ class BaseCatalog(Catalog):
         if response.status == 200:
             lyrs = []
             jsonlayers = json.loads(content)
+            if "layer" not in jsonlayers["layers"]: #empty repo
+                return []
             for lyr in jsonlayers["layers"]["layer"]:
                 lyrs.append(BaseLayer(self, lyr["name"]))
         else:

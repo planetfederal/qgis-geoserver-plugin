@@ -9,6 +9,7 @@ Routines to ask for confirmation when performing certain operations
 from PyQt4 import QtGui, QtCore
 from geoserverexplorer.gui.dialogs.gsnamedialog import getGSLayerName
 from geoserverexplorer.gui.gsnameutils import isNameValid, xmlNameRegex
+from qgiscommons2.settings import pluginSetting
 
 def publishLayer(catalog, layer, workspace=None, overwrite=False):
     name = layer.name()
@@ -21,7 +22,7 @@ def publishLayer(catalog, layer, workspace=None, overwrite=False):
 
 
 def confirmDelete():
-    askConfirmation = bool(QtCore.QSettings().value("/GeoServer/Settings/General/ConfirmDelete", True, bool))
+    askConfirmation = pluginSetting("ConfirmDelete")
     if not askConfirmation:
         return True
     msg = "You confirm that you want to delete the selected elements?"

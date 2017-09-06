@@ -41,7 +41,7 @@ WORKSPACE = safeName("workspace")
 WORKSPACEB = safeName("workspaceb")
 
 # envs that can be override by os.environ envs
-GSHOSTNAME = 'boundless-test'
+GSHOSTNAME = 'suite.boundless.test'
 GSPORT = '8080'
 GSSSHPORT = '8443'
 GSUSER = 'admin'
@@ -164,18 +164,15 @@ def populateCatalog(cat):
 
 
 def geoserverLocation():
-    server = GSHOSTNAME
-    port = GSPORT
-    server = os.getenv('GSHOSTNAME', server)
-    port = os.getenv('GSPORT', port)
-    return '%s:%s' % (server, port)
+    host = os.getenv("GSHOSTNAME", GSHOSTNAME)
+    port = os.getenv("GSPORT", GSPORT)
+    return '%s:%s' % (host, port)
 
 
 def geoserverLocationSsh():
-    location = geoserverLocation().split(":")[0]
-    sshport = GSSSHPORT
-    sshport = os.getenv('GSSSHPORT', sshport)
-    return '%s:%s' % (location, sshport)
+    host = os.getenv("GSHOSTNAME", GSHOSTNAME)
+    port = os.getenv("GSSSHPORT", GSSSHPORT)
+    return '%s:%s' % (host, port)
 
 
 def serverLocationBasicAuth():
@@ -381,6 +378,7 @@ def openAndUpload():
     catWrapper = setUpCatalogAndWorkspace()
     cat = catWrapper.catalog
     # catWrapper = CatalogWrapper(cat)
+
     catWrapper.publishLayer(layer, "test_workspace", True)
     stores = cat.get_stores("test_workspace")
     assert len(stores) != 0
@@ -389,6 +387,7 @@ def openAndUpload():
     quri.setParam("styles", 'qgis_plugin_test_pt1')
     quri.setParam("format", 'image/png')
     quri.setParam("crs", 'EPSG:4326')
+
     if AUTHM:
         quri.setParam("url", serverLocationPkiAuth()+'/wms')
     else:

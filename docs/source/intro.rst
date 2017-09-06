@@ -64,7 +64,7 @@ If you enable this option, whenever you connect to a catalog, the information th
 
 Retrieving information from each connection might take a long time and cause QGIS to take too long to start up. For this reason, catalog data is fetch on request and not automatically when starting the GeoServer Explorer. You should refresh the catalog item to populate it. Unpopulated catalogs are shown with a gray icon.
 
-If the catalog uses basic authentication and username and password are introduced using the basic authentication tab, the password is not stored. You will be prompted to enter it when you reconnect to the catalog. If the *Configurations" tab is used, connection data (wheter password or certificate-based) will be stored in the encrypted QGIS auth database. You will be prompted to enter the master password in case you haven't used the auth database in the current QGIS session.
+If the catalog uses basic authentication and username and password are introduced using the basic authentication tab, the password is not stored. You will be prompted to enter it when you reconnect to the catalog. If the *Configurations* tab is used, connection data (wheter password or certificate-based) will be stored in the encrypted QGIS auth database. You will be prompted to enter the master password in case you haven't used the auth database in the current QGIS session.
 
 To delete a catalog from the list of previous connections, use the *Remove* option of the catalog item in the Explorer tree.
 

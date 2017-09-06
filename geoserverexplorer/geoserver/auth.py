@@ -26,7 +26,7 @@ from xml.etree.ElementTree import XML
 from xml.parsers.expat import ExpatError
 from geoserver.catalog import FailedRequestError
 from gsimporter.client import Client, _Client
-from .networkaccessmanager import NetworkAccessManager
+from qgiscommons2.network.networkaccessmanager import NetworkAccessManager
 from .basecatalog import BaseCatalog
 
 logger = logging.getLogger("auth.authcatalog")
