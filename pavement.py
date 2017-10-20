@@ -269,20 +269,24 @@ def _make_zip(zipFile, options):
             relpath = os.path.join(options.plugin.name, "docs", os.path.relpath(root, options.sphinx.builddir))
             zipFile.write(path(root) / f, path(relpath) / f)
 
+
 def create_settings_docs(options):
     settings_file = path(options.plugin.name) / "settings.json"
     doc_file = options.sphinx.sourcedir / "settingsconf.rst"
-    with open(settings_file) as f:
-        settings = json.load(f)
-
+    try:
+        with open(settings_file) as f:
+            settings = json.load(f)
+    except:
+        return
     grouped = defaultdict(list)
     for setting in settings:
         grouped[setting["group"]].append(setting)
     with open (doc_file, "w") as f:
-        f.write("Plugin settings\n===============\n\n"
+        f.write(".. _plugin_settings:\n\n"
+                "Plugin settings\n===============\n\n"
                 "The plugin can be adjusted using the following settings, "
-                "to be found in its settings dialog.\n")
-        for groupName, group in grouped.iteritems():
+                "to be found in its settings dialog (|path_to_settings|).\n")
+        for groupName, group in grouped.items():
             section_marks = "-" * len(groupName)
             f.write("\n%s\n%s\n\n"
                     ".. list-table::\n"
@@ -302,18 +306,24 @@ def create_settings_docs(options):
 @task
 @cmdopts([
     ('clean', 'c', 'clean out built artifacts first'),
+    ('sphinx_theme=', 's', 'Sphinx theme to use in documentation'),
 ])
 def builddocs(options):
-    clean = getattr(options, 'clean', False)
-    try: #this might fail if the plugin code is not in a git repo
+    try:
+        # May fail if not in a git repo
         sh("git submodule init")
         sh("git submodule update")
     except:
         pass
     create_settings_docs(options)
-    cwd = os.getcwd()
-    os.chdir(options.sphinx.docroot)
-    if clean:
-        sh("make clean")
-    sh("make html")
-    os.chdir(cwd)
+    if getattr(options, 'clean', False):
+        options.sphinx.builddir.rmtree()
+    if getattr(options, 'sphinx_theme', False):
+        # overrides default theme by the one provided in command line
+        set_theme = "-D html_theme='{}'".format(options.sphinx_theme)
+    else:
+        # Uses default theme defined in conf.py
+        set_theme = ""
+    sh("sphinx-build -a {} {} {}/html".format(set_theme,
+                                              options.sphinx.sourcedir,
+                                              options.sphinx.builddir))
