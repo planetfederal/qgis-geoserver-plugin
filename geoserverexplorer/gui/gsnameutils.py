@@ -9,6 +9,7 @@ validation.
 """
 
 from PyQt4 import QtGui, QtCore
+import unicodedata
 
 APP = None
 if __name__ == '__main__':
@@ -21,8 +22,8 @@ from geoserverexplorer.gui.contextualhelp import InfoIcon
 
 # noinspection PyPep8Naming
 def xmlNameFixUp(name):
-    # TODO: handle bad unicode characters, too
-    n = name.replace(u' ', u'_')  # doesn't hurt to always do this
+    n = unicode(unicodedata.normalize('NFKD', name).encode('ascii','ignore'))
+    n = n.replace(u' ', u'_')  # doesn't hurt to always do this
     if not xmlNameIsValid(n) and not n.startswith(u'_'):
         rx = QtCore.QRegExp(r'^(?=XML|\d|\W).*', QtCore.Qt.CaseInsensitive)
         if rx.exactMatch(n):
