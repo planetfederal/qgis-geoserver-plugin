@@ -1263,7 +1263,7 @@ class GsWorkspaceItem(GsTreeItem):
         self.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDropEnabled)
 
     def populate(self):
-        stores = self.element.catalog.get_stores(self.element)
+        stores = self.element.catalog.get_stores()
         nonAscii = False
         for store in stores:
             storeItem = GsStoreItem(store)
