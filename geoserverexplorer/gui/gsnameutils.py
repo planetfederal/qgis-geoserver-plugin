@@ -22,6 +22,8 @@ from geoserverexplorer.gui.contextualhelp import InfoIcon
 
 # noinspection PyPep8Naming
 def xmlNameFixUp(name):
+    if not isinstance(name, unicode):
+        name = name.decode('utf-8', errors='ignore')
     n = unicode(unicodedata.normalize('NFKD', name).encode('ascii','ignore'))
     n = n.replace(u' ', u'_')  # doesn't hurt to always do this
     if not xmlNameIsValid(n) and not n.startswith(u'_'):
