@@ -10,6 +10,7 @@ validation.
 
 from PyQt4 import QtGui, QtCore
 import unicodedata
+import re
 
 APP = None
 if __name__ == '__main__':
@@ -25,7 +26,7 @@ def xmlNameFixUp(name):
     if not isinstance(name, unicode):
         name = name.decode('utf-8', errors='ignore')
     n = unicode(unicodedata.normalize('NFKD', name).encode('ascii','ignore'))
-    n = n.replace(u' ', u'_')  # doesn't hurt to always do this
+    n = re.sub('[ /\\\\]', '_', n)
     if not xmlNameIsValid(n) and not n.startswith(u'_'):
         rx = QtCore.QRegExp(r'^(?=XML|\d|\W).*', QtCore.Qt.CaseInsensitive)
         if rx.exactMatch(n):
