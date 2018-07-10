@@ -42,6 +42,31 @@ options(
     )
 )
 
+@task
+def install(options):
+    '''install plugin to qgis'''
+    builddocs(options)
+    plugin_name = options.plugin.name
+    src = path(__file__).dirname() / plugin_name
+    if os.name == 'nt':
+        dst = path('~/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins').expanduser() / plugin_name
+    else:
+        dst = path('~/.local/share/QGIS/QGIS3/profiles/default/python/plugins').expanduser() / plugin_name
+    src = src.abspath()
+    dst = dst.abspath()
+    if not hasattr(os, 'symlink'):
+        dst.rmtree()
+        src.copytree(dst)
+    elif not dst.exists():
+        src.symlink(dst)
+        # Symlink the build folder to the parent
+        docs = path('..') / '..' / "docs" / 'build' / 'html'
+        docs_dest = path(__file__).dirname() / plugin_name / "docs"
+        docs_link = docs_dest / 'html'
+        if not docs_dest.exists():
+            docs_dest.mkdir()
+        if not docs_link.islink():
+            docs.symlink(docs_link)
 
 @task
 @cmdopts([
@@ -67,7 +92,6 @@ def setup(options):
                 if localpath.exists():
                     cwd = os.getcwd()
                     os.chdir(localpath)
-                    print(localpath)
                     sh('git pull')
                     os.chdir(cwd)
                 else:
@@ -110,40 +134,6 @@ def read_requirements():
     not_comments = lambda s,e: [ l for l in lines[s:e] if l[0] != '#']
     return not_comments(0, idx), not_comments(idx+1, None)
 
-
-def _install(folder, options):
-    '''install plugin to qgis'''
-    builddocs(options)
-    plugin_name = options.plugin.name
-    src = path(__file__).dirname() / plugin_name
-    dst = path('~').expanduser() / folder / 'python' / 'plugins' / plugin_name
-    src = src.abspath()
-    dst = dst.abspath()
-    if not hasattr(os, 'symlink'):
-        dst.rmtree()
-        src.copytree(dst)
-    elif not dst.exists():
-        src.symlink(dst)
-    # Symlink the build folder to the parent
-    docs = path('..') / '..' / "docs" / 'build' / 'html'
-    docs_dest = path(__file__).dirname() / plugin_name / "docs"
-    docs_link = docs_dest / 'html'
-    if not docs_dest.exists():
-        docs_dest.mkdir()
-    if not docs_link.islink():
-        docs.symlink(docs_link)
-
-@task
-def install(options):
-    _install(".qgis2", options)
-
-@task
-def installdev(options):
-    _install(".qgis-dev", options)
-
-@task
-def install3(options):
-    _install(".qgis3", options)
 
 @task
 @cmdopts([
