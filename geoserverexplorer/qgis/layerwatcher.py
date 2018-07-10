@@ -15,8 +15,8 @@ from PyQt4 import QtCore, QtGui
 from geoserverexplorer.qgis.utils import getTrackingInfo, removeTrackedLayer
 from geoserver.catalog import Catalog
 from geoserverexplorer.qgis.catalog import CatalogWrapper
-from qgiscommons.settings import pluginSetting
-from qgiscommons.files import tempFilename
+from qgiscommons2.settings import pluginSetting
+from qgiscommons2.files import tempFilename
 
 _explorer = None
 

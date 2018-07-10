@@ -12,7 +12,7 @@ from qgis.utils import iface
 from geoserverexplorer.test.utils import PT1, safeName, PT2, WORKSPACE, WORKSPACEB, shapefile_and_friends
 from geoserverexplorer.test.integrationtest import ExplorerIntegrationTest
 from geoserverexplorer.qgis import layers
-from qgiscommons.settings import pluginSetting, setPluginSetting
+from qgiscommons2.settings import pluginSetting, setPluginSetting
 
 class DeleteTests(ExplorerIntegrationTest):
 

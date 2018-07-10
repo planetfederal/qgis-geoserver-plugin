@@ -13,11 +13,13 @@ import shutil
 from paver.easy import *
 from paver.doctools import html
 
+import json
+from collections import defaultdict
 
 options(
     plugin = Bunch(
         name = 'geoserverexplorer',
-        ext_libs = path('geoserverexplorer/ext-libs'),
+        ext_libs = path('geoserverexplorer/extlibs'),
         ext_src = path('geoserverexplorer/ext-src'),
         source_dir = path('geoserverexplorer'),
         package_dir = path('.'),
@@ -176,7 +178,7 @@ def pep8(args):
     ignore = ['E203', 'E121', 'E122', 'E123', 'E124', 'E125', 'E126', 'E127',
         'E128', 'E402']
     styleguide = pep8.StyleGuide(ignore=ignore,
-                                 exclude=['*/ext-libs/*', '*/ext-src/*'],
+                                 exclude=['*/extlibs/*', '*/ext-src/*'],
                                  repeat=True, max_line_length=79,
                                  parse_argv=args)
     styleguide.input_dir(options.plugin.source_dir)
@@ -257,11 +259,61 @@ def _make_zip(zipFile, options):
             relpath = os.path.join(options.plugin.name, "docs", os.path.relpath(root, options.sphinx.builddir))
             zipFile.write(path(root) / f, path(relpath) / f)
 
+
+def create_settings_docs(options):
+    settings_file = path(options.plugin.name) / "settings.json"
+    doc_file = options.sphinx.sourcedir / "settingsconf.rst"
+    try:
+        with open(settings_file) as f:
+            settings = json.load(f)
+    except:
+        return
+    grouped = defaultdict(list)
+    for setting in settings:
+        grouped[setting["group"]].append(setting)
+    with open (doc_file, "w") as f:
+        f.write(".. _plugin_settings:\n\n"
+                "Plugin settings\n===============\n\n"
+                "The plugin can be adjusted using the following settings, "
+                "to be found in its settings dialog (|path_to_settings|).\n")
+        for groupName, group in grouped.items():
+            section_marks = "-" * len(groupName)
+            f.write("\n%s\n%s\n\n"
+                    ".. list-table::\n"
+                    "   :header-rows: 1\n"
+                    "   :stub-columns: 1\n"
+                    "   :widths: 20 80\n"
+                    "   :class: non-responsive\n\n"
+                    "   * - Option\n"
+                    "     - Description\n"
+                    % (groupName, section_marks))
+            for setting in group:
+                f.write("   * - %s\n"
+                        "     - %s\n"
+                        % (setting["label"], setting["description"]))
+
+
 @task
+@cmdopts([
+    ('clean', 'c', 'clean out built artifacts first'),
+    ('sphinx_theme=', 's', 'Sphinx theme to use in documentation'),
+])
 def builddocs(options):
-    sh("git submodule init")
-    sh("git submodule update")
-    cwd = os.getcwd()
-    os.chdir(options.sphinx.docroot)
-    sh("make html")
-    os.chdir(cwd)
+    try:
+        # May fail if not in a git repo
+        sh("git submodule init")
+        sh("git submodule update")
+    except:
+        pass
+    create_settings_docs(options)
+    if getattr(options, 'clean', False):
+        options.sphinx.builddir.rmtree()
+    if getattr(options, 'sphinx_theme', False):
+        # overrides default theme by the one provided in command line
+        set_theme = "-D html_theme='{}'".format(options.sphinx_theme)
+    else:
+        # Uses default theme defined in conf.py
+        set_theme = ""
+    sh("sphinx-build -a {} {} {}/html".format(set_theme,
+                                              options.sphinx.sourcedir,
+                                              options.sphinx.builddir))

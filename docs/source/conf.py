@@ -170,6 +170,13 @@ html_short_title = project
 htmlhelp_basename = 'GeoServerQGISplugindoc'
 
 
+# Substitutions
+rst_epilog = """
+.. |BLQGIS| replace:: *Boundless Desktop*
+.. |current_plugin| replace:: *GeoServer Explorer*
+.. |path_to_settings| replace:: :menuselection:`Web --> GeoServer --> Plugin Settings...`
+"""
+
 # -- Options for LaTeX output --------------------------------------------------
 
 latex_elements = {

@@ -16,9 +16,9 @@ except:
     processingOk = False
 from geoserverexplorer.qgis.sldadapter import adaptGsToQgs
 from geoserverexplorer.qgis import layerwatcher
-from qgiscommons.settings import pluginSetting, setPluginSetting, readSettings
-from qgiscommons.gui import addHelpMenu, removeHelpMenu, addAboutMenu, removeAboutMenu
-from qgiscommons.gui.settings import addSettingsMenu, removeSettingsMenu
+from qgiscommons2.settings import pluginSetting, setPluginSetting, readSettings
+from qgiscommons2.gui import addHelpMenu, removeHelpMenu, addAboutMenu, removeAboutMenu
+from qgiscommons2.gui.settings import addSettingsMenu, removeSettingsMenu
 
 class GeoServerExplorerPlugin:
 

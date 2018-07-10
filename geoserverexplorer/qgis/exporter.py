@@ -14,7 +14,7 @@ import os
 from PyQt4 import QtCore
 from qgis.utils import iface
 from qgis.gui import QgsMessageBar
-from qgiscommons.files import tempFilenameInTempFolder
+from qgiscommons2.files import tempFilenameInTempFolder
 
 def exportVectorLayer(layer):
     '''accepts a QgsVectorLayer or a string with a filepath'''

@@ -11,10 +11,17 @@ This is a quick and dirty solution until both programs support the same specific
 import re
 import os
 from PyQt4.QtXml import *
+from qgiscommons2.settings import pluginSetting
 from qgis.core import *
 import math
 
+
 SIZE_FACTOR = 4
+# use this factor (4) in case SLD UOM is NO correctly supported by QGIS
+SIZE_FACTOR_IF_NO_UOM = 4 
+# use this factor (1) in case SLD UOM is correctly supported by QGIS
+SIZE_FACTOR_IF_UOM = 1
+
 RASTER_SLD_TEMPLATE = ('<?xml version="1.0" encoding="UTF-8"?>'
                     '<sld:StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.''net/gml" version="1.0.0">'
                     '<sld:NamedLayer>'
@@ -35,9 +42,23 @@ RASTER_SLD_TEMPLATE = ('<?xml version="1.0" encoding="UTF-8"?>'
                     '</sld:NamedLayer>'
                     '</sld:StyledLayerDescriptor>')
 
+def setScaleFactor():
+    """Manage size scale factor basing if QGIS is able to manage or not SLD unit parameter (uom).
+    """
+    global SIZE_FACTOR
+    if pluginSetting("SldUomManaging"):
+        SIZE_FACTOR = SIZE_FACTOR_IF_UOM
+    else:
+        SIZE_FACTOR = SIZE_FACTOR_IF_NO_UOM
+        if pluginSetting("SldScaleFactor"):
+            SIZE_FACTOR = pluginSetting("SldScaleFactor")
+
 def adaptQgsToGs(sld, layer):
     if layer.type() != QgsMapLayer.VectorLayer:
         return sld, []
+    
+    setScaleFactor()
+
     sld = sld.replace("se:SvgParameter","CssParameter")
     sld = sld.replace("1.1.","1.0.")
     sld = sld.replace("\t","")
@@ -143,6 +164,7 @@ def getReadyToUploadSvgIcons(symbol):
     return icons
 
 def getLabelingAsSld(layer):
+    setScaleFactor()
     try:
         s = "<TextSymbolizer><Label>"
         s += "<ogc:PropertyName>" + layer.customProperty("labeling/fieldName") + "</ogc:PropertyName>"
@@ -203,6 +225,7 @@ def getLabelingAsSld(layer):
         return ""
 
 def adaptGsToQgs(sld):
+    setScaleFactor()
     sizes = re.findall("<sld:Size>.*?</sld:Size>", sld)
     for size in sizes:
         newsize="<sld:Size>%f</sld:Size>" % (float(size[10:-11]) / SIZE_FACTOR)

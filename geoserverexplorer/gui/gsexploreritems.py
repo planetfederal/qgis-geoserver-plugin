@@ -43,8 +43,8 @@ from geoserverexplorer.geoserver.retry import RetryCatalog
 from geoserverexplorer.geoserver.auth import AuthCatalog
 from geoserverexplorer.gui.gsoperations import addDraggedStyleToLayer
 import xml.dom.minidom
-from qgiscommons.settings import pluginSetting
-from qgiscommons.files import tempFilename
+from qgiscommons2.settings import pluginSetting
+from qgiscommons2.files import tempFilename
 
 class GsTreeItem(TreeItem):
 

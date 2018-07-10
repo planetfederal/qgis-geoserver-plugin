@@ -82,5 +82,19 @@
      "type": "file",
      "default": "",
      "group": "General"
+    },
+    {"name":"SldUomManaging",
+    "label": "QGIS manage SLD uom correctly",
+    "description": "QGIS manage SLD uom correctly",
+    "type": "bool",
+    "default": false,
+    "group": "General"
+    },
+    {"name":"SldScaleFactor",
+    "label": "Size scale factor. !Unused if uom is managed!",
+    "description": "Size scale factor. !Unused if uom is managed!",
+    "type": "number",
+    "default": 4,
+    "group": "General"
     }
 ]

@@ -13,7 +13,7 @@ from geoserverexplorer import config
 import traceback
 from geoserverexplorer.gui.explorertree import ExplorerTreeWidget
 from geoserverexplorer.qgis.utils import UserCanceledOperation
-from qgiscommons.settings import pluginSetting
+from qgiscommons2.settings import pluginSetting
 
 class GeoServerExplorer(QtGui.QDockWidget):
 
