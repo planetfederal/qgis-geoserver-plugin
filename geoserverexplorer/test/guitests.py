@@ -3,15 +3,16 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
+from builtins import map
+from builtins import range
 import unittest
 import sys
 import os
 from qgis.core import *
 from qgis.utils import iface
-from PyQt4.QtCore import *
-from PyQt4.QtGui import QWidget, QHBoxLayout, QToolTip
-from PyQt4.QtTest import QTest
-from geoserverexplorer.geoserver import pem
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtWidgets import QWidget, QHBoxLayout, QToolTip
+from qgis.PyQt.QtTest import QTest
 from geoserverexplorer.gui.dialogs.catalogdialog import DefineCatalogDialog
 from geoserverexplorer.gui.explorer import GeoServerExplorer
 from geoserverexplorer.gui.dialogs.groupdialog import LayerGroupDialog
@@ -35,11 +36,7 @@ class CreateCatalogDialogTests(unittest.TestCase):
         # reasize if in PKI auth context
         # import is doen here to avoid to have the effect to loose module
         # this fixes https://github.com/boundlessgeo/qgis-geoserver-plugin/issues/85
-        from geoserverexplorer.test.utils import AUTHCFGID, AUTHTYPE, AUTHM
-        if AUTHM:
-            self.cat = getGeoServerCatalog(authcfgid=AUTHCFGID, authtype=AUTHTYPE)
-        else:
-            self.cat = getGeoServerCatalog()
+        self.cat = getGeoServerCatalog()
 
     def tearDown(self):
         # reasize if in PKI auth context
@@ -155,8 +152,7 @@ class GroupDialogTests(ExplorerIntegrationTest):
             self.assertFalse(dialog.table.cellWidget(i, 0).isChecked())
 
     def testCannotEditName(self):
-        group = self.cat.get_layergroup(GROUP)
-        self.assertIsNotNone(group)
+        group = self.cat.get_layergroups(GROUP)[0]        
         dialog = LayerGroupDialog(self.cat, group)
         self.assertFalse(dialog.nameBox.isEnabled())
 
@@ -165,15 +161,7 @@ class LayerDialogTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.explorer = GeoServerExplorer()
-
-        # reasize if in PKI auth context
-        # import is doen here to avoid to have the effect to loose module
-        # this fixes https://github.com/boundlessgeo/qgis-geoserver-plugin/issues/85
-        from geoserverexplorer.test.utils import AUTHCFGID, AUTHTYPE, AUTHM
-        if AUTHM:
-            cls.catWrapper = getGeoServerCatalog(authcfgid=AUTHCFGID, authtype=AUTHTYPE)
-        else:
-            cls.catWrapper = getGeoServerCatalog()
+        cls.catWrapper = getGeoServerCatalog()
         cls.cat = cls.catWrapper.catalog
         cleanCatalog(cls.cat)
         cls.cat.create_workspace(WORKSPACE, "http://test1.com")
@@ -424,7 +412,7 @@ class GSNameDialogTest(unittest.TestCase):
 
 def suiteSubset():
     tests = ['testPublishLayersDialog']
-    suite = unittest.TestSuite(map(LayerDialogTests, tests))
+    suite = unittest.TestSuite(list(map(LayerDialogTests, tests)))
     return suite
 
 def suite():

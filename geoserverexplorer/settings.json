@@ -27,13 +27,6 @@
      "default": true,
      "group": "General"
     },
-    {"name":"UseRestApi",
-     "label": "Always use REST API for uploads",
-     "description": "Always use REST API for uploads",
-     "type": "bool",
-     "default": true,
-     "group": "General"
-    },
     {"name":"TrackLayers",
      "label": "Track layers and publish styles automatically",
      "description": "Track layers and publish styles automatically when they change",
@@ -67,20 +60,6 @@
      "description": "AuthCatalog XML cache time in seconds",
      "type": "number",
      "default": 180,
-     "group": "General"
-    },
-    {"name":"PreuploadRasterHook",
-     "label": "Raster pre-upload hook file",
-     "description": "Raster pre-upload hook file",
-     "type": "file",
-     "default": "",
-     "group": "General"
-    },
-    {"name":"PreuploadVectorHook",
-     "label": "Vector pre-upload hook file",
-     "description": "Vector pre-upload hook file",
-     "type": "file",
-     "default": "",
      "group": "General"
     },
     {"name":"SldUomManaging",

@@ -3,7 +3,9 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
-from PyQt4 import QtGui, QtCore
+from qgis.PyQt.QtGui import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtWidgets import *
 from geoserverexplorer.gui.dialogs.gwclayer import EditGwcLayerDialog, SeedGwcLayerDialog
 from geoserverexplorer.geoserver.gwc import Gwc, GwcLayer, SeedingStatusParsingError
 from geoserver.catalog import FailedRequestError
@@ -19,9 +21,9 @@ class GwcTreeItem(TreeItem):
 class GwcLayersItem(GwcTreeItem):
     def __init__(self, catalog):
         self.catalog = catalog
-        icon = QtGui.QIcon(os.path.dirname(__file__) + "/../images/gwc.png")
+        icon = QIcon(os.path.dirname(__file__) + "/../images/gwc.png")
         TreeItem.__init__(self, None, icon, "GeoWebCache layers")
-        self.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDropEnabled)
+        self.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsDropEnabled)
 
     def populate(self):
         try:
@@ -33,6 +35,7 @@ class GwcLayersItem(GwcTreeItem):
                 self.addChild(item)
             self.isValid = True
         except:
+            raise
             self.takeChildren()
             self.isValid = False
 
@@ -49,8 +52,8 @@ class GwcLayersItem(GwcTreeItem):
 
     def contextMenuActions(self, tree, explorer):
         if self.isValid:
-            icon = QtGui.QIcon(os.path.dirname(__file__) + "/../images/add.png")
-            addGwcLayerAction = QtGui.QAction(icon, "New GWC layer...", explorer)
+            icon = QIcon(os.path.dirname(__file__) + "/../images/add.png")
+            addGwcLayerAction = QAction(icon, "New GWC layer...", explorer)
             addGwcLayerAction.triggered.connect(lambda: self.addGwcLayer(tree, explorer))
             return [addGwcLayerAction]
         else:
@@ -66,39 +69,32 @@ class GwcLayersItem(GwcTreeItem):
             if dlg.gridsets is not None:
                 layer = dlg.layer
                 gwc = Gwc(layer.catalog)
-
-                #TODO: this is a hack that assumes the layer belongs to the same workspace
-                typename = layer.resource.workspace.name + ":" + layer.name
-
-                gwclayer = GwcLayer(gwc, typename, dlg.formats, dlg.gridsets, dlg.metaWidth, dlg.metaHeight)
+                gwclayer = GwcLayer(gwc, layer.name, dlg.formats, dlg.gridsets, dlg.metaWidth, dlg.metaHeight)
                 catItem = tree.findAllItems(cat)[0]
                 explorer.run(gwc.addLayer,
                                   "Create GWC layer '" + layer.name + "'",
                                   [catItem.gwcItem],
                                   gwclayer)
         else:
-            QtGui.QMessageBox.warning(None, "Create GWC layer", "There are no layers in the catalog")
-
-
-
+            QMessageBox.warning(None, "Create GWC layer", "There are no layers in the catalog")
 
 class GwcLayerItem(GwcTreeItem):
     def __init__(self, layer):
-        icon = QtGui.QIcon(os.path.dirname(__file__) + "/../images/layer.png")
+        icon = QIcon(os.path.dirname(__file__) + "/../images/layer.png")
         TreeItem.__init__(self, layer, icon)
-        self.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDropEnabled)
+        self.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsDropEnabled)
 
     def contextMenuActions(self, tree, explorer):
-        icon = QtGui.QIcon(os.path.dirname(__file__) + "/../images/edit.png")
-        editGwcLayerAction = QtGui.QAction(icon, "Edit...", explorer)
+        icon = QIcon(os.path.dirname(__file__) + "/../images/edit.png")
+        editGwcLayerAction = QAction(icon, "Edit...", explorer)
         editGwcLayerAction.triggered.connect(lambda: self.editGwcLayer(explorer))
-        icon = QtGui.QIcon(os.path.dirname(__file__) + "/../images/seed.png")
-        seedGwcLayerAction = QtGui.QAction(icon, "Seed...", explorer)
+        icon = QIcon(os.path.dirname(__file__) + "/../images/seed.png")
+        seedGwcLayerAction = QAction(icon, "Seed...", explorer)
         seedGwcLayerAction.triggered.connect(lambda: self.seedGwcLayer(explorer))
-        emptyGwcLayerAction = QtGui.QAction("Empty", explorer)
+        emptyGwcLayerAction = QAction("Empty", explorer)
         emptyGwcLayerAction.triggered.connect(lambda: self.emptyGwcLayer(explorer))
-        icon = QtGui.QIcon(os.path.dirname(__file__) + "/../images/delete.gif")
-        deleteLayerAction = QtGui.QAction(icon, "Delete", explorer)
+        icon = QIcon(os.path.dirname(__file__) + "/../images/delete.gif")
+        deleteLayerAction = QAction(icon, "Delete", explorer)
         deleteLayerAction.triggered.connect(lambda: self.deleteLayer(explorer))
         return[editGwcLayerAction, seedGwcLayerAction, emptyGwcLayerAction, deleteLayerAction]
 
@@ -111,8 +107,8 @@ class GwcLayerItem(GwcTreeItem):
             return []
 
     def multipleSelectionContextMenuActions(self, tree, explorer, selected):
-        icon = QtGui.QIcon(os.path.dirname(__file__) + "/../images/delete.gif")
-        deleteSelectedAction = QtGui.QAction(icon, "Delete", explorer)
+        icon = QIcon(os.path.dirname(__file__) + "/../images/delete.gif")
+        deleteSelectedAction = QAction(icon, "Delete", explorer)
         deleteSelectedAction.triggered.connect(lambda: self.deleteLayers(explorer, selected))
         return [deleteSelectedAction]
 
@@ -177,13 +173,14 @@ class GwcLayerItem(GwcTreeItem):
         if not confirmDelete():
             return
         explorer.setProgressMaximum(len(items), "Deleting GWC layers")
-        toUpdate = set()
+        toUpdate = []
         for i, item in enumerate(items):
             explorer.run(item.element.delete,
                      None,
                      [])
             explorer.setProgress(i)
-            toUpdate.add(item.parent())
+            if item.parent() not in toUpdate:
+                toUpdate.append(item.parent())
         for item in toUpdate:
             if item is not None:
                 item.refreshContent(explorer)
@@ -229,11 +226,7 @@ def createGwcLayer(explorer, layer):
     dlg.exec_()
     if dlg.gridsets is not None:
         gwc = Gwc(layer.catalog)
-
-        #TODO: this is a hack that assumes the layer belongs to the same workspace
-        typename = layer.resource.workspace.name + ":" + layer.name
-
-        gwclayer = GwcLayer(gwc, typename, dlg.formats, dlg.gridsets, dlg.metaWidth, dlg.metaHeight)
+        gwclayer = GwcLayer(gwc, layer.name, dlg.formats, dlg.gridsets, dlg.metaWidth, dlg.metaHeight)
         explorer.run(gwc.addLayer,
                           "Create GWC layer '" + layer.name + "'",
                           [],

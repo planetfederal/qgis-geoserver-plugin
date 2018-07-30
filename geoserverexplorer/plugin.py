@@ -3,68 +3,54 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
+
+from builtins import object
 import os
-import config
 from geoserverexplorer.gui.explorer import GeoServerExplorer
-from geoserverexplorer.geoserver import pem
-from PyQt4 import QtGui, QtCore
-try:
-    from processing.core.Processing import Processing
-    from processingprovider.geoserverprovider import GeoServerProvider
-    processingOk = True
-except:
-    processingOk = False
-from geoserverexplorer.qgis.sldadapter import adaptGsToQgs
+from qgis.PyQt.QtGui import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtWidgets import *
+from qgis import utils 
+from qgis.core import QgsMessageLog
 from geoserverexplorer.qgis import layerwatcher
 from qgiscommons2.settings import pluginSetting, setPluginSetting, readSettings
 from qgiscommons2.gui import addHelpMenu, removeHelpMenu, addAboutMenu, removeAboutMenu
 from qgiscommons2.gui.settings import addSettingsMenu, removeSettingsMenu
 
-class GeoServerExplorerPlugin:
+class GeoServerExplorerPlugin(object):
 
     def __init__(self, iface):
         self.iface = iface
-        config.iface = iface
-        if processingOk:
-            self.provider = GeoServerProvider()
         readSettings()
         try:
             from qgistester.tests import addTestModule
             from geoserverexplorer.test import testplugin
-            from geoserverexplorer.test import testpkiplugin
             addTestModule(testplugin, "GeoServer")
-            addTestModule(testpkiplugin, "PKI GeoServer")
         except Exception as ex:
             pass
 
-
     def unload(self):
-        pem.removePkiTempFiles(self.explorer.catalogs())
         self.explorer.deleteLater()
         removeSettingsMenu("GeoServer", self.iface.removePluginWebMenu)
         removeHelpMenu("GeoServer", self.iface.removePluginWebMenu)
         removeAboutMenu("GeoServer", self.iface.removePluginWebMenu)
         self.iface.removePluginWebMenu(u"GeoServer", self.explorerAction)
-        if processingOk:
-            Processing.removeProvider(self.provider)
         layerwatcher.disconnectLayerWasAdded()
         try:
             from qgistester.tests import removeTestModule
             from geoserverexplorer.test import testplugin
-            from geoserverexplorer.test import testpkiplugin
             removeTestModule(testplugin, "GeoServer")
-            removeTestModule(testpkiplugin, "PKI GeoServer")
         except Exception as ex:
             pass
 
     def initGui(self):
-        icon = QtGui.QIcon(os.path.dirname(__file__) + "/images/geoserver.png")
-        self.explorerAction = QtGui.QAction(icon, "GeoServer Explorer", self.iface.mainWindow())
+        icon = QIcon(os.path.dirname(__file__) + "/images/geoserver.png")
+        self.explorerAction = QAction(icon, "GeoServer Explorer", self.iface.mainWindow())
         self.explorerAction.triggered.connect(self.openExplorer)
         self.iface.addPluginToWebMenu(u"GeoServer", self.explorerAction)
 
         self.explorer = GeoServerExplorer()
-        self.iface.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.explorer)
+        self.iface.addDockWidget(Qt.RightDockWidgetArea, self.explorer)
         if not pluginSetting("ExplorerVisible"):
             self.explorer.hide()
         self.explorer.visibilityChanged.connect(self._explorerVisibilityChanged)
@@ -73,9 +59,6 @@ class GeoServerExplorerPlugin:
         addHelpMenu("GeoServer", self.iface.addPluginToWebMenu)
         addAboutMenu("GeoServer", self.iface.addPluginToWebMenu)
 
-        if processingOk:
-            Processing.addProvider(self.provider)
-
         layerwatcher.connectLayerWasAdded(self.explorer)
 
     def _explorerVisibilityChanged(self, visible):
@@ -83,4 +66,6 @@ class GeoServerExplorerPlugin:
 
     def openExplorer(self):
         self.explorer.show()
+
+
 

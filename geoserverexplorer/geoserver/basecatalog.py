@@ -16,16 +16,17 @@
 *                                                                         *
 ***************************************************************************
 """
+from builtins import str
 from datetime import datetime, timedelta
 
 __author__ = 'Alessandro Pasotti'
 __date__ = 'August 2016'
 
 from geoserver.catalog import Catalog, FailedRequestError
-from geoserver.support import url
+from geoserver.support import build_url
 from geoserver.layer import Layer
-from geoserverexplorer import config
 from qgis.gui import *
+from qgis.utils import iface
 import json
 from xml.etree.ElementTree import XML
 from xml.parsers.expat import ExpatError
@@ -45,6 +46,9 @@ class BaseLayer(Layer):
 
 class BaseCatalog(Catalog):
 
+    def layersEndpointUrl(self):
+        return self.service_url[:self.service_url.find("/rest")]
+        
     def _get_res(self, name):
         return [r for r in self.get_resources() if r.name == name]
 
@@ -66,25 +70,7 @@ class BaseCatalog(Catalog):
 
     def get_layers(self, resource=None):
         """Prefix the layer name with ws name"""
-        # Original code from gsconfig
-        if isinstance(resource, basestring):
-            resource = self.get_resource(resource)
-
-        layers_url = url(self.service_url, ["layers.json"])
-        response, content = self.http.request(layers_url)
-        if response.status == 200:
-            lyrs = []
-            jsonlayers = json.loads(content)
-            if "layer" not in jsonlayers["layers"]: #empty repo
-                return []
-            for lyr in jsonlayers["layers"]["layer"]:
-                lyrs.append(BaseLayer(self, lyr["name"]))
-        else:
-            raise FailedRequestError("Tried to make a GET request to %s but got a %d status code: \n%s" % (layers_url, response.status, content))
-
-        if resource is not None:
-            lyrs = [l for l in lyrs if l.resource.href == resource.href]
-
+        lyrs = super().get_layers(resource)
         # Start patch:
         layers = {}
         result = []
@@ -95,7 +81,7 @@ class BaseCatalog(Catalog):
                 layers[l.name] = [l]
         # Prefix all names
         noAscii = False
-        for name, ls in layers.items():
+        for name, ls in list(layers.items()):
             try:
                 if len(ls) == 1:
                     l = ls[0]
@@ -112,35 +98,9 @@ class BaseCatalog(Catalog):
                 noAscii = True
 
         if noAscii:
-            config.iface.messageBar().pushMessage("Warning", "Some layers contain non-ascii characters and could not be loaded",
+            iface.messageBar().pushMessage("Warning", "Some layers contain non-ascii characters and could not be loaded",
                       level = QgsMessageBar.WARNING,
                       duration = 10)
         return result
 
-    def get_xml(self, rest_url):
-
-        cached_response = self._cache.get(rest_url)
-
-        def is_valid(cached_response):
-            return cached_response is not None and datetime.now() - cached_response[0] < timedelta(seconds=5)
-
-        def parse_or_raise(xml):
-            try:
-                xml = unicode(xml, errors="ignore").decode("utf-8", errors="ignore")
-                return XML(xml)
-            except (ExpatError, SyntaxError), e:
-                msg = "GeoServer gave non-XML response for [GET %s]: %s"
-                msg = msg % (rest_url, xml)
-                raise Exception(msg, e)
-
-        if is_valid(cached_response):
-            raw_text = cached_response[1]
-            return parse_or_raise(raw_text)
-        else:
-            response, content = self.http.request(rest_url)
-            if response.status == 200:
-                self._cache[rest_url] = (datetime.now(), content)
-                return parse_or_raise(content)
-            else:
-                raise FailedRequestError("Tried to make a GET request to %s but got a %d status code: \n%s" % (rest_url, response.status, content))
 

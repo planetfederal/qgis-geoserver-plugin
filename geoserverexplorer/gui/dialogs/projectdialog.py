@@ -3,9 +3,10 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
-from PyQt4 import QtGui
+from qgis.PyQt.QtGui import *
+from qgis.PyQt.QtWidgets import *
 
-class PublishProjectDialog(QtGui.QDialog):
+class PublishProjectDialog(QDialog):
 
     def __init__(self, catalog, parent = None):
         super(PublishProjectDialog, self).__init__(parent)
@@ -17,15 +18,15 @@ class PublishProjectDialog(QtGui.QDialog):
 
     def initGui(self):
 
-        layout = QtGui.QVBoxLayout()
+        layout = QVBoxLayout()
         self.setWindowTitle('Publish project')
 
-        verticalLayout = QtGui.QVBoxLayout()
-        horizontalLayout = QtGui.QHBoxLayout()
+        verticalLayout = QVBoxLayout()
+        horizontalLayout = QHBoxLayout()
         horizontalLayout.setSpacing(30)
         horizontalLayout.setMargin(0)
-        workspaceLabel = QtGui.QLabel('Workspace')
-        self.workspaceBox = QtGui.QComboBox()
+        workspaceLabel = QLabel('Workspace')
+        self.workspaceBox = QComboBox()
         self.workspaces = self.catalog.get_workspaces()
         try:
             defaultWorkspace = self.catalog.get_default_workspace()
@@ -41,33 +42,33 @@ class PublishProjectDialog(QtGui.QDialog):
         horizontalLayout.addWidget(self.workspaceBox)
         verticalLayout.addLayout(horizontalLayout)
 
-        self.destGroupBox = QtGui.QGroupBox()
+        self.destGroupBox = QGroupBox()
         self.destGroupBox.setLayout(verticalLayout)
 
-        verticalLayout = QtGui.QVBoxLayout()
+        verticalLayout = QVBoxLayout()
 
-        horizontalLayout = QtGui.QHBoxLayout()
+        horizontalLayout = QHBoxLayout()
         horizontalLayout.setSpacing(30)
         horizontalLayout.setMargin(0)
-        groupLabel = QtGui.QLabel('Global group name')
-        self.groupNameBox = QtGui.QLineEdit()
+        groupLabel = QLabel('Global group name')
+        self.groupNameBox = QLineEdit()
         self.groupNameBox.setPlaceholderText("[leave empty if no global group should be created]")
         horizontalLayout.addWidget(groupLabel)
         horizontalLayout.addWidget(self.groupNameBox)
         verticalLayout.addLayout(horizontalLayout)
 
-        self.groupGroupBox = QtGui.QGroupBox()
+        self.groupGroupBox = QGroupBox()
         self.groupGroupBox.setLayout(verticalLayout)
 
         layout.addWidget(self.destGroupBox)
         layout.addWidget(self.groupGroupBox)
 
-        self.overwriteBox = QtGui.QCheckBox()
+        self.overwriteBox = QCheckBox()
         self.overwriteBox.setChecked(False)
         self.overwriteBox.setText("Overwrite without asking")
         layout.addWidget(self.overwriteBox)
 
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Close)
+        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Close)
         layout.addWidget(self.buttonBox)
 
         self.setLayout(layout)

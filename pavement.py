@@ -4,10 +4,9 @@
 # This code is licensed under the GPL 2.0 license.
 #
 import os
-import xmlrpclib
 import zipfile
 import requests
-import StringIO
+import io
 import shutil
 
 from paver.easy import *
@@ -56,7 +55,7 @@ def install(options):
         dst = path('~/.local/share/QGIS/QGIS3/profiles/default/python/plugins').expanduser() / plugin_name
     src = src.abspath()
     dst = dst.abspath()
-    if not hasattr(os, 'symlink'):
+    if os.name == 'nt':
         dst.rmtree()
         src.copytree(dst)
     elif not dst.exists():
@@ -100,19 +99,20 @@ def setup(options):
                     sh('git clone  %s %s' % (urlspec, localpath))
             req = localpath
 
-        sh('easy_install -a -d %(ext_libs)s %(dep)s' % {
+        else:
+            sh('easy_install -a -d %(ext_libs)s %(dep)s' % {
             'ext_libs' : ext_libs.abspath(),
             'dep' : req
-        })
+            })
     get_certs()
 
 def get_certs():
-    print "Downloading and installing test certificates..."
+    print("Downloading and installing test certificates...")
     certsPath = os.path.abspath("./_certs")
     if os.path.exists(certsPath):
         shutil.rmtree(certsPath)
     r = requests.get("https://github.com/boundlessgeo/boundless-test-certs/archive/master.zip", stream=True)
-    z = zipfile.ZipFile(StringIO.StringIO(r.content))
+    z = zipfile.ZipFile(io.StringIO(r.content))
     z.extractall(path=certsPath)
     dstPath = "./geoserverexplorer/test/resources/auth_system/certs-keys"
     if os.path.exists(dstPath):

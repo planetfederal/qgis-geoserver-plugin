@@ -3,13 +3,16 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
-from PyQt4 import QtGui, QtCore
+from builtins import str
+from qgis.PyQt.QtGui import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtWidgets import *
 from geoserverexplorer.qgis import layers
 from geoserverexplorer.gui.gsnameutils import GSNameWidget, xmlNameFixUp,\
     xmlNameRegexMsg, xmlNameRegex
 
 
-class StyleFromLayerDialog(QtGui.QDialog):
+class StyleFromLayerDialog(QDialog):
 
     def __init__(self, styles=None, parent = None):
         super(StyleFromLayerDialog, self).__init__(parent)
@@ -18,21 +21,20 @@ class StyleFromLayerDialog(QtGui.QDialog):
         self.name = None
         self.initGui()
 
-
     def initGui(self):
-        verticalLayout = QtGui.QVBoxLayout()
-        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Close)
-        self.okButton = buttonBox.button(QtGui.QDialogButtonBox.Ok)
-        self.cancelButton = buttonBox.button(QtGui.QDialogButtonBox.Close)
+        verticalLayout = QVBoxLayout()
+        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Close)
+        self.okButton = buttonBox.button(QDialogButtonBox.Ok)
+        self.cancelButton = buttonBox.button(QDialogButtonBox.Close)
         self.setWindowTitle('Create style from layer')
 
-        horizontalLayout = QtGui.QHBoxLayout()
+        horizontalLayout = QHBoxLayout()
         horizontalLayout.setMargin(0)
-        layerLabel = QtGui.QLabel('Layer')
+        layerLabel = QLabel('Layer')
         layerLabel.setSizePolicy(
-            QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum,
-                              QtGui.QSizePolicy.Fixed))
-        self.layerBox = QtGui.QComboBox()
+            QSizePolicy(QSizePolicy.Maximum,
+                              QSizePolicy.Fixed))
+        self.layerBox = QComboBox()
         self.alllayers = [layer.name() for layer in layers.getAllLayers()]
         self.layerBox.addItems(self.alllayers)
         self.layerBox.setMinimumWidth(250)
@@ -40,12 +42,12 @@ class StyleFromLayerDialog(QtGui.QDialog):
         horizontalLayout.addWidget(self.layerBox)
         verticalLayout.addLayout(horizontalLayout)
 
-        horizontalLayout = QtGui.QHBoxLayout()
+        horizontalLayout = QHBoxLayout()
         horizontalLayout.setMargin(0)
-        nameLabel = QtGui.QLabel('Name')
+        nameLabel = QLabel('Name')
         nameLabel.setSizePolicy(
-            QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum,
-                              QtGui.QSizePolicy.Fixed))
+            QSizePolicy(QSizePolicy.Maximum,
+                              QSizePolicy.Fixed))
         defaultname = ''
         if len(self.alllayers) > 0:
             defaultname = xmlNameFixUp(self.alllayers[0])
@@ -61,11 +63,11 @@ class StyleFromLayerDialog(QtGui.QDialog):
         horizontalLayout.addWidget(self.nameBox)
         verticalLayout.addLayout(horizontalLayout)
 
-        self.groupBox = QtGui.QGroupBox()
+        self.groupBox = QGroupBox()
         self.groupBox.setTitle("")
         self.groupBox.setLayout(verticalLayout)
 
-        layout = QtGui.QVBoxLayout()
+        layout = QVBoxLayout()
         layout.addWidget(self.groupBox)
         layout.addWidget(buttonBox)
 
@@ -82,11 +84,11 @@ class StyleFromLayerDialog(QtGui.QDialog):
 
         self.resize(400,150)
 
-    @QtCore.pyqtSlot(str)
+    @pyqtSlot(str)
     def updateNameBox(self, name):
         self.nameBox.setName(xmlNameFixUp(name))
 
-    @QtCore.pyqtSlot(bool)
+    @pyqtSlot(bool)
     def updateButtons(self, overwriting):
         txt = "Overwrite" if overwriting else "OK"
         self.okButton.setText(txt)
@@ -95,7 +97,7 @@ class StyleFromLayerDialog(QtGui.QDialog):
 
     def okPressed(self):
         self.layer = self.layerBox.currentText()
-        self.name = unicode(self.nameBox.definedName())
+        self.name = str(self.nameBox.definedName())
         self.close()
 
     def cancelPressed(self):
@@ -103,7 +105,7 @@ class StyleFromLayerDialog(QtGui.QDialog):
         self.name = None
         self.close()
 
-class AddStyleToLayerDialog(QtGui.QDialog):
+class AddStyleToLayerDialog(QDialog):
 
     def __init__(self, catalog, layer, parent = None):
         super(AddStyleToLayerDialog, self).__init__(parent)
@@ -118,23 +120,23 @@ class AddStyleToLayerDialog(QtGui.QDialog):
         self.initGui()
 
     def initGui(self):
-        layout = QtGui.QVBoxLayout()
-        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Close)
+        layout = QVBoxLayout()
+        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Close)
         self.setWindowTitle('Add style to layer')
 
-        horizontalLayout = QtGui.QHBoxLayout()
+        horizontalLayout = QHBoxLayout()
         horizontalLayout.setMargin(0)
-        styleLabel = QtGui.QLabel('Style')
+        styleLabel = QLabel('Style')
         styleLabel.setSizePolicy(
-            QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum,
-                              QtGui.QSizePolicy.Fixed))
-        self.styleBox = QtGui.QComboBox()
+            QSizePolicy(QSizePolicy.Maximum,
+                              QSizePolicy.Fixed))
+        self.styleBox = QComboBox()
         styles = [style.name for style in self.catalog.get_styles()]
-        sm = QtGui.QStandardItemModel()
+        sm = QStandardItemModel()
         defaultset = False
         for style in styles:
             isdefault = style == self.layerdefaultstyle
-            si = QtGui.QStandardItem(style)
+            si = QStandardItem(style)
             si.setEnabled(style not in self.layerstyles and not isdefault)
             if not defaultset and isdefault:
                 si.setText("{0} [default style]".format(style))
@@ -146,9 +148,9 @@ class AddStyleToLayerDialog(QtGui.QDialog):
         horizontalLayout.addWidget(self.styleBox)
         layout.addLayout(horizontalLayout)
 
-        horizontalLayout = QtGui.QHBoxLayout()
+        horizontalLayout = QHBoxLayout()
         horizontalLayout.setMargin(0)
-        self.checkBox = QtGui.QCheckBox("Add as default style")
+        self.checkBox = QCheckBox("Add as default style")
         if not self.layerdefaultstyle:
             self.checkBox.setChecked(True)
             self.checkBox.setEnabled(False)
@@ -164,7 +166,7 @@ class AddStyleToLayerDialog(QtGui.QDialog):
         self.resize(400,200)
 
     def okPressed(self):
-        self.style = self.catalog.get_style(self.styleBox.currentText())
+        self.style = self.catalog.get_styles(self.styleBox.currentText())[0]
         self.default = self.checkBox.isChecked()
         self.close()
 
@@ -174,12 +176,12 @@ class AddStyleToLayerDialog(QtGui.QDialog):
         self.close()
 
 
-class PublishStyleDialog(QtGui.QDialog):
+class PublishStyleDialog(QDialog):
 
     def __init__(self, catalogs, layername, parent = None):
         super(PublishStyleDialog, self).__init__(parent)
         self.catalogs = catalogs
-        self.catalognames = catalogs.keys()
+        self.catalognames = list(catalogs.keys())
         self.layername = layername
         self.catalog = None
         self.name = None
@@ -187,32 +189,32 @@ class PublishStyleDialog(QtGui.QDialog):
 
 
     def initGui(self):
-        verticalLayout = QtGui.QVBoxLayout()
-        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Close)
-        self.okButton = buttonBox.button(QtGui.QDialogButtonBox.Ok)
-        self.cancelButton = buttonBox.button(QtGui.QDialogButtonBox.Close)
+        verticalLayout = QVBoxLayout()
+        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Close)
+        self.okButton = buttonBox.button(QDialogButtonBox.Ok)
+        self.cancelButton = buttonBox.button(QDialogButtonBox.Close)
         self.setWindowTitle('Publish style')
-        horizontalLayout = QtGui.QHBoxLayout()
+        horizontalLayout = QHBoxLayout()
         horizontalLayout.setMargin(0)
-        catalogLabel = QtGui.QLabel('Catalog')
+        catalogLabel = QLabel('Catalog')
         catalogLabel.setSizePolicy(
-            QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum,
-                              QtGui.QSizePolicy.Fixed))
-        self.catalogBox = QtGui.QComboBox()
+            QSizePolicy(QSizePolicy.Maximum,
+                              QSizePolicy.Fixed))
+        self.catalogBox = QComboBox()
         self.catalogBox.addItems(self.catalognames)
         self.catalogBox.setSizePolicy(
-            QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding,
-                              QtGui.QSizePolicy.Fixed))
+            QSizePolicy(QSizePolicy.Expanding,
+                              QSizePolicy.Fixed))
         horizontalLayout.addWidget(catalogLabel)
         horizontalLayout.addWidget(self.catalogBox)
         verticalLayout.addLayout(horizontalLayout)
 
-        horizontalLayout = QtGui.QHBoxLayout()
+        horizontalLayout = QHBoxLayout()
         horizontalLayout.setMargin(0)
-        nameLabel = QtGui.QLabel('Name')
+        nameLabel = QLabel('Name')
         nameLabel.setSizePolicy(
-            QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum,
-                              QtGui.QSizePolicy.Fixed))
+            QSizePolicy(QSizePolicy.Maximum,
+                              QSizePolicy.Fixed))
         self.nameBox = GSNameWidget(
             namemsg='',
             name=xmlNameFixUp(self.layername),
@@ -221,18 +223,18 @@ class PublishStyleDialog(QtGui.QDialog):
             names=[],
             unique=False)
         self.nameBox.setSizePolicy(
-            QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding,
-                              QtGui.QSizePolicy.Fixed))
+            QSizePolicy(QSizePolicy.Expanding,
+                              QSizePolicy.Fixed))
         horizontalLayout.addWidget(nameLabel)
         horizontalLayout.addWidget(self.nameBox)
         verticalLayout.addLayout(horizontalLayout)
 
 
-        self.groupBox = QtGui.QGroupBox()
+        self.groupBox = QGroupBox()
         self.groupBox.setTitle("")
         self.groupBox.setLayout(verticalLayout)
 
-        layout = QtGui.QVBoxLayout()
+        layout = QVBoxLayout()
         layout.addWidget(self.groupBox)
         layout.addWidget(buttonBox)
 
@@ -251,22 +253,22 @@ class PublishStyleDialog(QtGui.QDialog):
 
         self.resize(400,200)
 
-    @QtCore.pyqtSlot(bool)
+    @pyqtSlot(bool)
     def updateButtons(self, overwriting):
         txt = "Overwrite" if overwriting else "OK"
         self.okButton.setText(txt)
         self.okButton.setDefault(not overwriting)
         self.cancelButton.setDefault(overwriting)
 
-    @QtCore.pyqtSlot(str)
+    @pyqtSlot(str)
     def updateCatalogStyles(self, catname):
         catalog = self.catalogs[catname]
         styles = [style.name for style in catalog.get_styles()]
         self.nameBox.setNames(styles)
 
     def okPressed(self):
-        self.name = unicode(self.nameBox.definedName())
-        self.catalog = unicode(self.catalogBox.currentText())
+        self.name = str(self.nameBox.definedName())
+        self.catalog = str(self.catalogBox.currentText())
         self.close()
 
     def cancelPressed(self):

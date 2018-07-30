@@ -16,12 +16,12 @@ def name(named):
          as long as it's a string
        * otherwise, we raise a ValueError
     """
-    if isinstance(named, basestring) or named is None:
+    if isinstance(named, str) or named is None:
         return named
     elif hasattr(named, 'name'):
-        if isinstance(named.name, basestring):
+        if isinstance(named.name, str):
             return named.name
-        elif callable(named.name) and isinstance(named.name(), basestring):
+        elif callable(named.name) and isinstance(named.name(), str):
             return named.name()    
     else:
         raise ValueError("Can't interpret %s as a name or a configuration object" % named)
@@ -74,7 +74,7 @@ def addLayerToGroups(catalog, layer, groups, workspace=None):
         lyrs = grp.layers
         styles = grp.styles
         lyrs.append(layer.name)
-        style = catalog.get_style(layer.name, workspace=workspace)
+        style = catalog.get_styles(layer.name, workspace=workspace)[0]
         styles.append(style)
         grp.dirty.update(layers=lyrs, styles=styles)
         catalog.save(grp)

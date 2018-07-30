@@ -8,9 +8,12 @@ methods to convert the SLD produced by GeoServer (1.0) to the SLD produced by QG
 This is a quick and dirty solution until both programs support the same specification
 '''
 
+from builtins import hex
+from builtins import str
+from builtins import range
 import re
 import os
-from PyQt4.QtXml import *
+from qgis.PyQt.QtXml import *
 from qgiscommons2.settings import pluginSetting
 from qgis.core import *
 import math
@@ -83,7 +86,7 @@ def adaptQgsToGs(sld, layer):
         sld = sld.replace(arr, newdasharrays)
     #//replace "native" SLD symbols
     wknReplacements = {}
-    if layer.geometryType() == QGis.Point:
+    if layer.geometryType() == QgsWkbTypes.PointGeometry:
         wknReplacements = {"regular_star":"star",
                        "cross2": "x",
                        "equilateral_triangle": "triangle",
@@ -92,14 +95,14 @@ def adaptQgsToGs(sld, layer):
                        "line": "shape://vertline",
                        "arrow": "ttf://Wingdings#0xE9",
                        "diamond": "ttf://Wingdings#0x75"}
-    if layer.geometryType() == QGis.Polygon:
+    if layer.geometryType() == QgsWkbTypes.PolygonGeometry:
         wknReplacements = {"horline":"shape://horline",
                        "vertline":"shape://vertline",
                        "cross":"shape://plus",
                        "slash":"shape://slash",
                        "backslash":"shape://backslash",
                        "x": "shape://times"}
-    for key,value in wknReplacements.iteritems():
+    for key,value in wknReplacements.items():
         sld = sld.replace("<sld:WellKnownName>%s</sld:WellKnownName>" % key,
                       "<sld:WellKnownName>%s</sld:WellKnownName>" % value)
 
@@ -112,13 +115,13 @@ def adaptQgsToGs(sld, layer):
         sld = sld.replace(arr, '<WellKnownName>'+policeValue+'#'+hex(int(markerIndexValue))+'</WellKnownName>')
         
     icons = []
-    renderer = layer.rendererV2()
-    if isinstance(renderer, QgsSingleSymbolRendererV2):
+    renderer = layer.renderer()
+    if isinstance(renderer, QgsSingleSymbolRenderer):
         icons = getReadyToUploadSvgIcons(renderer.symbol())
-    elif isinstance(renderer, QgsCategorizedSymbolRendererV2):
+    elif isinstance(renderer, QgsCategorizedSymbolRenderer):
         for cat in renderer.categories():
             icons.extend(getReadyToUploadSvgIcons(cat.symbol()))
-    elif isinstance(renderer, QgsGraduatedSymbolRendererV2):
+    elif isinstance(renderer, QgsGraduatedSymbolRenderer):
         for ran in renderer.ranges():
             icons.extend(getReadyToUploadSvgIcons(ran.symbol()))
 
@@ -135,9 +138,9 @@ def adaptQgsToGs(sld, layer):
 
 def getReadyToUploadSvgIcons(symbol):
     icons = []
-    for i in xrange(symbol.symbolLayerCount()):
+    for i in range(symbol.symbolLayerCount()):
         sl = symbol.symbolLayer(i)
-        if isinstance(sl, QgsSvgMarkerSymbolLayerV2):
+        if isinstance(sl, QgsSvgMarkerSymbolLayer):
             props = sl.properties()
             with open(sl.path()) as f:
                 svg = "".join(f.readlines())
@@ -146,7 +149,7 @@ def getReadyToUploadSvgIcons(symbol):
             svg = re.sub(r'param\(outline-width\).*?\"', props["outline_width"] + '"', svg)
             basename = os.path.basename(sl.path())
             filename, ext = os.path.splitext(basename)
-            propsHash = hash(frozenset(props.items()))
+            propsHash = hash(frozenset(list(props.items())))
             icons.append ([sl.path(), "%s_%s%s" % (filename, propsHash, ext), svg])
         elif isinstance(sl, QgsSVGFillSymbolLayer):
             props = sl.properties()
@@ -157,9 +160,9 @@ def getReadyToUploadSvgIcons(symbol):
             svg = re.sub(r'param\(outline-width\).*?\"', props["outline_width"] + '"', svg)
             basename = os.path.basename(sl.svgFilePath())
             filename, ext = os.path.splitext(basename)
-            propsHash = hash(frozenset(props.items()))
+            propsHash = hash(frozenset(list(props.items())))
             icons.append ([sl.svgFilePath(), "%s_%s%s" % (filename, propsHash, ext), svg])
-        elif isinstance(sl, QgsMarkerLineSymbolLayerV2):
+        elif isinstance(sl, QgsMarkerLineSymbolLayer):
             return getReadyToUploadSvgIcons(sl.subSymbol())
     return icons
 
@@ -185,7 +188,7 @@ def getLabelingAsSld(layer):
             s += '<CssParameter name="font-weight">bold</CssParameter>'
         s += "</Font>"
         s += "<LabelPlacement>"
-        if layer.geometryType() == QGis.Point:
+        if layer.geometryType() == QgsWkbTypes.PointGeometry:
             s += ("<PointPlacement>"
                 "<AnchorPoint>"
                 "<AnchorPointX>0.5</AnchorPointX>"
@@ -197,7 +200,7 @@ def getLabelingAsSld(layer):
             s += "</Displacement>"
             s += "<Rotation>-" + str(layer.customProperty("labeling/angleOffset")) + "</Rotation>"
             s += "</PointPlacement>"
-        elif layer.geometryType() == QGis.Line:
+        elif layer.geometryType() == QgsWkbTypes.LineGeometry:
             mode = layer.customProperty("labeling/placement")
             if mode != 4:
                 follow = '<VendorOption name="followLine">true</VendorOption>' if mode == 3 else ''
@@ -245,6 +248,9 @@ def getGsCompatibleSld(layer):
 
 def getStyleAsSld(layer):
     if layer.type() == layer.VectorLayer:
+        print(layer.name())
+        print(layer.source())
+        print("1")
         document = QDomDocument()
         header = document.createProcessingInstruction( "xml", "version=\"1.0\" encoding=\"UTF-8\"" )
         document.appendChild( header )
@@ -263,8 +269,7 @@ def getStyleAsSld(layer):
 
         errorMsg = ""
         layer.writeSld(namedLayerNode, document, errorMsg)
-
-        return unicode(document.toString(4))
+        return str(document.toString(4))
     elif layer.type() == layer.RasterLayer:
         renderer = layer.renderer()
         if isinstance(renderer, QgsSingleBandGrayRenderer):
@@ -280,7 +285,7 @@ def getStyleAsSld(layer):
             for item in items:
                 color = item.color
                 rgb = '#%02x%02x%02x' % (color.red(), color.green(), color.blue())
-                symbolizerCode += '<ColorMapEntry color="' + rgb + '" quantity="' + unicode(item.value) + '" />'
+                symbolizerCode += '<ColorMapEntry color="' + rgb + '" quantity="' + str(item.value) + '" />'
             symbolizerCode += "</ColorMap>"
             sld =  RASTER_SLD_TEMPLATE.replace("SYMBOLIZER_CODE", symbolizerCode).replace("STYLE_NAME", layer.name())
             return sld

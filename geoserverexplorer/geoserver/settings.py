@@ -3,47 +3,28 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
+
+from builtins import str
+from builtins import object
 import httplib2
 from xml.etree.ElementTree import XML
 import xml.etree.ElementTree as ET
-from urlparse import urlparse
-from geoserver.support import url
-from geoserverexplorer.geoserver.pki import PKICatalog
+from urllib.parse import urlparse
+from geoserver.support import build_url
 from geoserverexplorer.geoserver.auth import AuthCatalog
 
 class Settings(object):
 
     def __init__(self, catalog):
         self.catalog = catalog
-        if isinstance(catalog, AuthCatalog):
-            http = catalog.http
-        elif isinstance(catalog, PKICatalog):
-            http = httplib2.Http(ca_certs=catalog.ca_cert, disable_ssl_certificate_validation = False)
-            http.add_certificate(catalog.key, catalog.cert, '')
-        else:
-            http = httplib2.Http()
-            http.add_credentials(catalog.username, catalog.password)
-            netloc = urlparse(self.catalog.service_url).netloc
-            http.authorizations.append(
-                httplib2.BasicAuthentication(
-                    (catalog.username, catalog.password),
-                    netloc,
-                    self.catalog.service_url,
-                    {},
-                    None,
-                    None,
-                    http
-                )
-        )
-        self.http = http
 
     def settings(self):
         settings = {}
-        settings_url = url(self.catalog.service_url, ['settings.xml'])
-        headers, response = self.http.request(settings_url, 'GET')
-        if headers.status != 200: raise Exception('Settings listing failed - %s, %s' %
-                                                 (headers,response))
-        dom = XML(response)
+        settings_url = build_url(self.catalog.service_url, ['settings.xml'])
+        resp = self.catalog.http_request(settings_url, 'GET')
+        if resp.status_code != 200: 
+            raise Exception('Settings listing failed: ' + resp.text)
+        dom = XML(resp.text)
         sections = ['settings', 'jai','coverageAccess']
         for section in sections:
             params = []
@@ -71,14 +52,14 @@ class Settings(object):
                     if subelement is None:
                         subelement = ET.SubElement(element, name)
                     subsubelement = ET.SubElement(subelement, subname)
-                    subsubelement.text = unicode(value)
+                    subsubelement.text = str(value)
                 else:
                     subelement = ET.SubElement(element, name)
-                    subelement.text = unicode(value)
+                    subelement.text = str(value)
 
         xml = ET.tostring(root)
-        settings_url = url(self.catalog.service_url, ['settings.xml'])
+        settings_url = build_url(self.catalog.service_url, ['settings.xml'])
         headers = {'Content-type': 'text/xml'}
-        headers, response = self.http.request(settings_url, 'PUT', xml, headers = headers)
-        if headers.status != 200: raise Exception('Settings update failed - %s, %s' %
-                                                 (headers,response))
+        resp = self.catalog.http_request(settings_url, xml, 'PUT', headers = headers)
+        if resp.status_code != 200: 
+            raise Exception('Settings update failed: ' + resp.text)

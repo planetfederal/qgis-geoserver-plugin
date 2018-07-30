@@ -8,13 +8,15 @@ Dialog to create a user-defined name for a GeoServer component, with optional
 validation.
 """
 
-from PyQt4 import QtGui, QtCore
+from qgis.PyQt.QtGui import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtWidgets import *
 
 APP = None
 if __name__ == '__main__':
     import sys
     # instantiate QApplication before importing QtGui subclasses
-    APP = QtGui.QApplication(sys.argv)
+    APP = QApplication(sys.argv)
 
 from geoserverexplorer.gui.gsnameutils import GSNameWidget
 from geoserverexplorer.qgis.utils import UserCanceledOperation
@@ -23,7 +25,7 @@ from geoserverexplorer.gui.gsnameutils import GSNameWidget, \
 
 
 # noinspection PyAttributeOutsideInit, PyPep8Naming
-class GSNameDialog(QtGui.QDialog):
+class GSNameDialog(QDialog):
 
     def __init__(self, boxtitle='', boxmsg='', name='', namemsg='',
                  nameregex='', nameregexmsg='', names=None,
@@ -44,25 +46,25 @@ class GSNameDialog(QtGui.QDialog):
 
     def initGui(self):
         self.setWindowTitle('Define name')
-        vertlayout = QtGui.QVBoxLayout()
+        vertlayout = QVBoxLayout()
 
-        self.groupBox = QtGui.QGroupBox()
+        self.groupBox = QGroupBox()
         self.groupBox.setTitle(self.boxtitle)
         self.groupBox.setLayout(vertlayout)
 
         if self.boxmsg:
-            self.groupBoxMsg = QtGui.QLabel(self.boxmsg)
+            self.groupBoxMsg = QLabel(self.boxmsg)
             self.groupBoxMsg.setWordWrap(True)
             self.groupBox.layout().addWidget(self.groupBoxMsg)
 
         self.groupBox.layout().addWidget(self.nameBox)
 
-        layout = QtGui.QVBoxLayout()
+        layout = QVBoxLayout()
         layout.addWidget(self.groupBox)
-        self.buttonBox = QtGui.QDialogButtonBox(
-            QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
-        self.okButton = self.buttonBox.button(QtGui.QDialogButtonBox.Ok)
-        self.cancelButton = self.buttonBox.button(QtGui.QDialogButtonBox.Cancel)
+        self.buttonBox = QDialogButtonBox(
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.okButton = self.buttonBox.button(QDialogButtonBox.Ok)
+        self.cancelButton = self.buttonBox.button(QDialogButtonBox.Cancel)
         layout.addWidget(self.buttonBox)
 
         self.setLayout(layout)
@@ -87,7 +89,7 @@ class GSNameDialog(QtGui.QDialog):
     def overwritingName(self):
         return self.nameBox.overwritingName()
 
-    @QtCore.pyqtSlot(bool)
+    @pyqtSlot(bool)
     def updateButtons(self, overwriting):
         txt = "Overwrite" if overwriting else "OK"
         self.okButton.setText(txt)
@@ -115,9 +117,9 @@ class GSXmlNameDialog(GSNameDialog):
 
 def getGSXmlName(kind, **kwargs):
     dlg = GSXmlNameDialog(kind=kind, **kwargs)
-    QtGui.QApplication.setOverrideCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+    QApplication.setOverrideCursor(QCursor(Qt.ArrowCursor))
     res = dlg.exec_()
-    QtGui.QApplication.restoreOverrideCursor()
+    QApplication.restoreOverrideCursor()
     if res:
         return dlg.definedName()
     else:
@@ -147,13 +149,17 @@ if __name__ == '__main__':
         unique=False,
         maxlength=10)
     gdlg.exec_()
-    print gdlg.definedName()
-    print gdlg.overwritingName()
+    # fix_print_with_import
+    print(gdlg.definedName())
+    # fix_print_with_import
+    print(gdlg.overwritingName())
     # and with no kwargs
     gdlg = GSNameDialog()
     gdlg.exec_()
-    print gdlg.definedName()
-    print gdlg.overwritingName()
+    # fix_print_with_import
+    print(gdlg.definedName())
+    # fix_print_with_import
+    print(gdlg.overwritingName())
     # gdlg.show()
     # gdlg.raise_()
     # gdlg.activateWindow()

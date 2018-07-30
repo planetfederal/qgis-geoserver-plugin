@@ -8,10 +8,11 @@ This module provides methods to export layers so they can be used as valid data
 for uploading to GeoServer.
 '''
 
+from builtins import str
 from qgis.core import *
 from geoserverexplorer.qgis import utils
 import os
-from PyQt4 import QtCore
+from qgis.PyQt import QtCore
 from qgis.utils import iface
 from qgis.gui import QgsMessageBar
 from qgiscommons2.files import tempFilenameInTempFolder
@@ -21,24 +22,20 @@ def exportVectorLayer(layer):
     settings = QtCore.QSettings()
     systemEncoding = settings.value( "/UI/encoding", "System" )
     if isinstance(layer, QgsMapLayer):
-        filename = unicode(layer.source())
-        destFilename = unicode(layer.name())
+        filename = str(layer.source())
+        destFilename = str(layer.name())
     else:
-        filename = unicode(layer)
-        destFilename = unicode(os.path.splitext(os.path.basename(filename))[0])
+        filename = str(layer)
+        destFilename = str(os.path.splitext(os.path.basename(filename))[0])
     if (not filename.lower().endswith("shp")):
         if not isinstance(layer, QgsMapLayer):
             layer = QgsVectorLayer(filename, "layer", "ogr")
             if not layer.isValid() or layer.type() != QgsMapLayer.VectorLayer:
                 raise Exception ("Error reading file {} or it is not a valid vector layer file".format(filename))
         output = tempFilenameInTempFolder(destFilename + ".shp")
-        provider = layer.dataProvider()
-        writer = QgsVectorFileWriter(output, systemEncoding, layer.pendingFields(), provider.geometryType(), layer.crs() )
-        for feat in layer.getFeatures():
-            writer.addFeature(feat)
-        del writer
+        QgsVectorFileWriter.writeAsVectorFormat(layer, output, systemEncoding, layer.crs(), "ESRI Shapefile")
         iface.messageBar().pushMessage("Warning", "Layer had to be exported to shapefile for importing. Data might be lost.",
-                                              level = QgsMessageBar.WARNING,
+                                              level = Qgis.Warning,
                                               duration = 5)
         return output
     else:
@@ -47,7 +44,7 @@ def exportVectorLayer(layer):
 
 
 def exportRasterLayer(layer):
-    if (not unicode(layer.source()).lower().endswith("tif") ):
+    if (not str(layer.source()).lower().endswith("tif") ):
         filename = str(layer.name())
         output = tempFilenameInTempFolder(filename + ".tif")
         writer = QgsRasterFileWriter(output)
@@ -56,7 +53,7 @@ def exportRasterLayer(layer):
         del writer
         return output
     else:
-        return unicode(layer.source())
+        return str(layer.source())
 
 
 
