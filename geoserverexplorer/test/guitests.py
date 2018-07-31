@@ -33,19 +33,7 @@ class CreateCatalogDialogTests(unittest.TestCase):
     explorer = GeoServerExplorer()
 
     def setUp(self):
-        # reasize if in PKI auth context
-        # import is doen here to avoid to have the effect to loose module
-        # this fixes https://github.com/boundlessgeo/qgis-geoserver-plugin/issues/85
         self.cat = getGeoServerCatalog()
-
-    def tearDown(self):
-        # reasize if in PKI auth context
-        # import is doen here to avoid to have the effect to loose module
-        # this fixes https://github.com/boundlessgeo/qgis-geoserver-plugin/issues/85
-        from geoserverexplorer.test.utils import AUTHM
-        if AUTHM:
-            # remove certs
-            pem.removeCatalogPkiTempFiles(self.cat)
 
     def testCreateCatalogDialog(self):
         dialog = DefineCatalogDialog(self.explorer.catalogs())
@@ -157,6 +145,7 @@ class GroupDialogTests(ExplorerIntegrationTest):
         self.assertFalse(dialog.nameBox.isEnabled())
 
 class LayerDialogTests(unittest.TestCase):
+
 
     @classmethod
     def setUpClass(cls):

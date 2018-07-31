@@ -46,30 +46,24 @@ WORKSPACEB = safeName("workspaceb")
 # envs that can be override by os.environ envs
 GSHOSTNAME = 'localhost'
 GSPORT = '8080'
-GSSSHPORT = '8443'
 GSUSER = 'admin'
 GSPASSWORD = 'geoserver'
 
 AUTHDB_MASTERPWD = 'password'
-AUTHCFGID = None
+AUTHCFGID = "geoservertest"
+
+USEAUTHSYSTEM = False
 
 AUTHDBDIR = tempfile.mkdtemp(prefix='tmp-qgis_authdb',
                              dir=tempfile.gettempdir())
 
-#
-# To avoid revrite some utils methods in PKI context
-# has been created a global variable 'AUTHM' that define the running context
-#
-AUTHM = None
-
-def getGeoServerCatalog(authcfgid=None):
-    # beaware that these envs can be overrided by os.environ envs cnaging
-    # the function behaviour
+def getGeoServerCatalog():
+    authid = AUTHCFGID if USEAUTHSYSTEM else None
     conf = dict(
         URL=serverLocationBasicAuth()+'/rest',
         USER=GSUSER,
         PASSWORD=GSPASSWORD,
-        AUTHCFG=authcfgid)
+        AUTHCFG=authid)
 
     conf.update([(k, os.getenv('GS%s' % k))
                 for k in conf if 'GS%s' % k in os.environ])
@@ -84,7 +78,6 @@ def getGeoServerCatalog(authcfgid=None):
 
 
 def cleanCatalog(cat):
-
     for groupName in [GROUP, GEOLOGY_GROUP]:
         def _del_group(groupName, cat):
             groups = cat.get_layergroups(groupName)
@@ -168,33 +161,61 @@ def serverLocationBasicAuth():
 #     Auth config utils
 #######################################################################
 
+def disableAuth():
+    global USEAUTHSYSTEM
+    USEAUTHSYSTEM = False
+    
+def enableAuth():
+    initAuthManager()
+    initAuthConfigId()
+    global USEAUTHSYSTEM
+    USEAUTHSYSTEM = True
 
 def initAuthManager():
+    return
     """
     Setup AuthManager instance.
 
     heavily based on testqgsauthmanager.cpp.
-    """
-    global AUTHM
-    if not AUTHM:
-        AUTHM = QgsApplication.authManager()
-        # check if QgsAuthManager has been already initialised... a side effect
-        # of the QgsAuthManager.init() is that AuthDbPath is set
-        if AUTHM.authenticationDbPath():
-            # already initilised => we are inside QGIS. Assumed that the
-            # actual qgis_auth.db has the same master pwd as AUTHDB_MASTERPWD
-            if AUTHM.masterPasswordIsSet():
-                msg = 'Auth master password not set from passed string'
-                assert AUTHM.masterPasswordSame(AUTHDB_MASTERPWD)
-            else:
-                msg = 'Master password could not be set'
-                assert AUTHM.setMasterPassword(AUTHDB_MASTERPWD, True), msg
+    """    
+    am = QgsApplication.authManager()
+    # check if QgsAuthManager has been already initialised... a side effect
+    # of the QgsAuthManager.init() is that AuthDbPath is set
+    if am.authenticationDbPath():
+        # already initilised => we are inside QGIS. Assumed that the
+        # actual qgis_auth.db has the same master pwd as AUTHDB_MASTERPWD
+        if am.masterPasswordIsSet():
+            msg = 'Auth master password not set from passed string'
+            assert am.masterPasswordSame(AUTHDB_MASTERPWD)
         else:
-            # outside qgis => setup env var before db init
-            os.environ['QGIS_AUTH_DB_DIR_PATH'] = AUTHDBDIR
             msg = 'Master password could not be set'
-            assert AUTHM.setMasterPassword(AUTHDB_MASTERPWD, True), msg
-            AUTHM.init(AUTHDBDIR)
+            assert am.setMasterPassword(AUTHDB_MASTERPWD, True), msg
+    else:
+        # outside qgis => setup env var before db init
+        os.environ['QGIS_AUTH_DB_DIR_PATH'] = AUTHDBDIR
+        msg = 'Master password could not be set'
+        assert am.setMasterPassword(AUTHDB_MASTERPWD, True), msg
+        am.init(AUTHDBDIR)
+
+def initAuthConfigId():
+    am =  QgsApplication.authManager()
+    if AUTHCFGID not in am.configIds():
+        conf = dict(
+            URL=serverLocationBasicAuth()+'/rest',
+            USER=GSUSER,
+            PASSWORD=GSPASSWORD,
+            AUTHCFG=authid)
+
+        conf.update([(k, os.getenv('GS%s' % k))
+                for k in conf if 'GS%s' % k in os.environ])
+
+        cfg = QgsAuthMethodConfig()
+        cfg.setId(AUTHCFGID)
+        cfg.setName('yourPluginName')
+        cfg.setMethod('Basic')
+        cfg.setConfig('username', conf['USER'])
+        cfg.setConfig('password', conf['PASSWORD'])
+        self.am.storeAuthenticationConfig(cfg)
 
 
 #######################################################################
@@ -217,7 +238,6 @@ def loadSymbologyTestData():
 
 def getCatalog():
     catWrapper = getGeoServerCatalog()
-
     return catWrapper
 
 def setUpCatalogAndWorkspace():
@@ -261,7 +281,6 @@ def clean():
 
 
 def openAndUpload():
-    global AUTHM
     global AUTHCFGID
     loadTestData()
     layer = layerFromName("qgis_plugin_test_pt1")

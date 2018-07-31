@@ -18,14 +18,12 @@ from geoserverexplorer.test import utils
 from geoserverexplorer.test.utils import PT1, DEM, DEM2, PT1JSON, DEMASCII,\
     GEOLOGY_GROUP, GEOFORMS, LANDUSE, HOOK, WORKSPACE, WORKSPACEB
 import re
-from .utils import UtilsTestCase
+from .utils import *
 from qgiscommons2.settings import pluginSetting, setPluginSetting
-
-
-class CatalogTests(UtilsTestCase):
+        
+class _CatalogTests(UtilsTestCase):
     '''
     Tests for the CatalogWrapper class that provides additional capabilities to a gsconfig catalog
-    Requires a Geoserver catalog running on localhost:8080 with default credentials
     '''
 
     @classmethod
@@ -164,13 +162,26 @@ class CatalogTests(UtilsTestCase):
 
 ##################################################################################################
 
-def suiteSubset():
-    tests = ['testPreuploadVectorHook']
-    suite = unittest.TestSuite(list(map(CatalogTests, tests)))
+class CatalogTestsAuth(_CatalogTests):
+    
+    @classmethod
+    def setUpClass(cls):
+        enableAuth()
+        super().setUpClass()
+
+class CatalogTestsNoAuth(_CatalogTests):
+
+    @classmethod
+    def setUpClass(cls):
+        disableAuth()
+        super().setUpClass()
+
+def suiteAuth():
+    suite = unittest.makeSuite(CatalogTestsAuth, 'test')
     return suite
 
-def suite():
-    suite = unittest.makeSuite(CatalogTests, 'test')
+def suiteNoAuth():
+    suite = unittest.makeSuite(CatalogTestsNoAuth, 'test')
     return suite
 
 # run all tests using unittest skipping nose or testplugin
@@ -181,3 +192,5 @@ def run_all():
 # run a subset of tests using unittest skipping nose or testplugin
 def run_subset():
     unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suiteSubset())
+
+

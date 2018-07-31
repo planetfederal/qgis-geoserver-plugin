@@ -15,7 +15,7 @@ from qgis.core import *
 from qgiscommons2.settings import pluginSetting, setPluginSetting
 
 class ExplorerIntegrationTest(unittest.TestCase):
-
+        
     @classmethod
     def setUpClass(cls):
         cls.explorer = GeoServerExplorer()

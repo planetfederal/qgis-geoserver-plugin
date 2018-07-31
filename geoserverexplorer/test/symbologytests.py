@@ -38,9 +38,6 @@ class SymbologyTests(unittest.TestCase):
     def tearDownClass(cls):
         utils.cleanCatalog(cls.cat.catalog)
 
-
-
-
     def compareSld(self, a, b):
         a = a.replace("\r", "").replace("\n", "").replace(" ", "").replace("\t", "")
         b = b.replace("\r", "").replace("\n", "").replace(" ", "").replace("\t", "")
@@ -50,8 +47,6 @@ class SymbologyTests(unittest.TestCase):
         b = re.sub(r"<ogc:Literal>(\d+)\.(\d+)</ogc:Literal>", r"<ogc:Literal>\1</ogc:Literal>", b)
         self.assertEqual(a, b, "SLD compare failes: %s %s" % (a, b))
 
-
-
     def testVectorFontStylingUpload(self):
         layer = layers.resolveLayer(PT1)
         sld, icons = getGsCompatibleSld(layer)
@@ -60,14 +55,8 @@ class SymbologyTests(unittest.TestCase):
             sldref = f.read()
         self.compareSld(sldref, sld)
 
-
-
 ##################################################################################################
 
-def suiteSubset():
-    tests = []
-    suite = unittest.TestSuite(list(map(SymbologyTests, tests)))
-    return suite
 
 def suite():
     suite = unittest.makeSuite(SymbologyTests, 'test')

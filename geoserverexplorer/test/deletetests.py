@@ -137,11 +137,6 @@ class DeleteTests(ExplorerIntegrationTest):
 
 ##################################################################################################
 
-def suiteSubset():
-    tests = ['testDeleteLayerAndStyle']
-    suite = unittest.TestSuite(list(map(DeleteTests, tests)))
-    return suite
-
 def suite():
     suite = unittest.makeSuite(DeleteTests, 'test')
     return suite

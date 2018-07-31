@@ -6,7 +6,8 @@
 import unittest
 import sys
 from geoserverexplorer.test import utils
-from geoserverexplorer.test.catalogtests import suite as catalogSuite
+from geoserverexplorer.test.catalogtests import suiteAuth as catalogSuiteAuth
+from geoserverexplorer.test.catalogtests import suiteNoAuth as catalogSuiteNoAuth
 from geoserverexplorer.test.deletetests import suite as deleteSuite
 from geoserverexplorer.test.dragdroptests import suite as dragdropSuite
 from geoserverexplorer.test.guitests import suite as guiSuite
@@ -39,8 +40,9 @@ def functionalTests():
     return [dragdropTest, vectorRenderingTest]
 
 def unitTests():
-    _tests = []
-    _tests.extend(catalogSuite())
+    _tests = []    
+    _tests.extend(catalogSuiteNoAuth())
+    _tests.extend(catalogSuiteAuth())   
     _tests.extend(deleteSuite())
     _tests.extend(dragdropSuite())
     _tests.extend(guiSuite())
