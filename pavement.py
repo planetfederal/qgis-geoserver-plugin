@@ -8,6 +8,7 @@ import zipfile
 import requests
 import io
 import shutil
+import sys
 
 from paver.easy import *
 from paver.doctools import html
@@ -112,7 +113,7 @@ def get_certs():
     if os.path.exists(certsPath):
         shutil.rmtree(certsPath)
     r = requests.get("https://github.com/boundlessgeo/boundless-test-certs/archive/master.zip", stream=True)
-    z = zipfile.ZipFile(io.StringIO(r.content))
+    z = zipfile.ZipFile(io.BytesIO(r.content))
     z.extractall(path=certsPath)
     dstPath = "./geoserverexplorer/test/resources/auth_system/certs-keys"
     if os.path.exists(dstPath):
