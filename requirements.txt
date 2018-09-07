@@ -6,9 +6,6 @@ python-dateutil
 requests==2.5.0
 qgiscommons
 
-https://github.com/boundlessgeo/gsconfig.git#egg=gsconfig
-https://github.com/boundlessgeo/gsimporter.git#egg=gsimporter
-
 # test requirements
 
 

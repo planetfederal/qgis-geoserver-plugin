@@ -20,14 +20,12 @@ options(
     plugin = Bunch(
         name = 'geoserverexplorer',
         ext_libs = path('geoserverexplorer/extlibs'),
-        ext_src = path('geoserverexplorer/ext-src'),
         source_dir = path('geoserverexplorer'),
         package_dir = path('.'),
         tests = ['test'],
         excludes = [
             '.DS_Store',  # on Mac
             'test-output',
-            'ext-src',
             'coverage*',
             'nose*',
             '*.pyc',
@@ -80,31 +78,16 @@ def setup(options):
     clean = getattr(options, 'clean', False)
     develop = getattr(options, 'develop', False)
     ext_libs = options.plugin.ext_libs
-    ext_src = options.plugin.ext_src
     if clean:
         ext_libs.rmtree()
     ext_libs.makedirs()
     runtime, test = read_requirements()
     os.environ['PYTHONPATH']=ext_libs.abspath()
     for req in runtime + test:
-        if '#egg' in req:
-            urlspec, req = req.split('#egg=')
-            localpath = ext_src / req
-            if not develop:
-                if localpath.exists():
-                    cwd = os.getcwd()
-                    os.chdir(localpath)
-                    sh('git pull')
-                    os.chdir(cwd)
-                else:
-                    sh('git clone  %s %s' % (urlspec, localpath))
-            req = localpath
-
-        else:
-            sh('easy_install -a -d %(ext_libs)s %(dep)s' % {
+        sh('easy_install -a -d %(ext_libs)s %(dep)s' % {
             'ext_libs' : ext_libs.abspath(),
             'dep' : req
-            })
+        })
     get_certs()
 
 def get_certs():
