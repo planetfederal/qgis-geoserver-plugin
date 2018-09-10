@@ -130,7 +130,6 @@ class CatalogWrapper(object):
         if isinstance(layer, str):
             layer = layers.resolveLayer(layer)
         sld, icons = getGsCompatibleSld(layer)
-        print(sld)
         if sld is not None:
             name = name if name is not None else layer.name()
             name = name.replace(" ", "_")
