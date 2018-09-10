@@ -139,6 +139,15 @@ class Catalog(object):
             resp = req_method(url, headers=headers, data=data, auth=(self.username, self.password))
         return resp
 
+    def about(self):
+        '''return the about information as a formatted html'''
+        about_url = self.service_url + "/about/version.html"
+        response = self.http_request(about_url)
+        if response.status_code == 200:
+            return response.text
+        raise FailedRequestError('Unable to determine version: %s' %
+                                 (content or response.status))
+
     def gsversion(self):
         '''obtain the version or just 2.2.x if < 2.3.x
         Raises:
@@ -816,6 +825,8 @@ class Catalog(object):
             except FailedRequestError:
                 continue
 
+        print(resources)
+        print([r.name for r in resources])
         if names is None:
             names = []
         elif isinstance(names, basestring):

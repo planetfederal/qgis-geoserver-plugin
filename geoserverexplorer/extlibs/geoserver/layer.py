@@ -118,7 +118,7 @@ class Layer(ResourceInfo):
         name = self.dom.find("resource/name").text
         atom_link = [n for n in self.dom.find("resource").getchildren() if 'href' in n.attrib]
         ws_name = workspace_from_url(atom_link[0].get('href'))
-        return self.catalog.get_resources(names=name, workspaces=ws_name)[0]
+        return self.catalog.get_resources(names=name.split(":")[-1], workspaces=ws_name)[0]
 
     def _get_default_style(self):
         if 'default_style' in self.dirty:
