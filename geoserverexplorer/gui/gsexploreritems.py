@@ -150,7 +150,6 @@ class GsTreeItem(TreeItem):
                 if styleEntry not in toUpdate:
                     toUpdate.append(styleEntry) 
         explorer.setProgressMaximum(len(elements), "Deleting elements")
-        print(toUpdate)
         for progress, element in enumerate(elements):
             explorer.setProgress(progress)
             #we run this delete operation this way, to ignore the error in case we are trying to delete
@@ -360,6 +359,7 @@ class GsLayersItem(GsTreeItem):
                     iface.messageBar().pushMessage("Warning", "Layers %s could not be added" % layer.name,
                       level = Qgis.Warning,
                       duration = 10)
+                    continue
                 layerItem.populate()
                 self.addChild(layerItem)
                 items[layer.name] = layerItem
