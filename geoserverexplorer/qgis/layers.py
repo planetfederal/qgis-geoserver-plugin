@@ -22,7 +22,7 @@ def getPublishableLayers():
     return [layer for layer in layers if layer.dataProvider().name() != "wms"]
 
 def getAllLayers():
-    return QgsProject.instance().mapLayers().values()
+    return list(QgsProject.instance().mapLayers().values())
 
 def getAllLayersAsDict():
     return {layer.source(): layer for layer in getAllLayers()}
