@@ -17,6 +17,7 @@ import traceback
 from geoserverexplorer.gui.explorertree import ExplorerTreeWidget
 from geoserverexplorer.qgis.utils import UserCanceledOperation
 from qgiscommons2.settings import pluginSetting
+from geoserver.catalog import FailedRequestError
 
 class GeoServerExplorer(QDockWidget):
 
@@ -113,7 +114,10 @@ class GeoServerExplorer(QDockWidget):
         except UserCanceledOperation:
             pass
         except Exception as e:
-            self.setError(str(e), traceback.format_exc())
+            if isinstance(e, FailedRequestError):
+                self.setError("Error connecting to server (See log for more details)", traceback.format_exc())
+            else:
+                self.setError(str(e) + " (See log for more details)", traceback.format_exc())
             noerror = False
         finally:
             QApplication.restoreOverrideCursor()

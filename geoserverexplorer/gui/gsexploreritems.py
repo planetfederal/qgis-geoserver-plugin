@@ -529,8 +529,7 @@ class GsCatalogItem(GsTreeItem):
         except Exception as e:
             if catalogIsNone:
                 self.catalog = None
-            var = traceback.format_exc()
-            raise Exception("Error while trying to connect to catalog:\n" + var)
+            raise
         finally:
             self.element = self.catalog
 
