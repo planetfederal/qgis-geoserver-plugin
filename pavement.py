@@ -79,7 +79,11 @@ def setup(options):
     develop = getattr(options, 'develop', False)
     ext_libs = options.plugin.ext_libs
     if clean:
-        ext_libs.rmtree()
+        subfolders =  [f for f in os.listdir(ext_libs.abspath()) if os.path.isdir(os.path.join(ext_libs.abspath(), f))]
+        for subfolder in subfolders:
+            if subfolder != "geoserver":
+                fullPath = os.path.join(ext_libs.abspath(), subfolder)
+                shutil.rmtree(fullPath)
     ext_libs.makedirs()
     runtime, test = read_requirements()
     os.environ['PYTHONPATH']=ext_libs.abspath()
