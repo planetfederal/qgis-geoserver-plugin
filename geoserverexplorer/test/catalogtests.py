@@ -140,11 +140,12 @@ class _CatalogTests(UtilsTestCase):
         layers = group.layers
         for layer in layers:
             self.assertIsNotNone(self.cat.catalog.get_layer(layer))
-        self.assertTrue(GEOFORMS in layers)
-        self.assertTrue(LANDUSE in layers)
+        layernames = [lay.split(":")[-1] for lay in layers]
+        self.assertTrue(GEOFORMS in layernames)
+        self.assertTrue(LANDUSE in layernames)
         self.cat.catalog.delete(self.cat.catalog.get_layergroups(GEOLOGY_GROUP)[0])
-        self.cat.catalog.delete(self.cat.catalog.get_layer(GEOFORMS), recurse = True)
-        self.cat.catalog.delete(self.cat.catalog.get_layer(LANDUSE), recurse = True)
+        for lay in layers:
+            self.cat.catalog.delete(self.cat.catalog.get_layer(lay), recurse = True)            
 
     def testUploadRenameAndDownload(self):
         QgsNetworkAccessManager.instance().cache().clear()
