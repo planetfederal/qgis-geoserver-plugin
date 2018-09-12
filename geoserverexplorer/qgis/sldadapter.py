@@ -101,7 +101,7 @@ def adaptQgsToGs(sld, layer):
         sld = sld.replace("<sld:WellKnownName>%s</sld:WellKnownName>" % key,
                       "<sld:WellKnownName>%s</sld:WellKnownName>" % value)
 
-    fontmarkers = re.findall('<sld:OnlineResource xlink:type=".*?"/> <sld:Format>ttf</sld:Format> <sld:MarkIndex>.*?</sld:MarkIndex>', sld)
+    fontmarkers = re.findall('<sld:OnlineResource.*?"/> <sld:Format>ttf</sld:Format> <sld:MarkIndex>.*?</sld:MarkIndex>', sld)
     for arr in fontmarkers:
         police = re.findall('xlink:href=".*?"/>', arr)
         policeValue=police[0][12:-3]
@@ -129,6 +129,7 @@ def adaptQgsToGs(sld, layer):
             relPath = os.path.normpath(icon[0]).replace(path, "").replace("\\", "/")
             sld = sld.replace(relPath, icon[1])
 
+    print(sld)
     return sld, icons
 
 def getReadyToUploadSvgIcons(symbol):
@@ -160,67 +161,6 @@ def getReadyToUploadSvgIcons(symbol):
         elif isinstance(sl, QgsMarkerLineSymbolLayer):
             return getReadyToUploadSvgIcons(sl.subSymbol())
     return icons
-
-def getLabelingAsSld(layer):
-    setScaleFactor()
-    try:
-        s = "<TextSymbolizer><Label>"
-        s += "<ogc:PropertyName>" + layer.customProperty("labeling/fieldName") + "</ogc:PropertyName>"
-        s += "</Label>"
-        r = int(layer.customProperty("labeling/textColorR"))
-        g = int(layer.customProperty("labeling/textColorG"))
-        b = int(layer.customProperty("labeling/textColorB"))
-        rgb = '#%02x%02x%02x' % (r, g, b)
-        s += '<Fill><CssParameter name="fill">' + rgb + "</CssParameter></Fill>"
-        s += "<Font>"
-        s += '<CssParameter name="font-family">' + layer.customProperty("labeling/fontFamily") +'</CssParameter>'
-        s += ('<CssParameter name="font-size">' +
-                str(float(layer.customProperty("labeling/fontSize")) * SIZE_FACTOR)
-                +'</CssParameter>')
-        if layer.customProperty("labeling/fontItalic") == "true":
-            s += '<CssParameter name="font-style">italic</CssParameter>'
-        if layer.customProperty("labeling/fontBold") == "true":
-            s += '<CssParameter name="font-weight">bold</CssParameter>'
-        s += "</Font>"
-        s += "<LabelPlacement>"
-        if layer.geometryType() == QgsWkbTypes.PointGeometry:
-            s += ("<PointPlacement>"
-                "<AnchorPoint>"
-                "<AnchorPointX>0.5</AnchorPointX>"
-                "<AnchorPointY>0.5</AnchorPointY>"
-                "</AnchorPoint>")
-            s += "<Displacement>"
-            s += "<DisplacementX>" + str(layer.customProperty("labeling/xOffset")) + "</DisplacementX>"
-            s += "<DisplacementY>" + str(layer.customProperty("labeling/yOffset")) + "</DisplacementY>"
-            s += "</Displacement>"
-            s += "<Rotation>-" + str(layer.customProperty("labeling/angleOffset")) + "</Rotation>"
-            s += "</PointPlacement>"
-        elif layer.geometryType() == QgsWkbTypes.LineGeometry:
-            mode = layer.customProperty("labeling/placement")
-            if mode != 4:
-                follow = '<VendorOption name="followLine">true</VendorOption>' if mode == 3 else ''
-                s += '''<LinePlacement>
-                        <PerpendicularOffset>
-                           %s
-                        </PerpendicularOffset>
-                      </LinePlacement>
-                      %s''' %  (str(layer.customProperty("labeling/dist")), follow)
-        s += "</LabelPlacement>"
-
-        if layer.customProperty("labeling/bufferDraw") == "true":
-            r = int(layer.customProperty("labeling/bufferColorR"))
-            g = int(layer.customProperty("labeling/bufferColorG"))
-            b = int(layer.customProperty("labeling/bufferColorB"))
-            rgb = '#%02x%02x%02x' % (r, g, b)
-            haloSize = str(layer.customProperty("labeling/bufferSize"))
-            opacity = str(float(layer.customProperty("labeling/bufferColorA")) / 255.0)
-            s += "<Halo><Radius>%s</Radius><Fill>" % haloSize
-            s +=  '<CssParameter name="fill">%s</CssParameter>' % rgb
-            s += '<CssParameter name="fill-opacity">%s</CssParameter></Fill></Halo>' % opacity
-        s +="</TextSymbolizer>"
-        return s
-    except:
-        return ""
 
 def adaptGsToQgs(sld):
     setScaleFactor()
