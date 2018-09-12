@@ -38,22 +38,10 @@ class SymbologyTests(unittest.TestCase):
     def tearDownClass(cls):
         utils.cleanCatalog(cls.cat.catalog)
 
-    def compareSld(self, a, b):
-        a = a.replace("\r", "").replace("\n", "").replace(" ", "").replace("\t", "")
-        b = b.replace("\r", "").replace("\n", "").replace(" ", "").replace("\t", "")
-        a = re.sub(r"<sld:StyledLayerDescriptor.*?>", "", a)
-        b = re.sub(r"<sld:StyledLayerDescriptor.*?>", "", b)
-        a = re.sub(r"<ogc:Literal>(\d+)\.(\d+)</ogc:Literal>", r"<ogc:Literal>\1</ogc:Literal>", a)
-        b = re.sub(r"<ogc:Literal>(\d+)\.(\d+)</ogc:Literal>", r"<ogc:Literal>\1</ogc:Literal>", b)
-        self.assertEqual(a, b, "SLD compare failes: %s %s" % (a, b))
-
     def testVectorFontStylingUpload(self):
         layer = layers.resolveLayer(PT1)
         sld, icons = getGsCompatibleSld(layer)
-        sldfile = os.path.join(os.path.dirname(__file__), "resources", "font.sld")
-        with open(sldfile, 'r') as f:
-            sldref = f.read()
-        self.compareSld(sldref, sld)
+        self.assertTrue("<WellKnownName>ttf://DejaVu Sans#0x46</WellKnownName>" in sld)
 
 ##################################################################################################
 
