@@ -325,11 +325,11 @@ class GsCatalogsItem(GsTreeItem):
                 geoserverItem.populate()
                 self.setExpanded(True)
             except FailedRequestError as e:
-                explorer.setWarning(e.args[0])
+                explorer.setError("Error connecting to server (See log for more details)", traceback.format_exc())
             except SSLError:
                 explorer.setWarning("Cannot connect using the provided certificate/key values")
             except Exception as e:
-                explorer.setError("Could not connect to catalog:\n" + traceback.format_exc())
+                explorer.setError("Could not connect to catalog", traceback.format_exc())
             finally:
                 QApplication.restoreOverrideCursor()
 
