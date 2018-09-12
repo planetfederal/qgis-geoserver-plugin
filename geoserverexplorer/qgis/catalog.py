@@ -10,8 +10,7 @@ from qgis.core import *
 from qgis.PyQt import QtCore
 from geoserverexplorer.qgis import layers, exporter, utils
 from geoserver.catalog import ConflictingDataError, UploadError, FailedRequestError
-from geoserverexplorer.qgis.sldadapter import adaptGsToQgs,\
-    getGsCompatibleSld
+from geoserverexplorer.qgis.sldadapter import adaptGsToQgs, getGsCompatibleSld, setUnits
 from geoserverexplorer.qgis import uri as uri_utils
 from geoserverexplorer.geoserver.auth import AuthCatalog
 from geoserverexplorer.geoserver.basecatalog import BaseCatalog
@@ -465,6 +464,7 @@ class CatalogWrapper(object):
             except Exception as e:
                 ok = False
             QgsProject.instance().addMapLayers([qgslayer])
+            setUnits(qgslayer)
             addTrackedLayer(qgslayer, self.catalog.service_url)
             if not ok:
                 raise Exception ("Layer was added, but style could not be set (maybe GeoServer layer is missing default style)")

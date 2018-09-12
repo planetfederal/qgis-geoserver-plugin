@@ -73,11 +73,6 @@ def adaptQgsToGs(sld, layer):
         s = ("<MinScaleDenominator>" + str(layer.minimumScale()) +
         "</MinScaleDenominator><MaxScaleDenominator>" + str(layer.maximumScale()) + "</MaxScaleDenominator>")
         sld = sld.replace("<se:Rule>", "<se:Rule>" + s)
-    labeling = layer.customProperty("labeling/enabled")
-    labeling = str(labeling).lower() == str(True).lower()
-    if labeling:
-        s = getLabelingAsSld(layer)
-        sld = sld.replace("<se:Rule>", "<se:Rule>" + s)
     sld = sld.replace("se:", "sld:")
     dasharrays = re.findall('<CssParameter name="stroke-dasharray">.*?</CssParameter>', sld)
     for arr in dasharrays:
@@ -306,3 +301,10 @@ def getGeomTypeFromSld(sld):
         return "LineString"
     else:
         return "Polygon"
+
+def setUnits(layer):
+    labeling = layer.labeling()
+    settings = labeling.settings()
+    settings.offsetUnits = QgsUnitTypes.RenderPixels
+    labeling.setSettings(settings)
+    layer.setLabeling(labeling)    
