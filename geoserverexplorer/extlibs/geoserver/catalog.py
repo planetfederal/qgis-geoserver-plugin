@@ -301,7 +301,6 @@ class Catalog(object):
         elif isinstance(names, basestring):
             names = [s.strip() for s in names.split(',') if s.strip()]
 
-        print(stores)
         if stores and names:
             return ([store for store in stores if store.name in names])
 
@@ -825,8 +824,6 @@ class Catalog(object):
             except FailedRequestError:
                 continue
 
-        print(resources)
-        print([r.name for r in resources])
         if names is None:
             names = []
         elif isinstance(names, basestring):
@@ -963,7 +960,6 @@ class Catalog(object):
         else:
             style = None
 
-        print(style)
         if not overwrite and style is not None:
             raise ConflictingDataError("There is already a style named %s" % name)
 
