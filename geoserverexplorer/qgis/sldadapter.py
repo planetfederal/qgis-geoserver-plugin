@@ -129,7 +129,6 @@ def adaptQgsToGs(sld, layer):
             relPath = os.path.normpath(icon[0]).replace(path, "").replace("\\", "/")
             sld = sld.replace(relPath, icon[1])
 
-    print(sld)
     return sld, icons
 
 def getReadyToUploadSvgIcons(symbol):
