@@ -1158,7 +1158,10 @@ class GsStyleItem(GsTreeItem):
         layer = QgsVectorLayer(uri, "tmp", "memory")
         layer.loadSldStyle(sldfile)
         oldSld = getGsCompatibleSld(layer)[0]
-        iface.showLayerProperties(layer)
+
+        dlg = QgsRendererPropertiesDialog(layer, QgsStyle.defaultStyle())
+        dlg.setMapCanvas(iface.mapCanvas())
+        dlg.exec_()
         settings.setValue('/Projections/defaultBehaviour', prjSetting)
         newSld = getGsCompatibleSld(layer)[0]
         #TODO: we are not considering the possibility of the user selecting new svg markers,
