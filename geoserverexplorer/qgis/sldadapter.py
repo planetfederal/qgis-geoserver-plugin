@@ -131,34 +131,47 @@ def adaptQgsToGs(sld, layer):
 
     return sld, icons
 
+def resolveSvgPath(path):
+    folders = QgsSettings().value('svg/searchPathsForSVG')
+    for f in folders:
+        fullPath = os.path.join(f, path)
+        if os.path.exists(fullPath):
+            return fullPath
+    return None
+
 def getReadyToUploadSvgIcons(symbol):
     icons = []
     for i in range(symbol.symbolLayerCount()):
         sl = symbol.symbolLayer(i)
         if isinstance(sl, QgsSvgMarkerSymbolLayer):
-            props = sl.properties()
-            with open(sl.path()) as f:
-                svg = "".join(f.readlines())
-            svg = re.sub(r'param\(outline\).*?\"', props["outline_color"] + '"', svg)
-            svg = re.sub(r'param\(fill\).*?\"', props["color"] + '"', svg)
-            svg = re.sub(r'param\(outline-width\).*?\"', props["outline_width"] + '"', svg)
-            basename = os.path.basename(sl.path())
-            filename, ext = os.path.splitext(basename)
-            propsHash = hash(frozenset(list(props.items())))
-            icons.append ([sl.path(), "%s_%s%s" % (filename, propsHash, ext), svg])
+            path = resolveSvgPath(sl.path())
+            if path is not None:
+                props = sl.properties()
+                with open(path) as f:
+                    svg = "".join(f.readlines())
+                svg = re.sub(r'param\(outline\).*?\"', props["outline_color"] + '"', svg)
+                svg = re.sub(r'param\(fill\).*?\"', props["color"] + '"', svg)
+                svg = re.sub(r'param\(outline-width\).*?\"', props["outline_width"] + '"', svg)
+                basename = os.path.basename(sl.path())
+                filename, ext = os.path.splitext(basename)
+                propsHash = hash(frozenset(list(props.items())))
+                icons.append ([sl.path(), "%s_%s%s" % (filename, propsHash, ext), svg])
         elif isinstance(sl, QgsSVGFillSymbolLayer):
-            props = sl.properties()
-            with open(sl.svgFilePath()) as f:
-                svg = "".join(f.readlines())
-            svg = re.sub(r'param\(outline\).*?\"', props["outline_color"] + '"', svg)
-            svg = re.sub(r'param\(fill\).*?\"', props["color"] + '"', svg)
-            svg = re.sub(r'param\(outline-width\).*?\"', props["outline_width"] + '"', svg)
-            basename = os.path.basename(sl.svgFilePath())
-            filename, ext = os.path.splitext(basename)
-            propsHash = hash(frozenset(list(props.items())))
-            icons.append ([sl.svgFilePath(), "%s_%s%s" % (filename, propsHash, ext), svg])
-        elif isinstance(sl, QgsMarkerLineSymbolLayer):
-            return getReadyToUploadSvgIcons(sl.subSymbol())
+            path = resolveSvgPath(sl.svgFilePath())
+            if path is not None:
+                props = sl.properties()
+                with open(path) as f:
+                    svg = "".join(f.readlines())
+                svg = re.sub(r'param\(outline\).*?\"', props["outline_color"] + '"', svg)
+                svg = re.sub(r'param\(fill\).*?\"', props["color"] + '"', svg)
+                svg = re.sub(r'param\(outline-width\).*?\"', props["outline_width"] + '"', svg)
+                basename = os.path.basename(sl.svgFilePath())
+                filename, ext = os.path.splitext(basename)
+                propsHash = hash(frozenset(list(props.items())))
+                icons.append ([sl.svgFilePath(), "%s_%s%s" % (filename, propsHash, ext), svg])
+            elif isinstance(sl, QgsMarkerLineSymbolLayer):
+                return getReadyToUploadSvgIcons(sl.subSymbol())
+    
     return icons
 
 def adaptGsToQgs(sld):

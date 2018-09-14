@@ -139,9 +139,8 @@ class CatalogWrapper(object):
 
     def uploadIcons(self, icons):
         for icon in icons:
-            url = self.catalog.service_url + "rest/resource/styles/" + icon[1]
+            url = self.catalog.service_url + "/resource/styles/" + icon[1]
             r = self.catalog.http_request(url, data=icon[2], method="put")
-            r.raise_for_status()
 
 
     def getDataFromLayer(self, layer):
