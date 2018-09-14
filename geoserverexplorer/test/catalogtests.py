@@ -134,19 +134,6 @@ class _CatalogTests(UtilsTestCase):
         self.compareSld(sld, gssld)
         self.cat.catalog.delete(self.cat.catalog.get_layer(DEM), recurse = True)
 
-    def testGroup(self):
-        self.cat.publishGroup(GEOLOGY_GROUP, workspace = self.ws)
-        group = self.cat.catalog.get_layergroups(GEOLOGY_GROUP)[0]
-        layers = group.layers
-        for layer in layers:
-            self.assertIsNotNone(self.cat.catalog.get_layer(layer))
-        layernames = [lay.split(":")[-1] for lay in layers]
-        self.assertTrue(GEOFORMS in layernames)
-        self.assertTrue(LANDUSE in layernames)
-        self.cat.catalog.delete(self.cat.catalog.get_layergroups(GEOLOGY_GROUP)[0])
-        for lay in layers:
-            self.cat.catalog.delete(self.cat.catalog.get_layer(lay), recurse = True)            
-
     def testUploadRenameAndDownload(self):
         QgsNetworkAccessManager.instance().cache().clear()
         self.cat.publishLayer(PT1, self.ws, name = PT1)
