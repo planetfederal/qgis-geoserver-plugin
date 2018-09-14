@@ -204,14 +204,14 @@ def initAuthConfigId():
             URL=serverLocationBasicAuth()+'/rest',
             USER=GSUSER,
             PASSWORD=GSPASSWORD,
-            AUTHCFG=authid)
+            AUTHCFG=AUTHCFGID)
 
         conf.update([(k, os.getenv('GS%s' % k))
                 for k in conf if 'GS%s' % k in os.environ])
 
         cfg = QgsAuthMethodConfig()
         cfg.setId(AUTHCFGID)
-        cfg.setName('yourPluginName')
+        cfg.setName('Geoserver test')
         cfg.setMethod('Basic')
         cfg.setConfig('username', conf['USER'])
         cfg.setConfig('password', conf['PASSWORD'])

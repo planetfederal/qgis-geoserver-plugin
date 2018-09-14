@@ -256,7 +256,8 @@ def getGeomTypeFromSld(sld):
 
 def setUnits(layer):
     labeling = layer.labeling()
-    settings = labeling.settings()
-    settings.offsetUnits = QgsUnitTypes.RenderPixels
-    labeling.setSettings(settings)
-    layer.setLabeling(labeling)    
+    if labeling is not None:
+        settings = labeling.settings()
+        settings.offsetUnits = QgsUnitTypes.RenderPixels
+        labeling.setSettings(settings)
+        layer.setLabeling(labeling)    
