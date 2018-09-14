@@ -614,7 +614,7 @@ class GsCatalogItem(GsTreeItem):
             if dlg.authid:             
                 cache_time = pluginSetting("AuthCatalogXMLCacheTime")
                 self.catalog = AuthCatalog(dlg.url, dlg.authid, cache_time)          
-            elif dlg.username and dlg.password:
+            else:
                 self.catalog = BaseCatalog(dlg.url, dlg.username, dlg.password)
             self.catalog.authid = dlg.authid
             if self.name != dlg.name:
