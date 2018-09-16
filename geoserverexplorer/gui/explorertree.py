@@ -248,15 +248,7 @@ class ExplorerTreeWidget(QTreeWidget):
                         continue
                     child = child.nextSiblingElement()
 
-            toUpdate = destinationItem.acceptDroppedUris(self, self.explorer, elements)
-
-        self.explorer.resetActivity()
-        if len(toUpdate) > 1:
-            self.explorer.setProgressMaximum(len(toUpdate), "Refreshing tree")
-        for i, item in enumerate(toUpdate):
-            item.refreshContent(self.explorer)
-            self.explorer.setProgress(i)
-        self.explorer.resetActivity()
+            destinationItem.acceptDroppedUris(self, self.explorer, elements)
 
         event.setDropAction(Qt.CopyAction)
         event.accept()
