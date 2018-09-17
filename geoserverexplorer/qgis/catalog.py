@@ -63,7 +63,10 @@ class CatalogWrapper(object):
             usedStyles.update([s for s in group.styles if s is not None])
         toDelete = [s for s in styles if s.name not in usedStyles]
         for style in toDelete:
-            style.catalog.delete(style, purge = True)
+            try:
+                style.catalog.delete(style, purge = True)
+            except FailedRequestError:
+                QgsMessageLog.logMessage("Cannot delete style '%s'" % style.name)
 
     def cleanUnusedResources(self):
         '''cleans resources that are not published through any layer in the catalog'''

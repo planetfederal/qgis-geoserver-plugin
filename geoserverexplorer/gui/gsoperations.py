@@ -13,6 +13,7 @@ from geoserverexplorer.gui.dialogs.projectdialog import PublishProjectDialog
 from geoserver.catalog import ConflictingDataError
 from geoserverexplorer.gui.dialogs.layerdialog import PublishLayersDialog
 from geoserverexplorer.gui import setInfo, setWarning, setError
+from geoserverexplorer.geoserver import GeoserverException
 
 def _publishLayers(catalog, layers, layersUploaded):
     task = PublishLayersTask(catalog, layers) 
@@ -22,7 +23,6 @@ def _publishLayers(catalog, layers, layersUploaded):
     QgsMessageLog.logMessage(str(QgsApplication.taskManager().tasks()))
     setInfo("%i layers correctly published" % len(layers))
 
-    
 class PublishLayersTask(QgsTask):
 
     def __init__(self, catalog, layers):
@@ -42,9 +42,12 @@ class PublishLayersTask(QgsTask):
                 catalog = CatalogWrapper(self.catalog)
                 catalog.publishLayer(*layerAndParams)
             return True
-        except Exception as e:
+        except Exception as e:            
             self.exception = e
-            self.errortrace = traceback.format_exc()
+            if isinstance(e, GeoserverException):
+                self.errortrace = e.details
+            else:
+                self.errortrace = traceback.format_exc()
             return False
 
     def finished(self, ok):
