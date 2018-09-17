@@ -42,3 +42,13 @@ def getGroups():
             groups[child.name()] = layers
 
     return groups
+
+def layerFromUri(uri):
+    print(uri.uri)
+    print(uri.name)
+    allLayers = getAllLayers()
+    source = uri.uri.split("|")[0]
+    for layer in getAllLayers():
+        if layer.source() == source and layer.name() == uri.name:
+            return layer
+

@@ -18,9 +18,9 @@ from geoserverexplorer.geoserver import GeoserverException
 def _publishLayers(catalog, layers, layersUploaded):
     task = PublishLayersTask(catalog, layers) 
     task.taskCompleted.connect(layersUploaded)
-    QgsMessageLog.logMessage(str(QgsApplication.taskManager().tasks()))
+    #QgsMessageLog.logMessage(str(QgsApplication.taskManager().tasks()))
     QgsApplication.taskManager().addTask(task)
-    QgsMessageLog.logMessage(str(QgsApplication.taskManager().tasks()))
+    #QgsMessageLog.logMessage(str(QgsApplication.taskManager().tasks()))
     setInfo("%i layers correctly published" % len(layers))
 
 class PublishLayersTask(QgsTask):
@@ -37,7 +37,7 @@ class PublishLayersTask(QgsTask):
 
     def run(self):
         try:
-            QgsMessageLog.logMessage(str(self.layers))
+            #QgsMessageLog.logMessage(str(self.layers))
             for layerAndParams in self.layers:
                 catalog = CatalogWrapper(self.catalog)
                 catalog.publishLayer(*layerAndParams)
@@ -74,29 +74,36 @@ def addDraggedUrisToWorkspace(uris, catalog, workspace, explorer, tree):
         publishableLayers = qgislayers.getPublishableLayersAsDict()
         if len(uris) > 1:
             explorer.setProgressMaximum(len(uris))
-        for i, uri in enumerate(uris):
+        for i, uri in enumerate(uris): 
+            layer = None          
+            if isinstance(uri, QgsMimeDataUtils.Uri):
+                layer = qgislayers.layerFromUri(uri)                
             source = uri if isinstance(uri, str) else uri.uri
             source = source.split("|")[0]
-            if source in allLayers:
-                layer = publishableLayers.get(source, None)
-            else:
-                if isinstance(uri, str):
-                    layerName = QtCore.QFileInfo(uri).completeBaseName()
-                    layer = QgsRasterLayer(uri, layerName)
+            if layer is None:
+                if source in allLayers:
+                    layer = publishableLayers.get(source, None)
                 else:
-                    layer = QgsRasterLayer(uri.uri, uri.name)
-                if not layer.isValid() or layer.type() != QgsMapLayer.RasterLayer:
                     if isinstance(uri, str):
                         layerName = QtCore.QFileInfo(uri).completeBaseName()
-                        layer = QgsVectorLayer(uri, layerName, "ogr")
+                        layer = QgsRasterLayer(uri, layerName)
                     else:
-                        layer = QgsVectorLayer(uri.uri, uri.name, uri.providerKey)
-                    if not layer.isValid() or layer.type() != QgsMapLayer.VectorLayer:
-                        layer.deleteLater()
-                        layer = None
-            if layer is None:
-                name = "'%s'" % allLayers[source] if source in allLayers else "with source '%s'" % source
-                QgsMessageLog.logMessage("{}:{}".format(msg, trace), level=Qgis.Critical)
+                        layer = QgsRasterLayer(uri.uri, uri.name)
+                    if not layer.isValid() or layer.type() != QgsMapLayer.RasterLayer:
+                        if isinstance(uri, str):
+                            layerName = QtCore.QFileInfo(uri).completeBaseName()
+                            layer = QgsVectorLayer(uri, layerName, "ogr")
+                        else:
+                            layer = QgsVectorLayer(uri.uri, uri.name, uri.providerKey)
+                        if not layer.isValid() or layer.type() != QgsMapLayer.VectorLayer:
+                            layer.deleteLater()
+                            layer = None
+                if layer is None:
+                    name = "'%s'" % allLayers[source] if source in allLayers else "with source '%s'" % source
+                    msg = "Could not resolve layer " + name
+                    QgsMessageLog.logMessage(msg, level=Qgis.Critical)
+                else:
+                    toPublish.append([layer, workspace])
             else:
                 toPublish.append([layer, workspace])
 
