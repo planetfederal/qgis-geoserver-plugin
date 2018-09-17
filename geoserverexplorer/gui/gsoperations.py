@@ -18,10 +18,8 @@ from geoserverexplorer.geoserver import GeoserverException
 def _publishLayers(catalog, layers, layersUploaded):
     task = PublishLayersTask(catalog, layers) 
     task.taskCompleted.connect(layersUploaded)
-    #QgsMessageLog.logMessage(str(QgsApplication.taskManager().tasks()))
     QgsApplication.taskManager().addTask(task)
-    #QgsMessageLog.logMessage(str(QgsApplication.taskManager().tasks()))
-    setInfo("%i layers correctly published" % len(layers))
+    QtCore.QCoreApplication.processEvents()
 
 class PublishLayersTask(QgsTask):
 
@@ -37,7 +35,6 @@ class PublishLayersTask(QgsTask):
 
     def run(self):
         try:
-            #QgsMessageLog.logMessage(str(self.layers))
             for layerAndParams in self.layers:
                 catalog = CatalogWrapper(self.catalog)
                 catalog.publishLayer(*layerAndParams)
@@ -51,7 +48,9 @@ class PublishLayersTask(QgsTask):
             return False
 
     def finished(self, ok):
-        if not ok:
+        if ok:
+            setInfo("%i layers correctly published" % len(self.layers))
+        else:
             setError(str(self.exception), self.errortrace)
 
 def addDraggedLayerToGroup(explorer, layer, groupItem):
@@ -72,8 +71,6 @@ def addDraggedUrisToWorkspace(uris, catalog, workspace, explorer, tree):
         toPublish = []
         allLayers = qgislayers.getAllLayersAsDict()
         publishableLayers = qgislayers.getPublishableLayersAsDict()
-        if len(uris) > 1:
-            explorer.setProgressMaximum(len(uris))
         for i, uri in enumerate(uris): 
             layer = None          
             if isinstance(uri, QgsMimeDataUtils.Uri):
