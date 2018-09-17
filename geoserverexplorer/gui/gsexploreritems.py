@@ -45,6 +45,7 @@ from geoserverexplorer.geoserver.auth import AuthCatalog
 import xml.dom.minidom
 from qgiscommons2.settings import pluginSetting
 from qgiscommons2.files import tempFilename
+from geoserverexplorer.gui import setInfo, setWarning, setError
 
 class GsTreeItem(TreeItem):
 
@@ -325,11 +326,11 @@ class GsCatalogsItem(GsTreeItem):
                 geoserverItem.populate()
                 self.setExpanded(True)
             except FailedRequestError as e:
-                explorer.setError("Error connecting to server (See log for more details)", traceback.format_exc())
+                setError("Error connecting to server (See log for more details)", traceback.format_exc())
             except SSLError:
-                explorer.setWarning("Cannot connect using the provided certificate/key values")
+                setWarning("Cannot connect using the provided certificate/key values")
             except Exception as e:
-                explorer.setError("Could not connect to catalog", traceback.format_exc())
+                setError("Could not connect to catalog", traceback.format_exc())
             finally:
                 QApplication.restoreOverrideCursor()
 
@@ -367,7 +368,7 @@ class GsLayersItem(GsTreeItem):
 
 
     def acceptDroppedUris(self, tree, explorer, uris):
-        return addDraggedUrisToWorkspace(uris, self.parentCatalog(), self.getDefaultWorkspace(), explorer, tree)
+        addDraggedUrisToWorkspace(uris, self.parentCatalog(), self.getDefaultWorkspace(), explorer, tree)
 
 class GsGroupsItem(GsTreeItem):
     def __init__(self, catalog):
@@ -421,7 +422,7 @@ class GsWorkspacesItem(GsTreeItem):
             self.addChild(workspaceItem)
 
     def acceptDroppedUris(self, tree, explorer, uris):
-        return addDraggedUrisToWorkspace(uris, self.parentCatalog(), self.getDefaultWorkspace(), explorer, tree)
+        addDraggedUrisToWorkspace(uris, self.parentCatalog(), self.getDefaultWorkspace(), explorer, tree)
 
     def contextMenuActions(self, tree, explorer):
         icon = QIcon(os.path.dirname(__file__) + "/../images/add.png")
@@ -667,12 +668,10 @@ class GsCatalogItem(GsTreeItem):
                 self.parent()._catalogs[self.text(0)] = self.catalog
 
     def acceptDroppedUris(self, tree, explorer, uris):
-        if not self.isConnected:
-            return []
-        ws = self.getDefaultWorkspace()
-        if ws is None:
-            return []
-        return addDraggedUrisToWorkspace(uris, self.element, ws, explorer, tree)
+        if self.isConnected:
+            ws = self.getDefaultWorkspace()
+            if ws is not None:
+                addDraggedUrisToWorkspace(uris, self.element, ws, explorer, tree)
 
 
 class GsLayerItem(GsTreeItem):
@@ -974,9 +973,9 @@ class GsLayerItem(GsTreeItem):
         cat = CatalogWrapper(self.parentCatalog())
         try:
             cat.addLayerToProject(self.element.name)
-            explorer.setInfo("Layer '" + self.element.name + "' correctly added to QGIS project")
+            setInfo("Layer '" + self.element.name + "' correctly added to QGIS project")
         except Exception as e:
-            explorer.setError(str(e))
+            setError(str(e))
 
 
 class GsGroupItem(GsTreeItem):
@@ -1043,9 +1042,9 @@ class GsGroupItem(GsTreeItem):
         cat = CatalogWrapper(self.parentCatalog())
         try:
             cat.addGroupToProject(self.element.name)
-            explorer.setInfo("Group layer '" + self.element.name + "' correctly added to QGIS project")
+            setInfo("Group layer '" + self.element.name + "' correctly added to QGIS project")
         except Exception as e:
-            explorer.setError(str(e))
+            setError(str(e))
 
     def deleteLayerGroup(self, tree, explorer):
         self.deleteElements([self], tree, explorer);
@@ -1303,7 +1302,7 @@ class GsWorkspaceItem(GsTreeItem):
             wsitem.setExpanded(expanded)
 
     def acceptDroppedUris(self, tree, explorer, uris):
-        return addDraggedUrisToWorkspace(uris, self.parentCatalog(), self.element, explorer, tree)
+        addDraggedUrisToWorkspace(uris, self.parentCatalog(), self.element, explorer, tree)
 
 class GsStoreItem(GsTreeItem):
     def __init__(self, store):

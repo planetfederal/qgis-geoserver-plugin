@@ -18,6 +18,7 @@ from geoserverexplorer.gui.explorertree import ExplorerTreeWidget
 from geoserverexplorer.qgis.utils import UserCanceledOperation
 from qgiscommons2.settings import pluginSetting
 from geoserver.catalog import FailedRequestError
+from geoserverexplorer.gui import setInfo, setWarning, setError
 
 class GeoServerExplorer(QDockWidget):
 
@@ -110,14 +111,14 @@ class GeoServerExplorer(QDockWidget):
             if None in refresh:
                 self.refreshContent()
             if msg is not None and not self.isProgressVisible:
-                self.setInfo("Operation <i>" + msg + "</i> correctly executed")
+                setInfo("Operation <i>" + msg + "</i> correctly executed")
         except UserCanceledOperation:
             pass
         except Exception as e:
             if isinstance(e, FailedRequestError):
-                self.setError("Error connecting to server (See log for more details)", traceback.format_exc())
+                setError("Error connecting to server (See log for more details)", traceback.format_exc())
             else:
-                self.setError(str(e) + " (See log for more details)", traceback.format_exc())
+                setError(str(e) + " (See log for more details)", traceback.format_exc())
             noerror = False
         finally:
             QApplication.restoreOverrideCursor()
@@ -146,24 +147,6 @@ class GeoServerExplorer(QDockWidget):
         self.progressMessageBar.layout().addWidget(self.progress)
         iface.messageBar().pushWidget(self.progressMessageBar, Qgis.Info)
 
-    def setInfo(self, msg):
-        iface.messageBar().popWidget()
-        iface.messageBar().pushMessage("Info", msg,
-                                              level = Qgis.Info,
-                                              duration = 10)
-
-    def setWarning(self, msg):
-        iface.messageBar().pushMessage("Warning", msg,
-                                              level = Qgis.Warning,
-                                              duration = 10)
-
-    def setError(self, msg, trace=None):
-        iface.messageBar().clearWidgets()
-        iface.messageBar().pushMessage("Geoserver", msg, level=Qgis.Warning, duration=5)
-        if trace is not None:
-            QgsMessageLog.logMessage("{}:{}".format(msg, trace), level=Qgis.Critical)
-
-
     def setDescriptionWidget(self, widget = None):
         item = self.descriptionLayout.itemAt(0)
         if item:
@@ -174,8 +157,6 @@ class GeoServerExplorer(QDockWidget):
             widget.setHtml(u'<div style="background-color:#C7DBFC; color:#555555"><h1>Select an item above for contextual description</h1></div><ul>')
 
         self.descriptionLayout.addWidget(widget)
-
-
 
     def refreshDescription(self):
         item = self.explorerTree.lastClickedItem()

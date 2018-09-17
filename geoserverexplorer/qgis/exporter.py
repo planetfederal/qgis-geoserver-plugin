@@ -34,9 +34,8 @@ def exportVectorLayer(layer):
                 raise Exception ("Error reading file {} or it is not a valid vector layer file".format(filename))
         output = tempFilenameInTempFolder(destFilename + ".shp")
         QgsVectorFileWriter.writeAsVectorFormat(layer, output, systemEncoding, layer.crs(), "ESRI Shapefile")
-        iface.messageBar().pushMessage("Warning", "Layer had to be exported to shapefile for importing. Data might be lost.",
-                                              level = Qgis.Warning,
-                                              duration = 5)
+        QgsMessageLog.logMessage("Layer '%s' had to be exported to shapefile for importing. Data might be lost." % layer.name(),
+                                              level = Qgis.Warning)
         return output
     else:
         return filename

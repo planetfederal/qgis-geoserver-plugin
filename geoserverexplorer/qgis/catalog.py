@@ -338,65 +338,11 @@ class CatalogWrapper(object):
         settings.endGroup()
         return connName
 
-    def publishGroup(self, name, destName = None, workspace = None, overwrite = False, overwriteLayers = False):
-
-        '''
-        Publishes a group in the given catalog
-
-        name: the name of the QGIS group to publish. It will also be used as the GeoServer layergroup name
-
-        workspace: The workspace to add the group to
-
-        overwrite: if True, it will overwrite a previous group with the specified name, if it exists
-
-        overwriteLayers: if False, in case a layer in the group is not found in the specified workspace, the corresponding layer
-        from the current QGIS project will be published, but all layers of the group that can be found in the GeoServer
-        workspace will not be published. If True, all layers in the group are published, even if layers with the same name
-        exist in the workspace
-        '''
-        groups = layers.getGroups()
-        if name not in groups:
-            raise Exception("The specified group does not exist")
-
-        destName = destName if destName is not None else name
-        gsgroup = self.catalog.get_layergroups(destName)
-        if gsgroup and not overwrite:
-            return
-
-        group = groups[name]
-        bounds = None
-
-        def addToBounds(bbox, bounds):
-            if bounds is not None:
-                bounds = [min(bounds[0], bbox.xMinimum()),
-                            max(bounds[1], bbox.xMaximum()),
-                            min(bounds[2], bbox.yMinimum()),
-                            max(bounds[3], bbox.yMaximum())]
-            else:
-                bounds = [bbox.xMinimum(), bbox.xMaximum(),
-                          bbox.yMinimum(), bbox.yMaximum()]
-            return bounds
-
-        for layer in group:
-            gslayer = self.catalog.get_layer(layer.name())
-            if gslayer is None or overwriteLayers:
-                self.publishLayer(layer, workspace, True)
-            transform = QgsCoordinateTransform(layer.crs(), QgsCoordinateReferenceSystem("EPSG:4326"), QgsProject.instance())
-            bounds = addToBounds(transform.transformBoundingBox(layer.extent()), bounds)
-
-        names = [layer.name() for layer in group]
-
-        bounds = (str(bounds[0]), str(bounds[1]), str(bounds[2]), str(bounds[3]), "EPSG:4326")
-        layergroup = self.catalog.create_layergroup(destName, names, names, bounds)
-
-        self.catalog.save(layergroup)
-
 
     def publishLayer (self, layer, workspace=None, overwrite=True, name=None, style=None):
         '''
         Publishes a QGIS layer.
         It creates the corresponding store and the layer itself.
-        If a pre-upload hook is set, its runs it and publishes the resulting layer
 
         layer: the layer to publish, whether as a QgsMapLayer object or its name in the QGIS TOC.
 

@@ -17,6 +17,7 @@ from geoserver.catalog import Catalog
 from geoserverexplorer.qgis.catalog import CatalogWrapper
 from qgiscommons2.settings import pluginSetting
 from qgiscommons2.files import tempFilename
+from geoserverexplorer.gui import setInfo, setWarning, setError
 
 _explorer = None
 
@@ -43,7 +44,7 @@ def layerAdded(qgislayer):
                             raise Exception("Could not load style for layer <b>%s</b>" % qgislayer.name())
                         qgislayer.styleChanged.connect(partial(updatePublishedStyle, qgislayer))
                     except Exception as e:
-                        _explorer.setWarning("Could not set style for layer <b>%s</b>" % qgislayer.name())
+                        setWarning("Could not set style for layer <b>%s</b>" % qgislayer.name())
                     return
 
 
