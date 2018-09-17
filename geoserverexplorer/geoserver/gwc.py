@@ -28,7 +28,6 @@ class Gwc(object):
             raise Exception('GWC Layers listing failed: ' + resp.text)
 
         # try to resolve layer if already configured
-        print(resp.text)
         dom = XML(resp.text)
         layers = []
         for layer in list(dom):
@@ -48,7 +47,6 @@ class Gwc(object):
             "Content-type": "text/xml"
         }
         message = layer.xml()
-        print(message)
         resp = self.catalog.http_request(layer.href, message, "PUT", headers)
         if 400 <= int(resp.status_code) < 600:
             raise FailedRequestError(resp.text)
@@ -131,9 +129,7 @@ class GwcLayer(object):
 
     def truncate(self):
         url = self.gwc.url + "masstruncate"
-
         message = "<truncateLayer><layerName>"  + self.name + "</layerName></truncateLayer>"
-        print(message)
         resp = self.gwc.catalog.http_request(url, message, "POST", headers=self.headers)
 
         if resp.status_code == 200:

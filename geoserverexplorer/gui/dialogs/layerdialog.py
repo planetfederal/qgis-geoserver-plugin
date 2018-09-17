@@ -153,8 +153,6 @@ class PublishLayersDialog(QDialog):
     def okPressed(self):
         self.topublish = []
         for idx, layer in enumerate(self.layers):
-            # fix_print_with_import
-            print(idx, self.getColumn(self.lyr))
             lyrItem = self.table.item(idx, self.getColumn(self.lyr))
             if lyrItem.checkState() == Qt.Checked:
                 nameBox = self.table.cellWidget(idx, self.getColumn(self.name))
