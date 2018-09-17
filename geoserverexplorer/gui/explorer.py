@@ -12,6 +12,7 @@ import sip
 from qgis.core import *
 from qgis.gui import *
 from qgis.utils import iface
+from geoserverexplorer.geoserver import GeoserverException
 from geoserverexplorer.gui.exploreritems import *
 import traceback
 from geoserverexplorer.gui.explorertree import ExplorerTreeWidget
@@ -117,6 +118,8 @@ class GeoServerExplorer(QDockWidget):
         except Exception as e:
             if isinstance(e, FailedRequestError):
                 setError("Error connecting to server (See log for more details)", traceback.format_exc())
+            elif isinstance(e, GeoserverException):
+                setError(str(e), e.details)
             else:
                 setError(str(e) + " (See log for more details)", traceback.format_exc())
             noerror = False

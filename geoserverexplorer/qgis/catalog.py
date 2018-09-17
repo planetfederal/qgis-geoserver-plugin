@@ -8,6 +8,7 @@ from builtins import object
 import os
 from qgis.core import *
 from qgis.PyQt import QtCore
+from geoserverexplorer.geoserver import GeoserverException
 from geoserverexplorer.qgis import layers, exporter, utils
 from geoserver.catalog import ConflictingDataError, UploadError, FailedRequestError
 from geoserverexplorer.qgis.sldadapter import adaptGsToQgs, getGsCompatibleSld, setUnits
@@ -164,100 +165,6 @@ class CatalogWrapper(object):
             }
         return data
 
-
-    def _publishPostgisLayer(self, layer, workspace, overwrite, name, storename=None):
-        uri = QgsDataSourceURI(layer.dataProvider().dataSourceUri())
-
-        conname = self.getConnectionNameFromLayer(layer)
-        storename = xmlNameFixUp(storename or conname)
-
-        if not xmlNameIsValid(storename):
-            raise Exception("Database connection name is invalid XML and can "
-                            "not be auto-fixed: {0} -> {1}"
-                            .format(conname, storename))
-
-        user = uri.username()
-        passwd = uri.password()
-        if not uri or not passwd:
-            connInfo = uri.connectionInfo()
-            (success, user, passwd) = QgsCredentials.instance().get(connInfo, None, None)
-            if success:
-                QgsCredentials.instance().put(connInfo, user, passwd)
-            else:
-                raise Exception("Couldn't connect to database")
-
-        store = createPGFeatureStore(self.catalog,
-                                     storename,
-                                     workspace = workspace,
-                                     overwrite = overwrite,
-                                     host = uri.host(),
-                                     database = uri.database(),
-                                     schema = uri.schema(),
-                                     port = uri.port(),
-                                     user = user,
-                                     passwd = passwd)
-        if store is not None:
-            grpswlyr = []
-            if overwrite:
-                # TODO: How do we honor *unchecked* user setting of
-                #   "Delete resource when deleting layer" here?
-                #   Is it an issue, if overwrite is expected?
-
-                # We will soon have two layers with slightly different names,
-                # a temp based upon table.name, the other possibly existing
-                # layer with the same custom name, which may belong to group(s).
-                # If so, remove existing layer from any layer group, before
-                # continuing on with layer delete and renaming of new feature
-                # type layer to custom name, then add new resultant layer back
-                # to any layer groups the existing layer belonged to. Phew!
-
-                flyr = self.catalog.get_layer(name)
-                if flyr is not None:
-                    grpswlyr = groupsWithLayer(self.catalog, flyr)
-                    if grpswlyr:
-                        removeLayerFromGroups(self.catalog, flyr, grpswlyr)
-                    self.catalog.delete(flyr)
-                # TODO: What about when the layer name is the same, but the
-                #   underlying db connection/store has changed? Not an issue?
-                #   The layer is deleted, which is correct, but the original
-                #   db store and feature type will not be changed. A conflict?
-                frsc = store.get_resources(name=name)
-                if frsc is not None:
-                    self.catalog.delete(frsc)
-
-            # for dbs the name has to be the table name, initially
-            ftype = self.catalog.publish_featuretype(uri.table(), store,
-                                                     layer.crs().authid())
-
-            # once table-based feature type created, switch name to user-chosen
-            if ftype.name != name:
-                ftype.dirty["name"] = name
-                ftype.dirty["title"] = name
-            self.catalog.save(ftype)
-
-            # now re-add to any previously assigned-to layer groups
-            if overwrite and grpswlyr:
-                ftypes = self.catalog.get_resources(name)
-                if ftypes:
-                    ftype = ftypes[0]
-                    addLayerToGroups(self.catalog, ftype, grpswlyr,
-                                     workspace=workspace)
-
-
-    def _uploadRest(self, layer, workspace, overwrite, name):
-        if layer.type() == layer.RasterLayer:
-            path = self.getDataFromLayer(layer)
-            self.catalog.create_coveragestore(name,
-                                      path=path,
-                                      workspace=workspace)
-        elif layer.type() == layer.VectorLayer:
-            path = self.getDataFromLayer(layer)
-            self.catalog.create_featurestore(name,
-                              data=path,
-                              workspace=workspace,
-                              overwrite=overwrite)
-
-
     def upload(self, layer, workspace=None, overwrite=True, name=None):
         '''uploads the specified layer'''
 
@@ -269,29 +176,28 @@ class CatalogWrapper(object):
         name = name.replace(" ", "_")
 
         if layer.type() not in (layer.RasterLayer, layer.VectorLayer):
-            msg = layer.name() + ' is not a valid raster or vector layer'
-            raise Exception(msg)
+            raise Exception(layer.name() + ' is not a valid raster or vector layer')
 
         provider = layer.dataProvider()
         try:
-            if provider.name() == 'postgres':
-                self._publishPostgisLayer(layer, workspace, overwrite, name)
-            else:
-                self._uploadRest(layer, workspace, overwrite, name)
+            if layer.type() == layer.RasterLayer:
+                path = self.getDataFromLayer(layer)
+                self.catalog.create_coveragestore(name,
+                                          path=path,
+                                          workspace=workspace)
+            elif layer.type() == layer.VectorLayer:
+                path = self.getDataFromLayer(layer)
+                self.catalog.create_featurestore(name,
+                                  data=path,
+                                  workspace=workspace,
+                                  overwrite=overwrite)
         except UploadError as e:
-            msg = ('Could not save the layer %s, there was an upload '
-                   'error: %s' % (layer.name(), str(e)))
-            e.args = (msg,)
-            raise
+            raise Exception('Could not save the layer %s, there was an upload '
+                   'error: %s' % (layer.name()), traceback.format_exc())
         except ConflictingDataError as e:
             # A datastore of this name already exists
-            msg = ('GeoServer reported a conflict creating a store with name %s: '
-                   '"%s". This should never happen because a brand new name '
-                   'should have been generated. But since it happened, '
-                   'try renaming the file or deleting the store in '
-                   'GeoServer.' % (layer.name(), str(e)))
-            e.args = (msg,)
-            raise e
+            raise GeoserverException('GeoServer reported a conflict creating a store with name %s:'
+                     % layer.name(),  traceback.format_exc())
 
 
         # Verify the resource was created
