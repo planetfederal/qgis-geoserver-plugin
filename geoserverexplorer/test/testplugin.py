@@ -5,6 +5,7 @@
 #
 import unittest
 import sys
+from functools import partial
 from geoserverexplorer.test import utils
 from geoserverexplorer.test.catalogtests import suiteAuth as catalogSuiteAuth
 from geoserverexplorer.test.catalogtests import suiteNoAuth as catalogSuiteNoAuth
@@ -25,6 +26,7 @@ def functionalTests():
     except:
         return []
 
+    allTests = []
     dragdropTest = Test("Verify dragging browser element into workspace")
     dragdropTest.addStep("Setting up catalog and explorer", utils.setUpCatalogAndExplorer)
     dragdropTest.addStep("Setting up test data project", utils.loadTestData)
@@ -32,12 +34,16 @@ def functionalTests():
     dragdropTest.addStep("Checking new layer", utils.checkNewLayer)
     dragdropTest.setCleanup(utils.clean)
 
-    vectorRenderingTest = Test("Verify rendering of uploaded style")
-    vectorRenderingTest.addStep("Preparing data", utils.openAndUpload)
-    vectorRenderingTest.addStep("Check that WMS layer is correctly rendered")
-    vectorRenderingTest.setCleanup(utils.clean)
+    allTests.append(dragdropTest)
 
-    return [dragdropTest, vectorRenderingTest]
+    for i, testProject in enumerate(utils.testProjects()):
+        renderingTest = Test("Verify rendering of uploaded style (%i)" % i)
+        renderingTest.addStep("Preparing data", partial(utils.openAndUpload, testProject))
+        renderingTest.addStep("Check that WMS layer is correctly rendered")
+        renderingTest.setCleanup(utils.clean)
+        allTests.append(renderingTest)
+
+    return allTests
 
 def unitTests():
     _tests = []    

@@ -16,7 +16,8 @@ from geoserverexplorer.qgis.catalog import createGeoServerCatalog
 from qgis.core import (QgsProject,
                        QgsAuthManager,
                        QgsAuthMethodConfig,
-                       QgsAuthCertUtils)
+                       QgsAuthCertUtils,
+                       QgsDataSourceUri)
 import qgis
 import geoserverexplorer
 from geoserverexplorer.gui.gsexploreritems import *
@@ -27,6 +28,7 @@ PREFIX = "qgis_plugin_test_"
 def safeName(name):
     return PREFIX + name
 
+REFERENCE_LAYER = "reference_layer"
 PT1 = safeName("pt1")
 PT1JSON = safeName("pt1json")
 PT2 = safeName("pt2")
@@ -266,34 +268,38 @@ def setUpCatalogAndExplorer():
 
 def checkNewLayer():
     cat = getCatalog().catalog
-    stores = cat.get_stores(workspaces="test_workspace")
+    stores = cat.get_stores(WORKSPACE)
     assert len(stores) != 0
 
 
 def clean():
     global AUTHM
     cat = getCatalog().catalog
-    ws = cat.get_workspaces(workspaces="test_workspace")
+    ws = cat.get_workspaces(WORKSPACE)
     if ws:
         cat.delete(ws[0], recurse=True)
         ws = cat.get_workspaces(ws[0].name)
         assert len(ws) == 0
 
+def testProjects():
+    curPath = os.path.dirname(os.path.abspath(geoserverexplorer.__file__))
+    projectFolder = os.path.join(curPath, "test", "data", "symbology")
+    projects = [os.path.join(projectFolder, p) for p in os.listdir(projectFolder) if p.endswith(".qgs")]
+    return projects
 
-def openAndUpload():
+def openAndUpload(projectFile):
     global AUTHCFGID
-    loadTestData()
-    layer = layerFromName("qgis_plugin_test_pt1")
+    qgis.utils.iface.addProject(projectFile)
+    layer = layerFromName(REFERENCE_LAYER)
     catWrapper = setUpCatalogAndWorkspace()
     cat = catWrapper.catalog
-    # catWrapper = CatalogWrapper(cat)
-
     catWrapper.publishLayer(layer, "test_workspace", True)
-    stores = cat.get_stores("test_workspace")
-    assert len(stores) != 0
-    quri = QgsDataSourceURI()
-    quri.setParam("layers", 'test_workspace:qgis_plugin_test_pt1')
-    quri.setParam("styles", 'qgis_plugin_test_pt1')
+    stores = cat.get_stores(workspaces = "test_workspace")
+    #assert len(stores) != 0
+    catWrapper.addLayerToProject(REFERENCE_LAYER, "WFS")
+    quri = QgsDataSourceUri()
+    quri.setParam("layers", 'test_workspace:' + REFERENCE_LAYER)
+    quri.setParam("styles", REFERENCE_LAYER)
     quri.setParam("format", 'image/png')
     quri.setParam("crs", 'EPSG:4326')
     quri.setParam("url", serverLocationBasicAuth()+'/wms')
