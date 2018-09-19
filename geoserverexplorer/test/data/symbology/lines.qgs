@@ -19,11 +19,15 @@
   </projectCrs>
   <layer-tree-group>
     <customproperties/>
-    <layer-tree-layer name="lines" source="./lines.shp" providerKey="ogr" checked="Qt::Checked" id="lines_shp20150708163456077" expanded="1">
+    <layer-tree-layer name="lines" source="IgnoreGetFeatureInfoUrl=1&amp;IgnoreGetMapUrl=1&amp;crs=EPSG:4326&amp;dpiMode=1&amp;format=image/png&amp;layers=testes:lines&amp;password=geoserver&amp;styles=&amp;url=http://localhost:8080/geoserver/wms&amp;username=admin" providerKey="wms" checked="Qt::Unchecked" id="lines_0180ae72_fa99_4974_a6e7_91bc79dbae53" expanded="1">
+      <customproperties/>
+    </layer-tree-layer>
+    <layer-tree-layer name="lines" source="./lines.shp" providerKey="ogr" checked="Qt::Checked" id="lines_shp20150708163456077" expanded="0">
       <customproperties/>
     </layer-tree-layer>
     <custom-order enabled="0">
       <item>lines_shp20150708163456077</item>
+      <item>lines_0180ae72_fa99_4974_a6e7_91bc79dbae53</item>
     </custom-order>
   </layer-tree-group>
   <snapping-settings unit="2" enabled="1" mode="3" tolerance="0" type="1" intersection-snapping="0">
@@ -35,10 +39,10 @@
   <mapcanvas name="theMapCanvas" annotationsVisible="1">
     <units>degrees</units>
     <extent>
-      <xmin>-0.25</xmin>
-      <ymin>-0.25</ymin>
-      <xmax>10.25</xmax>
-      <ymax>10.25</ymax>
+      <xmin>-0.80698529411765385</xmin>
+      <ymin>1.62500000000000355</ymin>
+      <xmax>9.69301470588233904</xmax>
+      <ymax>12.12500000000000355</ymax>
     </extent>
     <rotation>0</rotation>
     <destinationsrs>
@@ -56,8 +60,13 @@
     <rendermaptile>0</rendermaptile>
   </mapcanvas>
   <legend updateDrawingOrder="true">
-    <legendlayer name="lines" drawingOrder="-1" open="true" checked="Qt::Checked" showFeatureCount="0">
+    <legendlayer name="lines" drawingOrder="-1" open="true" checked="Qt::Unchecked" showFeatureCount="0">
       <filegroup open="true" hidden="false">
+        <legendlayerfile isInOverview="0" layerid="lines_0180ae72_fa99_4974_a6e7_91bc79dbae53" visible="0"/>
+      </filegroup>
+    </legendlayer>
+    <legendlayer name="lines" drawingOrder="-1" open="false" checked="Qt::Checked" showFeatureCount="0">
+      <filegroup open="false" hidden="false">
         <legendlayerfile isInOverview="0" layerid="lines_shp20150708163456077" visible="1"/>
       </filegroup>
     </legendlayer>
@@ -65,6 +74,83 @@
   <mapViewDocks/>
   <mapViewDocks3D/>
   <projectlayers>
+    <maplayer minScale="1e+8" hasScaleBasedVisibilityFlag="0" refreshOnNotifyMessage="" maxScale="0" type="raster" refreshOnNotifyEnabled="0" autoRefreshEnabled="0" autoRefreshTime="0">
+      <extent>
+        <xmin>0</xmin>
+        <ymin>0</ymin>
+        <xmax>10</xmax>
+        <ymax>10</ymax>
+      </extent>
+      <id>lines_0180ae72_fa99_4974_a6e7_91bc79dbae53</id>
+      <datasource>IgnoreGetFeatureInfoUrl=1&amp;IgnoreGetMapUrl=1&amp;crs=EPSG:4326&amp;dpiMode=1&amp;format=image/png&amp;layers=testes:lines&amp;password=geoserver&amp;styles=&amp;url=http://localhost:8080/geoserver/wms&amp;username=admin</datasource>
+      <keywordList>
+        <value></value>
+      </keywordList>
+      <layername>lines</layername>
+      <srs>
+        <spatialrefsys>
+          <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
+          <srsid>3452</srsid>
+          <srid>4326</srid>
+          <authid>EPSG:4326</authid>
+          <description>WGS 84</description>
+          <projectionacronym>longlat</projectionacronym>
+          <ellipsoidacronym>WGS84</ellipsoidacronym>
+          <geographicflag>true</geographicflag>
+        </spatialrefsys>
+      </srs>
+      <resourceMetadata>
+        <identifier></identifier>
+        <parentidentifier></parentidentifier>
+        <language></language>
+        <type></type>
+        <title></title>
+        <abstract></abstract>
+        <links/>
+        <fees></fees>
+        <encoding></encoding>
+        <crs>
+          <spatialrefsys>
+            <proj4></proj4>
+            <srsid>0</srsid>
+            <srid>0</srid>
+            <authid></authid>
+            <description></description>
+            <projectionacronym></projectionacronym>
+            <ellipsoidacronym></ellipsoidacronym>
+            <geographicflag>false</geographicflag>
+          </spatialrefsys>
+        </crs>
+        <extent/>
+      </resourceMetadata>
+      <customproperties>
+        <property key="identify/format" value="Html"/>
+      </customproperties>
+      <provider>wms</provider>
+      <noData>
+        <noDataList bandNo="1" useSrcNoData="0"/>
+      </noData>
+      <map-layer-style-manager current="default">
+        <map-layer-style name="default"/>
+      </map-layer-style-manager>
+      <pipe>
+        <rasterrenderer alphaBand="-1" type="singlebandcolordata" band="1" opacity="1">
+          <rasterTransparency/>
+          <minMaxOrigin>
+            <limits>None</limits>
+            <extent>WholeRaster</extent>
+            <statAccuracy>Estimated</statAccuracy>
+            <cumulativeCutLower>0.02</cumulativeCutLower>
+            <cumulativeCutUpper>0.98</cumulativeCutUpper>
+            <stdDevFactor>2</stdDevFactor>
+          </minMaxOrigin>
+        </rasterrenderer>
+        <brightnesscontrast brightness="0" contrast="0"/>
+        <huesaturation colorizeOn="0" colorizeBlue="128" colorizeRed="255" saturation="0" colorizeStrength="100" grayscaleMode="0" colorizeGreen="128"/>
+        <rasterresampler maxOversampling="2"/>
+      </pipe>
+      <blendMode>0</blendMode>
+    </maplayer>
     <maplayer simplifyDrawingHints="1" simplifyDrawingTol="1" minScale="1e+8" simplifyLocal="1" labelsEnabled="0" simplifyAlgorithm="0" hasScaleBasedVisibilityFlag="0" simplifyMaxScale="1" refreshOnNotifyMessage="" maxScale="0" type="vector" refreshOnNotifyEnabled="0" autoRefreshEnabled="0" autoRefreshTime="0" geometry="Line" readOnly="0">
       <extent>
         <xmin>0</xmin>
@@ -164,6 +250,9 @@
           <category value="52" symbol="18" label="simple offset milimeters" render="true"/>
           <category value="72" symbol="19" label="simple  offset pixels" render="true"/>
           <category value="92" symbol="20" label="simple  negative offset milimeters" render="true"/>
+          <category value="47" symbol="21" label="round join and cap" render="true"/>
+          <category value="67" symbol="22" label="miter join and square cap" render="true"/>
+          <category value="87" symbol="23" label="bevel join and flat cap" render="true"/>
         </categories>
         <symbols>
           <symbol name="0" clip_to_extent="1" type="line" alpha="1">
@@ -541,6 +630,156 @@
               <prop v="0.26" k="line_width"/>
               <prop v="MM" k="line_width_unit"/>
               <prop v="-3" k="offset"/>
+              <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
+              <prop v="MM" k="offset_unit"/>
+              <prop v="0" k="use_custom_dash"/>
+              <prop v="3x:0,0,0,0,0,0" k="width_map_unit_scale"/>
+              <data_defined_properties>
+                <Option type="Map">
+                  <Option name="name" value="" type="QString"/>
+                  <Option name="properties"/>
+                  <Option name="type" value="collection" type="QString"/>
+                </Option>
+              </data_defined_properties>
+            </layer>
+          </symbol>
+          <symbol name="21" clip_to_extent="1" type="line" alpha="1">
+            <layer locked="0" pass="0" enabled="1" class="SimpleLine">
+              <prop v="round" k="capstyle"/>
+              <prop v="5;2" k="customdash"/>
+              <prop v="3x:0,0,0,0,0,0" k="customdash_map_unit_scale"/>
+              <prop v="MM" k="customdash_unit"/>
+              <prop v="0" k="draw_inside_polygon"/>
+              <prop v="round" k="joinstyle"/>
+              <prop v="122,245,0,255" k="line_color"/>
+              <prop v="solid" k="line_style"/>
+              <prop v="3.16" k="line_width"/>
+              <prop v="MM" k="line_width_unit"/>
+              <prop v="0" k="offset"/>
+              <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
+              <prop v="MM" k="offset_unit"/>
+              <prop v="0" k="use_custom_dash"/>
+              <prop v="3x:0,0,0,0,0,0" k="width_map_unit_scale"/>
+              <data_defined_properties>
+                <Option type="Map">
+                  <Option name="name" value="" type="QString"/>
+                  <Option name="properties"/>
+                  <Option name="type" value="collection" type="QString"/>
+                </Option>
+              </data_defined_properties>
+            </layer>
+            <layer locked="0" pass="0" enabled="1" class="SimpleLine">
+              <prop v="flat" k="capstyle"/>
+              <prop v="5;2" k="customdash"/>
+              <prop v="3x:0,0,0,0,0,0" k="customdash_map_unit_scale"/>
+              <prop v="MM" k="customdash_unit"/>
+              <prop v="0" k="draw_inside_polygon"/>
+              <prop v="miter" k="joinstyle"/>
+              <prop v="35,35,35,255" k="line_color"/>
+              <prop v="solid" k="line_style"/>
+              <prop v="0.26" k="line_width"/>
+              <prop v="MM" k="line_width_unit"/>
+              <prop v="0" k="offset"/>
+              <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
+              <prop v="MM" k="offset_unit"/>
+              <prop v="0" k="use_custom_dash"/>
+              <prop v="3x:0,0,0,0,0,0" k="width_map_unit_scale"/>
+              <data_defined_properties>
+                <Option type="Map">
+                  <Option name="name" value="" type="QString"/>
+                  <Option name="properties"/>
+                  <Option name="type" value="collection" type="QString"/>
+                </Option>
+              </data_defined_properties>
+            </layer>
+          </symbol>
+          <symbol name="22" clip_to_extent="1" type="line" alpha="1">
+            <layer locked="0" pass="0" enabled="1" class="SimpleLine">
+              <prop v="square" k="capstyle"/>
+              <prop v="5;2" k="customdash"/>
+              <prop v="3x:0,0,0,0,0,0" k="customdash_map_unit_scale"/>
+              <prop v="MM" k="customdash_unit"/>
+              <prop v="0" k="draw_inside_polygon"/>
+              <prop v="miter" k="joinstyle"/>
+              <prop v="122,245,0,255" k="line_color"/>
+              <prop v="solid" k="line_style"/>
+              <prop v="3.16" k="line_width"/>
+              <prop v="MM" k="line_width_unit"/>
+              <prop v="0" k="offset"/>
+              <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
+              <prop v="MM" k="offset_unit"/>
+              <prop v="0" k="use_custom_dash"/>
+              <prop v="3x:0,0,0,0,0,0" k="width_map_unit_scale"/>
+              <data_defined_properties>
+                <Option type="Map">
+                  <Option name="name" value="" type="QString"/>
+                  <Option name="properties"/>
+                  <Option name="type" value="collection" type="QString"/>
+                </Option>
+              </data_defined_properties>
+            </layer>
+            <layer locked="0" pass="0" enabled="1" class="SimpleLine">
+              <prop v="flat" k="capstyle"/>
+              <prop v="5;2" k="customdash"/>
+              <prop v="3x:0,0,0,0,0,0" k="customdash_map_unit_scale"/>
+              <prop v="MM" k="customdash_unit"/>
+              <prop v="0" k="draw_inside_polygon"/>
+              <prop v="miter" k="joinstyle"/>
+              <prop v="35,35,35,255" k="line_color"/>
+              <prop v="solid" k="line_style"/>
+              <prop v="0.26" k="line_width"/>
+              <prop v="MM" k="line_width_unit"/>
+              <prop v="0" k="offset"/>
+              <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
+              <prop v="MM" k="offset_unit"/>
+              <prop v="0" k="use_custom_dash"/>
+              <prop v="3x:0,0,0,0,0,0" k="width_map_unit_scale"/>
+              <data_defined_properties>
+                <Option type="Map">
+                  <Option name="name" value="" type="QString"/>
+                  <Option name="properties"/>
+                  <Option name="type" value="collection" type="QString"/>
+                </Option>
+              </data_defined_properties>
+            </layer>
+          </symbol>
+          <symbol name="23" clip_to_extent="1" type="line" alpha="1">
+            <layer locked="0" pass="0" enabled="1" class="SimpleLine">
+              <prop v="flat" k="capstyle"/>
+              <prop v="5;2" k="customdash"/>
+              <prop v="3x:0,0,0,0,0,0" k="customdash_map_unit_scale"/>
+              <prop v="MM" k="customdash_unit"/>
+              <prop v="0" k="draw_inside_polygon"/>
+              <prop v="bevel" k="joinstyle"/>
+              <prop v="122,245,0,255" k="line_color"/>
+              <prop v="solid" k="line_style"/>
+              <prop v="3.16" k="line_width"/>
+              <prop v="MM" k="line_width_unit"/>
+              <prop v="0" k="offset"/>
+              <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
+              <prop v="MM" k="offset_unit"/>
+              <prop v="0" k="use_custom_dash"/>
+              <prop v="3x:0,0,0,0,0,0" k="width_map_unit_scale"/>
+              <data_defined_properties>
+                <Option type="Map">
+                  <Option name="name" value="" type="QString"/>
+                  <Option name="properties"/>
+                  <Option name="type" value="collection" type="QString"/>
+                </Option>
+              </data_defined_properties>
+            </layer>
+            <layer locked="0" pass="0" enabled="1" class="SimpleLine">
+              <prop v="flat" k="capstyle"/>
+              <prop v="5;2" k="customdash"/>
+              <prop v="3x:0,0,0,0,0,0" k="customdash_map_unit_scale"/>
+              <prop v="MM" k="customdash_unit"/>
+              <prop v="0" k="draw_inside_polygon"/>
+              <prop v="miter" k="joinstyle"/>
+              <prop v="35,35,35,255" k="line_color"/>
+              <prop v="solid" k="line_style"/>
+              <prop v="0.26" k="line_width"/>
+              <prop v="MM" k="line_width_unit"/>
+              <prop v="0" k="offset"/>
               <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
               <prop v="MM" k="offset_unit"/>
               <prop v="0" k="use_custom_dash"/>
@@ -973,31 +1212,20 @@
             </config>
           </editWidget>
         </field>
-        <field name="label">
-          <editWidget type="">
-            <config>
-              <Option/>
-            </config>
-          </editWidget>
-        </field>
       </fieldConfiguration>
       <aliases>
         <alias name="" field="n" index="0"/>
-        <alias name="" field="label" index="1"/>
       </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
       <defaults>
         <default field="n" expression="" applyOnUpdate="0"/>
-        <default field="label" expression="" applyOnUpdate="0"/>
       </defaults>
       <constraints>
         <constraint field="n" constraints="0" notnull_strength="0" unique_strength="0" exp_strength="0"/>
-        <constraint field="label" constraints="0" notnull_strength="0" unique_strength="0" exp_strength="0"/>
       </constraints>
       <constraintExpressions>
         <constraint exp="" field="n" desc=""/>
-        <constraint exp="" field="label" desc=""/>
       </constraintExpressions>
       <attributeactions>
         <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
@@ -1049,6 +1277,7 @@ def my_form_open(dialog, layer, feature):
   </projectlayers>
   <layerorder>
     <layer id="lines_shp20150708163456077"/>
+    <layer id="lines_0180ae72_fa99_4974_a6e7_91bc79dbae53"/>
   </layerorder>
   <properties>
     <PAL>
