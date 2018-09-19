@@ -19,7 +19,7 @@
   </projectCrs>
   <layer-tree-group>
     <customproperties/>
-    <layer-tree-layer name="points" source="./points.shp" providerKey="ogr" checked="Qt::Checked" id="points_shp20150708141950508" expanded="0">
+    <layer-tree-layer name="reference_layer" source="./points.shp" providerKey="ogr" checked="Qt::Checked" id="points_shp20150708141950508" expanded="1">
       <customproperties/>
     </layer-tree-layer>
     <custom-order enabled="0">
@@ -56,8 +56,8 @@
     <rendermaptile>0</rendermaptile>
   </mapcanvas>
   <legend updateDrawingOrder="true">
-    <legendlayer name="points" drawingOrder="-1" open="false" checked="Qt::Checked" showFeatureCount="0">
-      <filegroup open="false" hidden="false">
+    <legendlayer name="reference_layer" drawingOrder="-1" open="true" checked="Qt::Checked" showFeatureCount="0">
+      <filegroup open="true" hidden="false">
         <legendlayerfile isInOverview="0" layerid="points_shp20150708141950508" visible="1"/>
       </filegroup>
     </legendlayer>
@@ -77,7 +77,7 @@
       <keywordList>
         <value></value>
       </keywordList>
-      <layername>points</layername>
+      <layername>reference_layer</layername>
       <srs>
         <spatialrefsys>
           <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
