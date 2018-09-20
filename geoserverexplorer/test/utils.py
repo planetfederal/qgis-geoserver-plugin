@@ -297,16 +297,8 @@ def openAndUpload(projectFile):
     stores = cat.get_stores(workspaces = "test_workspace")
     #assert len(stores) != 0
     catWrapper.addLayerToProject(REFERENCE_LAYER, "WFS")
-    quri = QgsDataSourceUri()
-    quri.setParam("layers", 'test_workspace:' + REFERENCE_LAYER)
-    quri.setParam("styles", REFERENCE_LAYER)
-    quri.setParam("format", 'image/png')
-    quri.setParam("crs", 'EPSG:4326')
-    quri.setParam("url", serverLocationBasicAuth()+'/wms')
-    if AUTHCFGID:
-        quri.setParam("authcfg", AUTHCFGID)
-
-    wmsLayer = QgsRasterLayer(str(quri.encodedUri()), "WMS", 'wms')
+    url = "crs=EPSG:4326&format=image/png&layers=test_workspace:reference_layer&styles=reference_layer&url=%s/wms" % serverLocationBasicAuth()
+    wmsLayer = QgsRasterLayer(url, "WMS", 'wms')
     assert wmsLayer.isValid()
     QgsProject.instance().addMapLayer(wmsLayer)
     qgis.utils.iface.zoomToActiveLayer()
