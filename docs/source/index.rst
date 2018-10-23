@@ -10,6 +10,7 @@ The GeoServer Explorer plugin is used to configure GeoServer through QGIS. It al
    :glob:
    :maxdepth: 2
 
+   installation
    intro
    actions
-   *
+   settingsconf
