@@ -1,9 +1,9 @@
-.. _plugin_settings:
+.. _geoserverexplorer_plugin_settings:
 
 Plugin settings
 ===============
 
-The plugin can be adjusted using the following settings, to be found in its settings dialog (|path_to_settings|).
+The plugin can be adjusted using the following settings, to be found in its settings dialog (:menuselection:`Web --> GeoServer --> Plugin Settings`).
 
 General
 -------
