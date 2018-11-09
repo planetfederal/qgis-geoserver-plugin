@@ -66,7 +66,7 @@
     "label": "QGIS manage SLD uom correctly",
     "description": "QGIS manage SLD uom correctly",
     "type": "bool",
-    "default": false,
+    "default": true,
     "group": "General"
     },
     {"name":"SldScaleFactor",
