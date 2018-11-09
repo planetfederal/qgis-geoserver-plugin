@@ -4,6 +4,7 @@
 # This code is licensed under the GPL 2.0 license.
 #
 import unittest
+import os
 import sys
 from functools import partial
 from geoserverexplorer.test import utils
@@ -36,8 +37,8 @@ def functionalTests():
 
     allTests.append(dragdropTest)
 
-    for i, testProject in enumerate(utils.testProjects()):
-        renderingTest = Test("Verify rendering of uploaded style (%i)" % i)
+    for testProject in utils.testProjects():
+        renderingTest = Test("Verify rendering of uploaded style (%i)" % os.path.basename(testProject))
         renderingTest.addStep("Preparing data", partial(utils.openAndUpload, testProject))
         renderingTest.addStep("Check that WMS layer is correctly rendered")
         renderingTest.setCleanup(utils.clean)
