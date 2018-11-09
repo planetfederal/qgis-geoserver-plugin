@@ -38,7 +38,7 @@ def functionalTests():
     allTests.append(dragdropTest)
 
     for testProject in utils.testProjects():
-        renderingTest = Test("Verify rendering of uploaded style (%i)" % os.path.basename(testProject))
+        renderingTest = Test("Verify rendering of uploaded style (%s)" % os.path.basename(testProject))
         renderingTest.addStep("Preparing data", partial(utils.openAndUpload, testProject))
         renderingTest.addStep("Check that WMS layer is correctly rendered")
         renderingTest.setCleanup(utils.clean)
