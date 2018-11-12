@@ -21,6 +21,9 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
+geoserverexplorer/docs/
+geoserverexplorer/extlibs/
+
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -56,3 +59,7 @@ target/
 #ext-src
 geoserverexplorer.zip
 ssh_config
+
+#QGIS Backup files
+*.qgs~
+*.qgz~
