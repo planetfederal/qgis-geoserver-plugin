@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis version="3.2.3-Bonn" projectname="">
+<qgis version="3.4.1-Madeira" projectname="">
   <homePath path=""/>
   <title></title>
   <autotransaction active="0"/>
@@ -19,20 +19,20 @@
   </projectCrs>
   <layer-tree-group>
     <customproperties/>
-    <layer-tree-layer name="reference_layer" source="./points.shp" providerKey="ogr" checked="Qt::Checked" id="points_shp20150708141950508" expanded="1">
+    <layer-tree-layer id="points_shp20150708141950508" name="reference_layer" expanded="1" checked="Qt::Unchecked" source="./points.shp" providerKey="ogr">
       <customproperties/>
     </layer-tree-layer>
     <custom-order enabled="0">
       <item>points_shp20150708141950508</item>
     </custom-order>
   </layer-tree-group>
-  <snapping-settings unit="2" enabled="1" mode="3" tolerance="0" type="1" intersection-snapping="0">
+  <snapping-settings unit="2" type="1" tolerance="0" enabled="1" mode="3" intersection-snapping="0">
     <individual-layer-settings>
-      <layer-setting enabled="0" units="0" tolerance="0" type="2" id="points_shp20150708141950508"/>
+      <layer-setting id="points_shp20150708141950508" type="2" units="0" tolerance="0" enabled="0"/>
     </individual-layer-settings>
   </snapping-settings>
   <relations/>
-  <mapcanvas name="theMapCanvas" annotationsVisible="1">
+  <mapcanvas annotationsVisible="1" name="theMapCanvas">
     <units>degrees</units>
     <extent>
       <xmin>-0.25</xmin>
@@ -55,17 +55,43 @@
     </destinationsrs>
     <rendermaptile>0</rendermaptile>
   </mapcanvas>
+  <projectModels/>
   <legend updateDrawingOrder="true">
-    <legendlayer name="reference_layer" drawingOrder="-1" open="true" checked="Qt::Checked" showFeatureCount="0">
+    <legendlayer name="reference_layer" checked="Qt::Unchecked" showFeatureCount="0" open="true" drawingOrder="-1">
       <filegroup open="true" hidden="false">
-        <legendlayerfile isInOverview="0" layerid="points_shp20150708141950508" visible="1"/>
+        <legendlayerfile layerid="points_shp20150708141950508" isInOverview="0" visible="0"/>
       </filegroup>
     </legendlayer>
   </legend>
-  <mapViewDocks/>
+  <mapViewDocks>
+    <view x="417" height="406" synced="1" name="Reference layer" showExtent="0" width="781" y="583" zoomSelected="0" floating="0" showCursor="1" scaleSynced="1" scaleFactor="1" area="8" showLabels="1"/>
+  </mapViewDocks>
   <mapViewDocks3D/>
+  <mapcanvas annotationsVisible="1" theme="original" name="Reference layer">
+    <units>degrees</units>
+    <extent>
+      <xmin>0.36555839727195316</xmin>
+      <ymin>0.9624183006535949</ymin>
+      <xmax>9.63444160272804595</xmax>
+      <ymax>9.03758169934640421</ymax>
+    </extent>
+    <rotation>0</rotation>
+    <destinationsrs>
+      <spatialrefsys>
+        <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
+        <srsid>3452</srsid>
+        <srid>4326</srid>
+        <authid>EPSG:4326</authid>
+        <description>WGS 84</description>
+        <projectionacronym>longlat</projectionacronym>
+        <ellipsoidacronym>WGS84</ellipsoidacronym>
+        <geographicflag>true</geographicflag>
+      </spatialrefsys>
+    </destinationsrs>
+    <rendermaptile>0</rendermaptile>
+  </mapcanvas>
   <projectlayers>
-    <maplayer simplifyDrawingHints="0" simplifyDrawingTol="1" minScale="1e+8" simplifyLocal="1" labelsEnabled="0" simplifyAlgorithm="0" hasScaleBasedVisibilityFlag="0" simplifyMaxScale="1" refreshOnNotifyMessage="" maxScale="-4.65661e-10" type="vector" refreshOnNotifyEnabled="0" autoRefreshEnabled="0" autoRefreshTime="0" geometry="Point" readOnly="0">
+    <maplayer hasScaleBasedVisibilityFlag="0" simplifyDrawingTol="1" styleCategories="AllStyleCategories" readOnly="0" maxScale="-4.65661e-10" refreshOnNotifyMessage="" geometry="Point" simplifyDrawingHints="0" simplifyLocal="1" refreshOnNotifyEnabled="0" type="vector" minScale="1e+8" labelsEnabled="0" autoRefreshEnabled="0" simplifyMaxScale="1" simplifyAlgorithm="0" autoRefreshTime="0">
       <extent>
         <xmin>0.5</xmin>
         <ymin>0.5</ymin>
@@ -122,7 +148,7 @@
           </spatialrefsys>
         </crs>
         <extent>
-          <spatial minx="0" minz="0" maxx="0" maxy="0" miny="0" crs="" dimensions="2" maxz="0"/>
+          <spatial dimensions="2" maxz="0" miny="0" minz="0" maxx="0" minx="0" crs="" maxy="0"/>
           <temporal>
             <period>
               <start></start>
@@ -141,71 +167,76 @@
         <map-layer-style name="default"/>
       </map-layer-style-manager>
       <auxiliaryLayer/>
-      <renderer-v2 symbollevels="0" forceraster="0" attr="n" type="categorizedSymbol" enableorderby="0">
+      <flags>
+        <Identifiable>1</Identifiable>
+        <Removable>1</Removable>
+        <Searchable>1</Searchable>
+      </flags>
+      <renderer-v2 symbollevels="0" type="categorizedSymbol" forceraster="0" attr="n" enableorderby="0">
         <categories>
-          <category value="9" symbol="0" label="cross" render="true"/>
-          <category value="8" symbol="1" label="diamond" render="true"/>
-          <category value="7" symbol="2" label="square" render="true"/>
-          <category value="62" symbol="3" label="arrow" render="true"/>
-          <category value="6" symbol="4" label="circle" render="true"/>
-          <category value="52" symbol="5" label="triangle" render="true"/>
-          <category value="5" symbol="6" label="multi layered" render="true"/>
-          <category value="45" symbol="7" label="dash dot dot border" render="true"/>
-          <category value="43" symbol="8" label="colored svg" render="true"/>
-          <category value="42" symbol="9" label="triangle" render="true"/>
-          <category value="35" symbol="10" label="dash dot border" render="true"/>
-          <category value="33" symbol="11" label="big original orange svg" render="true"/>
-          <category value="32" symbol="12" label="hexagon" render="true"/>
-          <category value="3" symbol="13" label="svg" render="true"/>
-          <category value="25" symbol="14" label="dot border" render="true"/>
-          <category value="24" symbol="15" label="big circle" render="true"/>
-          <category value="23" symbol="16" label="big colored svg" render="true"/>
-          <category value="22" symbol="17" label="pentagon" render="true"/>
-          <category value="16" symbol="18" label="colored border" render="true"/>
-          <category value="15" symbol="19" label="dash border" render="true"/>
-          <category value="14" symbol="20" label="thick border" render="true"/>
-          <category value="13" symbol="21" label="big svg" render="true"/>
-          <category value="12" symbol="22" label="star" render="true"/>
-          <category value="11" symbol="23" label="Font marker" render="true"/>
-          <category value="10" symbol="24" label="X" render="true"/>
-          <category value="2" symbol="25" label="circle" render="true"/>
-          <category value="72" symbol="26" label="cross_fill" render="true"/>
-          <category value="82" symbol="27" label="filled_arrowhead" render="true"/>
-          <category value="92" symbol="28" label="semicircle" render="true"/>
-          <category value="93" symbol="29" label="third-circle" render="true"/>
-          <category value="83" symbol="30" label="quarter-circle" render="true"/>
-          <category value="73" symbol="31" label="quarter-square" render="true"/>
-          <category value="63" symbol="32" label="half-square" render="true"/>
-          <category value="53" symbol="33" label="diagonal-half-square" render="true"/>
-          <category value="94" symbol="34" label="right-half-triangle" render="true"/>
-          <category value="84" symbol="35" label="left-half-triangle" render="true"/>
-          <category value="74" symbol="36" label="line" render="true"/>
-          <category value="64" symbol="37" label="arrowhead" render="true"/>
-          <category value="20" symbol="38" label="colored X" render="true"/>
-          <category value="30" symbol="39" label="thick colored X" render="true"/>
-          <category value="26" symbol="40" label="XY offset center" render="true"/>
-          <category value="36" symbol="41" label="top-right anchor" render="true"/>
-          <category value="17" symbol="42" label="square rotated" render="true"/>
-          <category value="46" symbol="43" label="bottom-left anchor" render="true"/>
-          <category value="55" symbol="44" label="circle pixels border" render="true"/>
-          <category value="65" symbol="45" label="circle inches border" render="true"/>
-          <category value="75" symbol="46" label="circle points border" render="true"/>
-          <category value="56" symbol="47" label="map scale units" render="true"/>
-          <category value="8" symbol="48" label="Ellipse marker - circle" render="true"/>
-          <category value="18" symbol="49" label="Ellipse marker - rectangle" render="true"/>
-          <category value="28" symbol="50" label="Ellipse marker - triangle" render="true"/>
-          <category value="38" symbol="51" label="Filled marker" render="true"/>
-          <category value="48" symbol="52" label="vector field marker" render="true"/>
-          <category value="21" symbol="53" label="font marker rotation" render="true"/>
-          <category value="31" symbol="54" label="font marker stroke color" render="true"/>
-          <category value="41" symbol="55" label="font marker stroke color" render="true"/>
-          <category value="58" symbol="56" label="vector field marker" render="true"/>
-          <category value="85" symbol="57" label="circle no stroke" render="true"/>
-          <category value="" symbol="58" label="Zero sized marker" render="true"/>
+          <category label="cross" value="9" render="true" symbol="0"/>
+          <category label="diamond" value="8" render="true" symbol="1"/>
+          <category label="square" value="7" render="true" symbol="2"/>
+          <category label="arrow" value="62" render="true" symbol="3"/>
+          <category label="circle" value="6" render="true" symbol="4"/>
+          <category label="triangle" value="52" render="true" symbol="5"/>
+          <category label="multi layered" value="5" render="true" symbol="6"/>
+          <category label="dash dot dot border" value="45" render="true" symbol="7"/>
+          <category label="colored svg" value="43" render="true" symbol="8"/>
+          <category label="triangle" value="42" render="true" symbol="9"/>
+          <category label="dash dot border" value="35" render="true" symbol="10"/>
+          <category label="big original orange svg" value="33" render="true" symbol="11"/>
+          <category label="hexagon" value="32" render="true" symbol="12"/>
+          <category label="svg" value="3" render="true" symbol="13"/>
+          <category label="dot border" value="25" render="true" symbol="14"/>
+          <category label="big circle" value="24" render="true" symbol="15"/>
+          <category label="big colored svg" value="23" render="true" symbol="16"/>
+          <category label="pentagon" value="22" render="true" symbol="17"/>
+          <category label="colored border" value="16" render="true" symbol="18"/>
+          <category label="dash border" value="15" render="true" symbol="19"/>
+          <category label="thick border" value="14" render="true" symbol="20"/>
+          <category label="big svg" value="13" render="true" symbol="21"/>
+          <category label="star" value="12" render="true" symbol="22"/>
+          <category label="Font marker" value="11" render="true" symbol="23"/>
+          <category label="X" value="10" render="true" symbol="24"/>
+          <category label="circle" value="2" render="true" symbol="25"/>
+          <category label="cross_fill" value="72" render="true" symbol="26"/>
+          <category label="filled_arrowhead" value="82" render="true" symbol="27"/>
+          <category label="semicircle" value="92" render="true" symbol="28"/>
+          <category label="third-circle" value="93" render="true" symbol="29"/>
+          <category label="quarter-circle" value="83" render="true" symbol="30"/>
+          <category label="quarter-square" value="73" render="true" symbol="31"/>
+          <category label="half-square" value="63" render="true" symbol="32"/>
+          <category label="diagonal-half-square" value="53" render="true" symbol="33"/>
+          <category label="right-half-triangle" value="94" render="true" symbol="34"/>
+          <category label="left-half-triangle" value="84" render="true" symbol="35"/>
+          <category label="line" value="74" render="true" symbol="36"/>
+          <category label="arrowhead" value="64" render="true" symbol="37"/>
+          <category label="colored X" value="20" render="true" symbol="38"/>
+          <category label="thick colored X" value="30" render="true" symbol="39"/>
+          <category label="XY offset center" value="26" render="true" symbol="40"/>
+          <category label="top-right anchor" value="36" render="true" symbol="41"/>
+          <category label="square rotated" value="17" render="true" symbol="42"/>
+          <category label="bottom-left anchor" value="46" render="true" symbol="43"/>
+          <category label="circle pixels border" value="55" render="true" symbol="44"/>
+          <category label="circle inches border" value="65" render="true" symbol="45"/>
+          <category label="circle points border" value="75" render="true" symbol="46"/>
+          <category label="map scale units" value="56" render="true" symbol="47"/>
+          <category label="Ellipse marker - circle" value="8" render="true" symbol="48"/>
+          <category label="Ellipse marker - rectangle" value="18" render="true" symbol="49"/>
+          <category label="Ellipse marker - triangle" value="28" render="true" symbol="50"/>
+          <category label="Filled marker" value="38" render="true" symbol="51"/>
+          <category label="vector field marker" value="48" render="true" symbol="52"/>
+          <category label="font marker rotation" value="21" render="true" symbol="53"/>
+          <category label="font marker stroke color" value="31" render="true" symbol="54"/>
+          <category label="font marker stroke color" value="41" render="true" symbol="55"/>
+          <category label="vector field marker" value="58" render="true" symbol="56"/>
+          <category label="circle no stroke" value="85" render="true" symbol="57"/>
+          <category label="Zero sized marker" value="" render="true" symbol="58"/>
         </categories>
         <symbols>
-          <symbol name="0" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="0" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="43,86,228,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -226,15 +257,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="1" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="1" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="202,109,108,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -255,15 +286,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="10" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="10" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="173,30,216,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -284,15 +315,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="11" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SvgMarker">
+          <symbol name="11" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SvgMarker">
               <prop v="0" k="angle"/>
               <prop v="0,0,0,255" k="color"/>
               <prop v="0" k="fixedAspectRatio"/>
@@ -312,15 +343,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="12" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="12" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="227,26,28,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -341,15 +372,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="13" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SvgMarker">
+          <symbol name="13" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SvgMarker">
               <prop v="0" k="angle"/>
               <prop v="0,0,0,255" k="color"/>
               <prop v="0" k="fixedAspectRatio"/>
@@ -369,15 +400,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="14" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="14" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="173,30,216,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -398,15 +429,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="15" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="15" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="70,205,171,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -427,15 +458,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="16" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SvgMarker">
+          <symbol name="16" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SvgMarker">
               <prop v="0" k="angle"/>
               <prop v="255,1,1,255" k="color"/>
               <prop v="0" k="fixedAspectRatio"/>
@@ -455,15 +486,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="17" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="17" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="227,26,28,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -484,15 +515,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="18" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="18" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="32,217,19,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -513,15 +544,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="19" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="19" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="173,30,216,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -542,15 +573,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="2" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="2" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="227,26,28,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -571,15 +602,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="20" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="20" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="47,219,56,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -600,15 +631,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="21" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SvgMarker">
+          <symbol name="21" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SvgMarker">
               <prop v="0" k="angle"/>
               <prop v="0,0,0,255" k="color"/>
               <prop v="0" k="fixedAspectRatio"/>
@@ -628,15 +659,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="22" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="22" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="227,26,28,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -657,15 +688,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="23" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="FontMarker">
+          <symbol name="23" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="FontMarker">
               <prop v="4" k="angle"/>
               <prop v="Ａ" k="chr"/>
               <prop v="254,0,101,255" k="color"/>
@@ -685,15 +716,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="24" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="24" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="211,236,141,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -714,15 +745,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="25" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="25" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="227,26,28,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -743,15 +774,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="26" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="26" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="227,26,28,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -772,15 +803,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="27" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="27" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="227,26,28,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -801,15 +832,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="28" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="28" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="227,26,28,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -830,15 +861,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="29" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="29" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="227,26,28,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -859,15 +890,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="3" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="3" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="227,26,28,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -888,15 +919,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="30" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="30" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="227,26,28,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -917,15 +948,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="31" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="31" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="227,26,28,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -946,15 +977,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="32" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="32" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="227,26,28,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -975,15 +1006,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="33" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="33" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="227,26,28,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -1004,15 +1035,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="34" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="34" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="227,26,28,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -1033,15 +1064,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="35" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="35" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="227,26,28,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -1062,15 +1093,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="36" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="36" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="227,26,28,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -1091,15 +1122,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="37" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="37" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="227,26,28,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -1120,15 +1151,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="38" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="38" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="211,236,141,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -1149,15 +1180,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="39" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="39" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="211,236,141,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -1178,15 +1209,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="4" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="4" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="154,25,240,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -1207,15 +1238,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="40" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="40" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="32,217,19,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -1236,13 +1267,13 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="0,0,0,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -1263,15 +1294,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="41" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="41" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="32,217,19,255" k="color"/>
               <prop v="2" k="horizontal_anchor_point"/>
@@ -1292,13 +1323,13 @@
               <prop v="0" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="0,0,0,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -1319,15 +1350,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="42" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="42" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="45" k="angle"/>
               <prop v="227,26,28,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -1348,15 +1379,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="43" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="43" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="32,217,19,255" k="color"/>
               <prop v="0" k="horizontal_anchor_point"/>
@@ -1377,13 +1408,13 @@
               <prop v="2" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="0,0,0,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -1404,15 +1435,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="44" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="44" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="173,30,216,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -1433,15 +1464,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="45" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="45" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="173,30,216,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -1462,15 +1493,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="46" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="46" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="173,30,216,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -1491,15 +1522,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="47" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="47" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="32,217,19,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -1520,15 +1551,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="48" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="EllipseMarker">
+          <symbol name="48" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="EllipseMarker">
               <prop v="0" k="angle"/>
               <prop v="133,182,111,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -1554,15 +1585,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="49" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="EllipseMarker">
+          <symbol name="49" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="EllipseMarker">
               <prop v="0" k="angle"/>
               <prop v="133,182,111,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -1588,15 +1619,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="5" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="5" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="227,26,28,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -1617,15 +1648,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="50" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="EllipseMarker">
+          <symbol name="50" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="EllipseMarker">
               <prop v="0" k="angle"/>
               <prop v="133,182,111,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -1651,15 +1682,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="51" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="FilledMarker">
+          <symbol name="51" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="FilledMarker">
               <prop v="0" k="angle"/>
               <prop v="55,126,184,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -1674,13 +1705,13 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
-              <symbol name="@51@0" clip_to_extent="1" type="fill" alpha="1">
-                <layer locked="0" pass="0" enabled="1" class="SimpleFill">
+              <symbol name="@51@0" alpha="1" clip_to_extent="1" type="fill">
+                <layer pass="0" locked="0" enabled="1" class="SimpleFill">
                   <prop v="3x:0,0,0,0,0,0" k="border_width_map_unit_scale"/>
                   <prop v="55,126,184,255" k="color"/>
                   <prop v="bevel" k="joinstyle"/>
@@ -1694,17 +1725,17 @@
                   <prop v="solid" k="style"/>
                   <data_defined_properties>
                     <Option type="Map">
-                      <Option name="name" value="" type="QString"/>
+                      <Option name="name" type="QString" value=""/>
                       <Option name="properties"/>
-                      <Option name="type" value="collection" type="QString"/>
+                      <Option name="type" type="QString" value="collection"/>
                     </Option>
                   </data_defined_properties>
                 </layer>
               </symbol>
             </layer>
           </symbol>
-          <symbol name="52" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="VectorField">
+          <symbol name="52" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="VectorField">
               <prop v="0" k="angle_orientation"/>
               <prop v="0" k="angle_units"/>
               <prop v="3x:0,0,0,0,0,0" k="distance_map_unit_scale"/>
@@ -1721,13 +1752,13 @@
               <prop v="y" k="y_attribute"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
-              <symbol name="@52@0" clip_to_extent="1" type="line" alpha="1">
-                <layer locked="0" pass="0" enabled="1" class="SimpleLine">
+              <symbol name="@52@0" alpha="1" clip_to_extent="1" type="line">
+                <layer pass="0" locked="0" enabled="1" class="SimpleLine">
                   <prop v="square" k="capstyle"/>
                   <prop v="5;2" k="customdash"/>
                   <prop v="3x:0,0,0,0,0,0" k="customdash_map_unit_scale"/>
@@ -1745,17 +1776,17 @@
                   <prop v="3x:0,0,0,0,0,0" k="width_map_unit_scale"/>
                   <data_defined_properties>
                     <Option type="Map">
-                      <Option name="name" value="" type="QString"/>
+                      <Option name="name" type="QString" value=""/>
                       <Option name="properties"/>
-                      <Option name="type" value="collection" type="QString"/>
+                      <Option name="type" type="QString" value="collection"/>
                     </Option>
                   </data_defined_properties>
                 </layer>
               </symbol>
             </layer>
           </symbol>
-          <symbol name="53" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="FontMarker">
+          <symbol name="53" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="FontMarker">
               <prop v="45" k="angle"/>
               <prop v="Ａ" k="chr"/>
               <prop v="254,0,101,255" k="color"/>
@@ -1775,15 +1806,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="54" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="FontMarker">
+          <symbol name="54" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="FontMarker">
               <prop v="0" k="angle"/>
               <prop v="4" k="chr"/>
               <prop v="254,0,101,255" k="color"/>
@@ -1803,15 +1834,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="55" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="FontMarker">
+          <symbol name="55" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="FontMarker">
               <prop v="0" k="angle"/>
               <prop v="d" k="chr"/>
               <prop v="254,0,101,255" k="color"/>
@@ -1831,15 +1862,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="56" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="VectorField">
+          <symbol name="56" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="VectorField">
               <prop v="0" k="angle_orientation"/>
               <prop v="0" k="angle_units"/>
               <prop v="3x:0,0,0,0,0,0" k="distance_map_unit_scale"/>
@@ -1856,13 +1887,13 @@
               <prop v="y" k="y_attribute"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
-              <symbol name="@56@0" clip_to_extent="1" type="line" alpha="1">
-                <layer locked="0" pass="0" enabled="1" class="SimpleLine">
+              <symbol name="@56@0" alpha="1" clip_to_extent="1" type="line">
+                <layer pass="0" locked="0" enabled="1" class="SimpleLine">
                   <prop v="square" k="capstyle"/>
                   <prop v="5;2" k="customdash"/>
                   <prop v="3x:0,0,0,0,0,0" k="customdash_map_unit_scale"/>
@@ -1880,17 +1911,17 @@
                   <prop v="3x:0,0,0,0,0,0" k="width_map_unit_scale"/>
                   <data_defined_properties>
                     <Option type="Map">
-                      <Option name="name" value="" type="QString"/>
+                      <Option name="name" type="QString" value=""/>
                       <Option name="properties"/>
-                      <Option name="type" value="collection" type="QString"/>
+                      <Option name="type" type="QString" value="collection"/>
                     </Option>
                   </data_defined_properties>
                 </layer>
               </symbol>
             </layer>
           </symbol>
-          <symbol name="57" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="57" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="173,30,216,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -1911,15 +1942,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="58" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="58" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="231,113,72,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -1940,15 +1971,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="6" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="6" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="255,0,0,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -1969,13 +2000,13 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="0,0,0,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -1996,15 +2027,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="7" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="7" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="173,30,216,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -2025,15 +2056,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="8" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SvgMarker">
+          <symbol name="8" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SvgMarker">
               <prop v="0" k="angle"/>
               <prop v="0,229,0,255" k="color"/>
               <prop v="0" k="fixedAspectRatio"/>
@@ -2053,15 +2084,15 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
-          <symbol name="9" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="9" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="227,26,28,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -2082,17 +2113,17 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
           </symbol>
         </symbols>
         <source-symbol>
-          <symbol name="0" clip_to_extent="1" type="marker" alpha="1">
-            <layer locked="0" pass="0" enabled="1" class="SimpleMarker">
+          <symbol name="0" alpha="1" clip_to_extent="1" type="marker">
+            <layer pass="0" locked="0" enabled="1" class="SimpleMarker">
               <prop v="0" k="angle"/>
               <prop v="225,223,88,255" k="color"/>
               <prop v="1" k="horizontal_anchor_point"/>
@@ -2113,9 +2144,9 @@
               <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" value="" type="QString"/>
+                  <Option name="name" type="QString" value=""/>
                   <Option name="properties"/>
-                  <Option name="type" value="collection" type="QString"/>
+                  <Option name="type" type="QString" value="collection"/>
                 </Option>
               </data_defined_properties>
             </layer>
@@ -2125,8 +2156,8 @@
         <sizescale/>
       </renderer-v2>
       <customproperties>
-        <property key="dualview/previewExpressions" value="n"/>
-        <property key="embeddedWidgets/count" value="0"/>
+        <property value="n" key="dualview/previewExpressions"/>
+        <property value="0" key="embeddedWidgets/count"/>
         <property key="variableNames"/>
         <property key="variableValues"/>
       </customproperties>
@@ -2134,27 +2165,31 @@
       <featureBlendMode>0</featureBlendMode>
       <layerOpacity>1</layerOpacity>
       <SingleCategoryDiagramRenderer attributeLegend="1" diagramType="Histogram">
-        <DiagramCategory maxScaleDenominator="1e+8" minimumSize="0" lineSizeType="MM" opacity="1" minScaleDenominator="-4.65661e-10" penAlpha="255" enabled="0" lineSizeScale="3x:0,0,0,0,0,0" width="15" penWidth="0" backgroundAlpha="255" penColor="#000000" scaleDependency="Area" diagramOrientation="Up" rotationOffset="270" scaleBasedVisibility="0" labelPlacementMethod="XHeight" barWidth="5" sizeScale="3x:0,0,0,0,0,0" backgroundColor="#ffffff" height="15" sizeType="MM">
+        <DiagramCategory width="15" diagramOrientation="Up" backgroundAlpha="255" labelPlacementMethod="XHeight" height="15" opacity="1" backgroundColor="#ffffff" scaleDependency="Area" sizeType="MM" sizeScale="3x:0,0,0,0,0,0" scaleBasedVisibility="0" minScaleDenominator="-4.65661e-10" minimumSize="0" lineSizeType="MM" lineSizeScale="3x:0,0,0,0,0,0" maxScaleDenominator="1e+8" barWidth="5" penColor="#000000" enabled="0" penWidth="0" rotationOffset="270" penAlpha="255">
           <fontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""/>
-          <attribute field="" color="#000000" label=""/>
+          <attribute label="" color="#000000" field=""/>
         </DiagramCategory>
       </SingleCategoryDiagramRenderer>
-      <DiagramLayerSettings placement="0" zIndex="0" priority="0" obstacle="0" linePlacementFlags="18" dist="0" showAll="1">
+      <DiagramLayerSettings linePlacementFlags="18" placement="0" dist="0" priority="0" obstacle="0" zIndex="0" showAll="1">
         <properties>
           <Option type="Map">
-            <Option name="name" value="" type="QString"/>
+            <Option name="name" type="QString" value=""/>
             <Option name="properties"/>
-            <Option name="type" value="collection" type="QString"/>
+            <Option name="type" type="QString" value="collection"/>
           </Option>
         </properties>
       </DiagramLayerSettings>
+      <geometryOptions removeDuplicateNodes="0" geometryPrecision="0">
+        <activeChecks/>
+        <checkConfiguration/>
+      </geometryOptions>
       <fieldConfiguration>
         <field name="n">
           <editWidget type="TextEdit">
             <config>
               <Option type="Map">
-                <Option name="IsMultiline" value="0" type="QString"/>
-                <Option name="UseHtml" value="0" type="QString"/>
+                <Option name="IsMultiline" type="QString" value="0"/>
+                <Option name="UseHtml" type="QString" value="0"/>
               </Option>
             </config>
           </editWidget>
@@ -2175,31 +2210,32 @@
         </field>
       </fieldConfiguration>
       <aliases>
-        <alias name="" field="n" index="0"/>
-        <alias name="" field="X" index="1"/>
-        <alias name="" field="y" index="2"/>
+        <alias index="0" name="" field="n"/>
+        <alias index="1" name="" field="X"/>
+        <alias index="2" name="" field="y"/>
       </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
       <defaults>
-        <default field="n" expression="" applyOnUpdate="0"/>
-        <default field="X" expression="" applyOnUpdate="0"/>
-        <default field="y" expression="" applyOnUpdate="0"/>
+        <default expression="" applyOnUpdate="0" field="n"/>
+        <default expression="" applyOnUpdate="0" field="X"/>
+        <default expression="" applyOnUpdate="0" field="y"/>
       </defaults>
       <constraints>
-        <constraint field="n" constraints="0" notnull_strength="0" unique_strength="0" exp_strength="0"/>
-        <constraint field="X" constraints="0" notnull_strength="0" unique_strength="0" exp_strength="0"/>
-        <constraint field="y" constraints="0" notnull_strength="0" unique_strength="0" exp_strength="0"/>
+        <constraint exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0" field="n"/>
+        <constraint exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0" field="X"/>
+        <constraint exp_strength="0" constraints="0" unique_strength="0" notnull_strength="0" field="y"/>
       </constraints>
       <constraintExpressions>
-        <constraint exp="" field="n" desc=""/>
-        <constraint exp="" field="X" desc=""/>
-        <constraint exp="" field="y" desc=""/>
+        <constraint desc="" exp="" field="n"/>
+        <constraint desc="" exp="" field="X"/>
+        <constraint desc="" exp="" field="y"/>
       </constraintExpressions>
+      <expressionfields/>
       <attributeactions>
-        <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
+        <defaultAction value="{00000000-0000-0000-0000-000000000000}" key="Canvas"/>
       </attributeactions>
-      <attributetableconfig sortOrder="0" sortExpression="" actionWidgetStyle="dropDown">
+      <attributetableconfig sortExpression="" sortOrder="0" actionWidgetStyle="dropDown">
         <columns>
           <column name="n" width="-1" type="field" hidden="0"/>
           <column width="-1" type="actions" hidden="1"/>
@@ -2207,6 +2243,10 @@
           <column name="y" width="-1" type="field" hidden="0"/>
         </columns>
       </attributetableconfig>
+      <conditionalstyles>
+        <rowstyles/>
+        <fieldstyles/>
+      </conditionalstyles>
       <editform tolerant="1">.</editform>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
@@ -2245,11 +2285,6 @@ def my_form_open(dialog, layer, feature):
         <field name="y" labelOnTop="0"/>
       </labelOnTop>
       <widgets/>
-      <conditionalstyles>
-        <rowstyles/>
-        <fieldstyles/>
-      </conditionalstyles>
-      <expressionfields/>
       <previewExpression>n</previewExpression>
       <mapTip></mapTip>
     </maplayer>
@@ -2259,62 +2294,29 @@ def my_form_open(dialog, layer, feature):
   </layerorder>
   <properties>
     <PAL>
-      <ShowingAllLabels type="bool">false</ShowingAllLabels>
-      <CandidatesLine type="int">50</CandidatesLine>
-      <DrawRectOnly type="bool">false</DrawRectOnly>
-      <ShowingPartialsLabels type="bool">true</ShowingPartialsLabels>
-      <SearchMethod type="int">0</SearchMethod>
-      <ShowingCandidates type="bool">false</ShowingCandidates>
       <CandidatesPolygon type="int">30</CandidatesPolygon>
-      <CandidatesPoint type="int">16</CandidatesPoint>
+      <ShowingCandidates type="bool">false</ShowingCandidates>
       <DrawOutlineLabels type="bool">true</DrawOutlineLabels>
+      <SearchMethod type="int">0</SearchMethod>
+      <CandidatesPoint type="int">16</CandidatesPoint>
+      <ShowingAllLabels type="bool">false</ShowingAllLabels>
+      <ShowingPartialsLabels type="bool">true</ShowingPartialsLabels>
+      <DrawRectOnly type="bool">false</DrawRectOnly>
+      <CandidatesLine type="int">50</CandidatesLine>
     </PAL>
+    <Paths>
+      <Absolute type="bool">false</Absolute>
+    </Paths>
     <PositionPrecision>
       <Automatic type="bool">true</Automatic>
       <DecimalPlaces type="int">2</DecimalPlaces>
     </PositionPrecision>
-    <SpatialRefSys>
-      <ProjectCrs type="QString">EPSG:4326</ProjectCrs>
-      <ProjectionsEnabled type="int">1</ProjectionsEnabled>
-      <ProjectCRSProj4String type="QString">+proj=longlat +datum=WGS84 +no_defs</ProjectCRSProj4String>
-      <ProjectCRSID type="int">3452</ProjectCRSID>
-    </SpatialRefSys>
     <Measurement>
-      <AreaUnits type="QString">m2</AreaUnits>
       <DistanceUnits type="QString">meters</DistanceUnits>
+      <AreaUnits type="QString">m2</AreaUnits>
     </Measurement>
-    <Legend>
-      <filterByMap type="bool">false</filterByMap>
-    </Legend>
-    <Paths>
-      <Absolute type="bool">false</Absolute>
-    </Paths>
     <Digitizing>
       <AvoidIntersectionsList type="QStringList"/>
-      <LayerSnapToList type="QStringList">
-        <value>to_vertex_and_segment</value>
-        <value>to_vertex_and_segment</value>
-        <value>to_vertex_and_segment</value>
-        <value>to_vertex_and_segment</value>
-        <value>to_vertex_and_segment</value>
-        <value>to_vertex_and_segment</value>
-      </LayerSnapToList>
-      <LayerSnappingToleranceList type="QStringList">
-        <value>0.000000</value>
-        <value>0.000000</value>
-        <value>0.000000</value>
-        <value>0.000000</value>
-        <value>0.000000</value>
-        <value>0.000000</value>
-      </LayerSnappingToleranceList>
-      <LayerSnappingList type="QStringList">
-        <value>graticule20150708141425208</value>
-        <value>lines_shp20150708163456077</value>
-        <value>points_shp20150708141950508</value>
-        <value>points20150709081243966</value>
-        <value>points20150709081557143</value>
-        <value>points20150709081810799</value>
-      </LayerSnappingList>
       <LayerSnappingToleranceUnitList type="QStringList">
         <value>0</value>
         <value>0</value>
@@ -2323,6 +2325,30 @@ def my_form_open(dialog, layer, feature):
         <value>0</value>
         <value>0</value>
       </LayerSnappingToleranceUnitList>
+      <LayerSnappingToleranceList type="QStringList">
+        <value>0.000000</value>
+        <value>0.000000</value>
+        <value>0.000000</value>
+        <value>0.000000</value>
+        <value>0.000000</value>
+        <value>0.000000</value>
+      </LayerSnappingToleranceList>
+      <LayerSnapToList type="QStringList">
+        <value>to_vertex_and_segment</value>
+        <value>to_vertex_and_segment</value>
+        <value>to_vertex_and_segment</value>
+        <value>to_vertex_and_segment</value>
+        <value>to_vertex_and_segment</value>
+        <value>to_vertex_and_segment</value>
+      </LayerSnapToList>
+      <LayerSnappingList type="QStringList">
+        <value>graticule20150708141425208</value>
+        <value>lines_shp20150708163456077</value>
+        <value>points_shp20150708141950508</value>
+        <value>points20150709081243966</value>
+        <value>points20150709081557143</value>
+        <value>points20150709081810799</value>
+      </LayerSnappingList>
       <LayerSnappingEnabledList type="QStringList">
         <value>disabled</value>
         <value>disabled</value>
@@ -2332,17 +2358,32 @@ def my_form_open(dialog, layer, feature):
         <value>disabled</value>
       </LayerSnappingEnabledList>
     </Digitizing>
+    <SpatialRefSys>
+      <ProjectionsEnabled type="int">1</ProjectionsEnabled>
+      <ProjectCRSProj4String type="QString">+proj=longlat +datum=WGS84 +no_defs</ProjectCRSProj4String>
+      <ProjectCRSID type="int">3452</ProjectCRSID>
+      <ProjectCrs type="QString">EPSG:4326</ProjectCrs>
+    </SpatialRefSys>
+    <Legend>
+      <filterByMap type="bool">false</filterByMap>
+    </Legend>
     <Gui>
       <SelectionColorAlphaPart type="int">255</SelectionColorAlphaPart>
-      <CanvasColorGreenPart type="int">255</CanvasColorGreenPart>
       <CanvasColorRedPart type="int">255</CanvasColorRedPart>
       <SelectionColorBluePart type="int">0</SelectionColorBluePart>
-      <SelectionColorGreenPart type="int">255</SelectionColorGreenPart>
+      <CanvasColorGreenPart type="int">255</CanvasColorGreenPart>
       <CanvasColorBluePart type="int">255</CanvasColorBluePart>
+      <SelectionColorGreenPart type="int">255</SelectionColorGreenPart>
       <SelectionColorRedPart type="int">255</SelectionColorRedPart>
     </Gui>
   </properties>
-  <visibility-presets/>
+  <visibility-presets>
+    <visibility-preset has-expanded-info="1" name="original">
+      <layer id="points_shp20150708141950508" style="default" expanded="1"/>
+      <expanded-legend-nodes id="points_shp20150708141950508"/>
+      <expanded-group-nodes/>
+    </visibility-preset>
+  </visibility-presets>
   <transformContext/>
   <projectMetadata>
     <identifier></identifier>

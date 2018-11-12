@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis projectname="" version="3.2.3-Bonn">
+<qgis version="3.4.1-Madeira" projectname="">
   <homePath path=""/>
   <title></title>
   <autotransaction active="0"/>
@@ -19,14 +19,14 @@
   </projectCrs>
   <layer-tree-group>
     <customproperties/>
-    <layer-tree-layer providerKey="gdal" checked="Qt::Checked" source="../qgis_plugin_test_dem.tif" name="reference_layer" id="qgis_plugin_test_dem_574bcdeb_a3a5_4b62_b019_b4bf5549c4ca" expanded="1">
+    <layer-tree-layer id="qgis_plugin_test_dem_574bcdeb_a3a5_4b62_b019_b4bf5549c4ca" name="reference_layer" expanded="1" checked="Qt::Unchecked" source="../qgis_plugin_test_dem.tif" providerKey="gdal">
       <customproperties/>
     </layer-tree-layer>
     <custom-order enabled="0">
       <item>qgis_plugin_test_dem_574bcdeb_a3a5_4b62_b019_b4bf5549c4ca</item>
     </custom-order>
   </layer-tree-group>
-  <snapping-settings unit="1" enabled="0" type="1" mode="2" intersection-snapping="0" tolerance="12">
+  <snapping-settings unit="1" type="1" tolerance="12" enabled="0" mode="2" intersection-snapping="0">
     <individual-layer-settings/>
   </snapping-settings>
   <relations/>
@@ -53,14 +53,17 @@
     </destinationsrs>
     <rendermaptile>0</rendermaptile>
   </mapcanvas>
+  <projectModels/>
   <legend updateDrawingOrder="true">
-    <legendlayer checked="Qt::Checked" open="true" drawingOrder="-1" name="reference_layer" showFeatureCount="0">
+    <legendlayer name="reference_layer" checked="Qt::Unchecked" showFeatureCount="0" open="true" drawingOrder="-1">
       <filegroup open="true" hidden="false">
-        <legendlayerfile isInOverview="0" visible="1" layerid="qgis_plugin_test_dem_574bcdeb_a3a5_4b62_b019_b4bf5549c4ca"/>
+        <legendlayerfile layerid="qgis_plugin_test_dem_574bcdeb_a3a5_4b62_b019_b4bf5549c4ca" isInOverview="0" visible="0"/>
       </filegroup>
     </legendlayer>
   </legend>
-  <mapViewDocks/>
+  <mapViewDocks>
+    <view x="417" height="406" synced="1" name="Reference layer" showExtent="0" width="781" y="583" zoomSelected="0" floating="0" showCursor="1" scaleSynced="1" scaleFactor="1" area="8" showLabels="1"/>
+  </mapViewDocks>
   <mapViewDocks3D/>
   <mapcanvas annotationsVisible="1" name="mAreaCanvas">
     <units>degrees</units>
@@ -131,8 +134,31 @@
     </destinationsrs>
     <rendermaptile>0</rendermaptile>
   </mapcanvas>
+  <mapcanvas annotationsVisible="0" theme="original" name="Reference layer">
+    <units>meters</units>
+    <extent>
+      <xmin>263493.95584322360809892</xmin>
+      <ymin>4460202.59230463672429323</ymin>
+      <xmax>267046.96174606087151915</xmax>
+      <ymax>4463298.01411392632871866</ymax>
+    </extent>
+    <rotation>0</rotation>
+    <destinationsrs>
+      <spatialrefsys>
+        <proj4>+proj=utm +zone=30 +ellps=intl +towgs84=-87,-98,-121,0,0,0,0 +units=m +no_defs</proj4>
+        <srsid>1976</srsid>
+        <srid>23030</srid>
+        <authid>EPSG:23030</authid>
+        <description>ED50 / UTM zone 30N</description>
+        <projectionacronym>utm</projectionacronym>
+        <ellipsoidacronym>intl</ellipsoidacronym>
+        <geographicflag>false</geographicflag>
+      </spatialrefsys>
+    </destinationsrs>
+    <rendermaptile>0</rendermaptile>
+  </mapcanvas>
   <projectlayers>
-    <maplayer minScale="1e+8" type="raster" autoRefreshTime="0" maxScale="0" autoRefreshEnabled="0" refreshOnNotifyMessage="" refreshOnNotifyEnabled="0" hasScaleBasedVisibilityFlag="0">
+    <maplayer hasScaleBasedVisibilityFlag="0" styleCategories="AllStyleCategories" maxScale="0" refreshOnNotifyMessage="" refreshOnNotifyEnabled="0" type="raster" minScale="1e+8" autoRefreshEnabled="0" autoRefreshTime="0">
       <extent>
         <xmin>263546.52572500001406297</xmin>
         <ymin>4459975</ymin>
@@ -189,7 +215,7 @@
           </spatialrefsys>
         </crs>
         <extent>
-          <spatial maxx="0" maxy="0" miny="0" minx="0" maxz="0" minz="0" dimensions="2" crs=""/>
+          <spatial dimensions="2" maxz="0" miny="0" minz="0" maxx="0" minx="0" crs="" maxy="0"/>
           <temporal>
             <period>
               <start></start>
@@ -198,21 +224,26 @@
           </temporal>
         </extent>
       </resourceMetadata>
-      <customproperties>
-        <property key="WMSBackgroundLayer" value="false"/>
-        <property key="WMSPublishDataSourceUrl" value="false"/>
-        <property key="embeddedWidgets/count" value="0"/>
-        <property key="identify/format" value="Value"/>
-      </customproperties>
       <provider>gdal</provider>
       <noData>
-        <noDataList useSrcNoData="1" bandNo="1"/>
+        <noDataList bandNo="1" useSrcNoData="1"/>
       </noData>
       <map-layer-style-manager current="default">
         <map-layer-style name="default"/>
       </map-layer-style-manager>
+      <flags>
+        <Identifiable>1</Identifiable>
+        <Removable>1</Removable>
+        <Searchable>1</Searchable>
+      </flags>
+      <customproperties>
+        <property value="false" key="WMSBackgroundLayer"/>
+        <property value="false" key="WMSPublishDataSourceUrl"/>
+        <property value="0" key="embeddedWidgets/count"/>
+        <property value="Value" key="identify/format"/>
+      </customproperties>
       <pipe>
-        <rasterrenderer type="singlebandgray" opacity="1" gradient="BlackToWhite" alphaBand="-1" grayBand="1">
+        <rasterrenderer type="singlebandgray" alphaBand="-1" gradient="BlackToWhite" grayBand="1" opacity="1">
           <rasterTransparency/>
           <minMaxOrigin>
             <limits>MinMax</limits>
@@ -229,7 +260,7 @@
           </contrastEnhancement>
         </rasterrenderer>
         <brightnesscontrast contrast="0" brightness="0"/>
-        <huesaturation colorizeBlue="128" colorizeRed="255" colorizeGreen="128" saturation="0" colorizeOn="0" grayscaleMode="0" colorizeStrength="100"/>
+        <huesaturation saturation="0" colorizeStrength="100" grayscaleMode="0" colorizeOn="0" colorizeRed="255" colorizeBlue="128" colorizeGreen="128"/>
         <rasterresampler maxOversampling="2"/>
       </pipe>
       <blendMode>0</blendMode>
@@ -239,21 +270,23 @@
     <layer id="qgis_plugin_test_dem_574bcdeb_a3a5_4b62_b019_b4bf5549c4ca"/>
   </layerorder>
   <properties>
-    <Legend>
-      <filterByMap type="bool">false</filterByMap>
-    </Legend>
+    <PAL>
+      <CandidatesPolygon type="int">30</CandidatesPolygon>
+      <ShowingCandidates type="bool">false</ShowingCandidates>
+      <DrawOutlineLabels type="bool">true</DrawOutlineLabels>
+      <SearchMethod type="int">0</SearchMethod>
+      <CandidatesPoint type="int">16</CandidatesPoint>
+      <ShowingAllLabels type="bool">false</ShowingAllLabels>
+      <ShowingPartialsLabels type="bool">true</ShowingPartialsLabels>
+      <DrawRectOnly type="bool">false</DrawRectOnly>
+      <CandidatesLine type="int">50</CandidatesLine>
+    </PAL>
     <Measure>
       <Ellipsoid type="QString">WGS84</Ellipsoid>
     </Measure>
-    <Gui>
-      <CanvasColorGreenPart type="int">255</CanvasColorGreenPart>
-      <CanvasColorBluePart type="int">255</CanvasColorBluePart>
-      <SelectionColorRedPart type="int">255</SelectionColorRedPart>
-      <SelectionColorAlphaPart type="int">255</SelectionColorAlphaPart>
-      <SelectionColorGreenPart type="int">255</SelectionColorGreenPart>
-      <CanvasColorRedPart type="int">255</CanvasColorRedPart>
-      <SelectionColorBluePart type="int">0</SelectionColorBluePart>
-    </Gui>
+    <Paths>
+      <Absolute type="bool">false</Absolute>
+    </Paths>
     <PositionPrecision>
       <Automatic type="bool">true</Automatic>
       <DecimalPlaces type="int">2</DecimalPlaces>
@@ -262,25 +295,29 @@
       <DistanceUnits type="QString">meters</DistanceUnits>
       <AreaUnits type="QString">m2</AreaUnits>
     </Measurement>
-    <Paths>
-      <Absolute type="bool">false</Absolute>
-    </Paths>
-    <PAL>
-      <SearchMethod type="int">0</SearchMethod>
-      <ShowingAllLabels type="bool">false</ShowingAllLabels>
-      <DrawRectOnly type="bool">false</DrawRectOnly>
-      <CandidatesLine type="int">50</CandidatesLine>
-      <ShowingPartialsLabels type="bool">true</ShowingPartialsLabels>
-      <CandidatesPolygon type="int">30</CandidatesPolygon>
-      <ShowingCandidates type="bool">false</ShowingCandidates>
-      <DrawOutlineLabels type="bool">true</DrawOutlineLabels>
-      <CandidatesPoint type="int">16</CandidatesPoint>
-    </PAL>
     <SpatialRefSys>
       <ProjectionsEnabled type="int">1</ProjectionsEnabled>
     </SpatialRefSys>
+    <Legend>
+      <filterByMap type="bool">false</filterByMap>
+    </Legend>
+    <Gui>
+      <SelectionColorAlphaPart type="int">255</SelectionColorAlphaPart>
+      <CanvasColorRedPart type="int">255</CanvasColorRedPart>
+      <SelectionColorBluePart type="int">0</SelectionColorBluePart>
+      <CanvasColorGreenPart type="int">255</CanvasColorGreenPart>
+      <CanvasColorBluePart type="int">255</CanvasColorBluePart>
+      <SelectionColorGreenPart type="int">255</SelectionColorGreenPart>
+      <SelectionColorRedPart type="int">255</SelectionColorRedPart>
+    </Gui>
   </properties>
-  <visibility-presets/>
+  <visibility-presets>
+    <visibility-preset has-expanded-info="1" name="original">
+      <layer id="qgis_plugin_test_dem_574bcdeb_a3a5_4b62_b019_b4bf5549c4ca" style="default" expanded="1"/>
+      <expanded-legend-nodes id="qgis_plugin_test_dem_574bcdeb_a3a5_4b62_b019_b4bf5549c4ca"/>
+      <expanded-group-nodes/>
+    </visibility-preset>
+  </visibility-presets>
   <transformContext/>
   <projectMetadata>
     <identifier></identifier>
