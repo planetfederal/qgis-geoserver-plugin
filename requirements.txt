@@ -5,6 +5,7 @@
 python-dateutil
 requests==2.5.0
 qgiscommons
+httplib2
 
 # test requirements
 
