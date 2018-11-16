@@ -22,3 +22,10 @@ services:
     environment:
         DISPLAY: ':99'
         QT_X11_NO_MITSHM: '1'
+
+volumes:
+  bs_data_100:
+  bs_data:
+
+networks:
+  desktop-network:
