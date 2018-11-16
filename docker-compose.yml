@@ -1,12 +1,19 @@
 version: '2'
 
 services:
-  boundless-test:
-    image: elpaso/suite-trusty:4.8.0
+
+  suite410:
+    image: boundlessgeo/suite-desktop-testing:4.10
+    environment: 
+    - TOMCAT_SSL_ENABLED_PROTOCOLS=${TOMCAT_SSL_ENABLED_PROTOCOLS}
     ports:
-    - "8080:8080"
-    - "8443:8443"
-    - "8432:5432"
+    - "8082:8080"
+    - "8444:8443"
+    networks:
+      desktop-network:
+        aliases:
+          - suite410.boundless.test
+
   qgis-testing-environment:
     image: elpaso/qgis-testing-environment:${QGIS_VERSION_TAG}
     volumes:
