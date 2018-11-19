@@ -9,7 +9,7 @@ env:
   matrix:
   - QGIS_VERSION_TAG=master PYTHON_EXECUTABLE=python3 PIP_EXECUTABLE=pip3
 before_install:
-- docker login -u $DOCKER_USER -p $DOCKER_PWD
+- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 - docker-compose up -d
 - docker-compose ps
 - sleep 10
