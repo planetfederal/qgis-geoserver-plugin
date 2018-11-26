@@ -1,4 +1,7 @@
 sudo: required
+addons:
+  hosts:
+    - suite410.boundless.test
 services:
 - docker
 env:
@@ -9,7 +12,7 @@ env:
   matrix:
   - QGIS_VERSION_TAG=master PYTHON_EXECUTABLE=python3 PIP_EXECUTABLE=pip3
 before_install:
-- docker login -u $DOCKER_USER -p $DOCKER_PWD
+- echo "$DOCKER_PWD" | docker login -u "$DOCKER_USER" --password-stdin
 - docker-compose up -d
 - docker-compose ps
 - sleep 10
