@@ -175,7 +175,8 @@ def suiteNoAuth():
 # run all tests using unittest skipping nose or testplugin
 def run_all():
     # demo_test = unittest.TestLoader().loadTestsFromTestCase(CatalogTests)
-    unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suite())
+    unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suiteAuth())
+    unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suiteNoAuth())
 
 # run a subset of tests using unittest skipping nose or testplugin
 def run_subset():
