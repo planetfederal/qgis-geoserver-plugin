@@ -1,4 +1,7 @@
 sudo: required
+addons:
+  hosts:
+    - suite410.boundless.test
 services:
 - docker
 env:
