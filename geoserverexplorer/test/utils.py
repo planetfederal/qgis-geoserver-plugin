@@ -217,7 +217,7 @@ def initAuthConfigId():
         cfg.setMethod('Basic')
         cfg.setConfig('username', conf['USER'])
         cfg.setConfig('password', conf['PASSWORD'])
-        self.am.storeAuthenticationConfig(cfg)
+        am.storeAuthenticationConfig(cfg)
 
 
 #######################################################################
