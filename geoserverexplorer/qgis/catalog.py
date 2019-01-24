@@ -3,19 +3,18 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
+from builtins import str
+from builtins import object
 import os
 from qgis.core import *
-from PyQt4 import QtCore
+from qgis.PyQt import QtCore
+from geoserverexplorer.geoserver import GeoserverException
 from geoserverexplorer.qgis import layers, exporter, utils
 from geoserver.catalog import ConflictingDataError, UploadError, FailedRequestError
-from geoserverexplorer.qgis.sldadapter import adaptGsToQgs,\
-    getGsCompatibleSld
+from geoserverexplorer.qgis.sldadapter import adaptGsToQgs, getGsCompatibleSld, setUnits
 from geoserverexplorer.qgis import uri as uri_utils
-from gsimporter.client import Client
-from geoserverexplorer.geoserver.pki import PKICatalog, PKIClient
-from geoserverexplorer.geoserver.auth import AuthCatalog, AuthClient
+from geoserverexplorer.geoserver.auth import AuthCatalog
 from geoserverexplorer.geoserver.basecatalog import BaseCatalog
-from geoserverexplorer.geoserver import pem
 from geoserverexplorer.geoserver.util import groupsWithLayer, removeLayerFromGroups, \
     addLayerToGroups
 from geoserverexplorer.gui.gsnameutils import xmlNameFixUp, xmlNameIsValid
@@ -24,41 +23,14 @@ from geoserverexplorer.qgis.utils import addTrackedLayer
 from qgiscommons2.settings import pluginSetting
 from qgiscommons2.files import tempFilename
 
-try:
-    from processing.modeler.ModelerAlgorithm import ModelerAlgorithm
-    from processing.script.ScriptAlgorithm import ScriptAlgorithm
-    from processing.core.parameters import *
-    from processing.core.outputs import *
-
-    from processing.gui.AlgorithmExecutor import *
-    from processing.gui.SilentProgress import SilentProgress
-    from processing.tools.dataobjects import getObjectFromUri as load
-    from processing.modeler.ModelerUtils import ModelerUtils
-    processingOk = True
-except Exception, e:
-    processingOk = False
-
 def createGeoServerCatalog(service_url = "http://localhost:8080/geoserver/rest",
                            username="admin",
                            password="geoserver",
-                           authid=None,
-                           authtype=None,
-                           disable_ssl_certificate_validation=False):
+                           authid=None):
     # if not authid use basic auth
-    if not authid or not authtype:
-        catalog = BaseCatalog(service_url, username, password, disable_ssl_certificate_validation)
-    elif QGis.QGIS_VERSION_INT < 21200:
-        # if autcfg, then get certs and ca and create a PKICatalog
-        certfile, keyfile, cafile = pem.getPemPkiPaths(authid, authtype)
-
-        # set connection
-        catalog = PKICatalog(service_url, keyfile, certfile, cafile)
-
-        # set authid parameter used by uri.py functions to manage
-        # uri creation with pki credential
-        catalog.authid = authid
+    if authid is None:
+        catalog = BaseCatalog(service_url, username, password)
     else:
-        # For QGIS > 2.12, use the new AuthCatalog and QgsNetworkAccessManager
         cache_time = pluginSetting("AuthCatalogXMLCacheTime")
         catalog = AuthCatalog(service_url, authid, cache_time)
 
@@ -72,14 +44,6 @@ class CatalogWrapper(object):
 
     def __init__(self, catalog):
         self.catalog = catalog
-        #we also create a Client object pointing to the same url
-        if isinstance(catalog, AuthCatalog):
-            self.client = AuthClient(catalog.service_url, catalog.authid)
-        elif isinstance(catalog, PKICatalog):
-            self.client = PKIClient(catalog.service_url, catalog.key, catalog.cert, catalog.ca_cert)
-        else:
-            self.client = Client(str(catalog.service_url), catalog.username, catalog.password)
-
 
     def clean(self):
         self.cleanUnusedStyles()
@@ -99,7 +63,10 @@ class CatalogWrapper(object):
             usedStyles.update([s for s in group.styles if s is not None])
         toDelete = [s for s in styles if s.name not in usedStyles]
         for style in toDelete:
-            style.catalog.delete(style, purge = True)
+            try:
+                style.catalog.delete(style, purge = True)
+            except FailedRequestError:
+                QgsMessageLog.logMessage("Cannot delete style '%s'" % style.name)
 
     def cleanUnusedResources(self):
         '''cleans resources that are not published through any layer in the catalog'''
@@ -125,13 +92,13 @@ class CatalogWrapper(object):
         used = {}
         allstyles = self.catalog.get_styles()
         for style in allstyles:
-            sld = style.sld_body.replace("<sld:Name>%s</sld:Name>" % style.name, "")
-            if sld in used.keys():
+            sld = style.sld_body.decode().replace("<sld:Name>%s</sld:Name>" % style.name, "")
+            if sld in list(used.keys()):
                 used[sld].append(style)
             else:
                 used[sld] = [style]
 
-        for sld, styles in used.iteritems():
+        for sld, styles in used.items():
             if len(styles) == 1:
                 continue
             #find the layers that use any of the secondary styles in the list, and make them use the first one
@@ -163,7 +130,7 @@ class CatalogWrapper(object):
         it will overwrite a style with that name in case it exists
         '''
 
-        if isinstance(layer, basestring):
+        if isinstance(layer, str):
             layer = layers.resolveLayer(layer)
         sld, icons = getGsCompatibleSld(layer)
         if sld is not None:
@@ -177,29 +144,9 @@ class CatalogWrapper(object):
 
     def uploadIcons(self, icons):
         for icon in icons:
-            url = self.catalog.gs_base_url + "rest/resource/styles/"+icon[1]
-            if isinstance(self.catalog, PKICatalog):
-                r = requests.put(url, data=icon[2], cert=(self.catalog.cert, self.catalog.key), verify=self.catalog.ca_cert)
-            else:
-                r = requests.put(url, data=icon[2], auth=(self.catalog.username, self.catalog.password))
-            try:
-                r.raise_for_status()
-            except Exception, e:
-                #In case the GeoServer instance is a Suite one with GeoServer 2.9 or earlier
-                self.uploadIconsSuite(icons)
+            url = self.catalog.service_url + "/resource/styles/" + icon[1]
+            r = self.catalog.http_request(url, data=icon[2], method="put")
 
-    def uploadIconsSuite(self, icons):
-        url = self.catalog.gs_base_url + "app/api/icons"
-        for icon in icons:
-            files = {'file': (icon[1], icon[2])}
-            if isinstance(self.catalog, PKICatalog):
-                r = requests.post(url, files=files, cert=(self.catalog.cert, self.catalog.key), verify=self.catalog.ca_cert)
-            else:
-                r = requests.post(url, files=files, auth=(self.catalog.username, self.catalog.password))
-            try:
-                r.raise_for_status()
-            except Exception, e:
-                raise Exception ("Error uploading SVG icon to GeoServer:\n" + str(e))
 
     def getDataFromLayer(self, layer):
         '''
@@ -222,171 +169,45 @@ class CatalogWrapper(object):
             }
         return data
 
-
-    def _publishPostgisLayer(self, layer, workspace, overwrite, name, storename=None):
-        uri = QgsDataSourceURI(layer.dataProvider().dataSourceUri())
-
-
-
-        conname = self.getConnectionNameFromLayer(layer)
-        storename = xmlNameFixUp(storename or conname)
-
-        if not xmlNameIsValid(storename):
-            raise Exception("Database connection name is invalid XML and can "
-                            "not be auto-fixed: {0} -> {1}"
-                            .format(conname, storename))
-
-
-        user = uri.username()
-        passwd = uri.password()
-        if not uri or not passwd:
-            connInfo = uri.connectionInfo()
-            (success, user, passwd) = QgsCredentials.instance().get(connInfo, None, None)
-            if success:
-                QgsCredentials.instance().put(connInfo, user, passwd)
-            else:
-                raise Exception("Couldn't connect to database")
-
-        store = createPGFeatureStore(self.catalog,
-                                     storename,
-                                     workspace = workspace,
-                                     overwrite = overwrite,
-                                     host = uri.host(),
-                                     database = uri.database(),
-                                     schema = uri.schema(),
-                                     port = uri.port(),
-                                     user = user,
-                                     passwd = passwd)
-        if store is not None:
-            grpswlyr = []
-            if overwrite:
-                # TODO: How do we honor *unchecked* user setting of
-                #   "Delete resource when deleting layer" here?
-                #   Is it an issue, if overwrite is expected?
-
-                # We will soon have two layers with slightly different names,
-                # a temp based upon table.name, the other possibly existing
-                # layer with the same custom name, which may belong to group(s).
-                # If so, remove existing layer from any layer group, before
-                # continuing on with layer delete and renaming of new feature
-                # type layer to custom name, then add new resultant layer back
-                # to any layer groups the existing layer belonged to. Phew!
-
-                flyr = self.catalog.get_layer(name)
-                if flyr is not None:
-                    grpswlyr = groupsWithLayer(self.catalog, flyr)
-                    if grpswlyr:
-                        removeLayerFromGroups(self.catalog, flyr, grpswlyr)
-                    self.catalog.delete(flyr)
-                # TODO: What about when the layer name is the same, but the
-                #   underlying db connection/store has changed? Not an issue?
-                #   The layer is deleted, which is correct, but the original
-                #   db store and feature type will not be changed. A conflict?
-                frsc = store.get_resources(name=name)
-                if frsc is not None:
-                    self.catalog.delete(frsc)
-
-            # for dbs the name has to be the table name, initially
-            ftype = self.catalog.publish_featuretype(uri.table(), store,
-                                                     layer.crs().authid())
-
-            # once table-based feature type created, switch name to user-chosen
-            if ftype.name != name:
-                ftype.dirty["name"] = name
-                ftype.dirty["title"] = name
-            self.catalog.save(ftype)
-
-            # now re-add to any previously assigned-to layer groups
-            if overwrite and grpswlyr:
-                ftype = self.catalog.get_resource(name)
-                if ftype:
-                    addLayerToGroups(self.catalog, ftype, grpswlyr,
-                                     workspace=workspace)
-
-
-    def _uploadRest(self, layer, workspace, overwrite, name):
-        if layer.type() == layer.RasterLayer:
-            path = self.getDataFromLayer(layer)
-            self.catalog.create_coveragestore(name,
-                                      path,
-                                      workspace=workspace,
-                                      overwrite=overwrite)
-        elif layer.type() == layer.VectorLayer:
-            path = self.getDataFromLayer(layer)
-            self.catalog.create_featurestore(name,
-                              path,
-                              workspace=workspace,
-                              overwrite=overwrite)
-
-
-    def _uploadImporter(self, layer, workspace, overwrite, name):
-        # @todo - more richness needed to allow ingestion into target store
-        # versus just publishing the layer to a workspace as a shapefile
-        path = self.getDataFromLayer(layer)
-        if isinstance(path, dict):
-            if 'shp' in path:
-                path = path['shp']
-            else:
-                raise Exception('Unexpected condition : %s', path.keys())
-        session = self.client.upload(path)
-        if not session.tasks:
-            raise Exception('Geoserver is not able to process the uploaded data')
-        if len(session.tasks) != 1:
-            # this probably shouldn't happen but just in case
-            raise Exception('Unexpected condition')
-        # set workspace if needed (network trip)
-        # limitation in setting name as importer interprets this as a request
-        # to use an existing store by name
-        if workspace:
-            session.tasks[0].set_target(workspace=workspace.name)
-        if overwrite:
-            session.tasks[0].set_update_mode('REPLACE')
-        session.commit()
-
-
     def upload(self, layer, workspace=None, overwrite=True, name=None):
         '''uploads the specified layer'''
 
-        if isinstance(layer, basestring):
+        if isinstance(layer, str):
             layer = layers.resolveLayer(layer)
 
         name = name or layer.name()
         title = name
         name = name.replace(" ", "_")
 
-        restApi = pluginSetting("UseRestApi")
-
         if layer.type() not in (layer.RasterLayer, layer.VectorLayer):
-            msg = layer.name() + ' is not a valid raster or vector layer'
-            raise Exception(msg)
+            raise Exception(layer.name() + ' is not a valid raster or vector layer')
 
         provider = layer.dataProvider()
         try:
-            if provider.name() == 'postgres':
-                self._publishPostgisLayer(layer, workspace, overwrite, name)
-            elif restApi:
-                self._uploadRest(layer, workspace, overwrite, name)
-            else:
-                self._uploadImporter(layer, workspace, overwrite, name)
-        except UploadError, e:
-            msg = ('Could not save the layer %s, there was an upload '
-                   'error: %s' % (layer.name(), str(e)))
-            e.args = (msg,)
-            raise
-        except ConflictingDataError, e:
+            if layer.type() == layer.RasterLayer:
+                path = self.getDataFromLayer(layer)
+                self.catalog.create_coveragestore(name,
+                                          path=path,
+                                          workspace=workspace)
+            elif layer.type() == layer.VectorLayer:
+                path = self.getDataFromLayer(layer)
+                self.catalog.create_featurestore(name,
+                                  data=path,
+                                  workspace=workspace,
+                                  overwrite=overwrite)
+        except UploadError as e:
+            raise Exception('Could not save the layer %s, there was an upload '
+                   'error: %s' % (layer.name()), traceback.format_exc())
+        except ConflictingDataError as e:
             # A datastore of this name already exists
-            msg = ('GeoServer reported a conflict creating a store with name %s: '
-                   '"%s". This should never happen because a brand new name '
-                   'should have been generated. But since it happened, '
-                   'try renaming the file or deleting the store in '
-                   'GeoServer.' % (layer.name(), str(e)))
-            e.args = (msg,)
-            raise e
+            raise GeoserverException('GeoServer reported a conflict creating a store with name %s:'
+                     % layer.name(),  traceback.format_exc())
 
 
         # Verify the resource was created
-        resource = self.catalog.get_resource(name)
-        if resource is not None:
+        resources = self.catalog.get_resources(name)
+        if resources:
+            resource = resources[0]
             assert resource.name == name
         else:
             msg = ('could not create layer %s.' % name)
@@ -427,65 +248,11 @@ class CatalogWrapper(object):
         settings.endGroup()
         return connName
 
-    def publishGroup(self, name, destName = None, workspace = None, overwrite = False, overwriteLayers = False):
-
-        '''
-        Publishes a group in the given catalog
-
-        name: the name of the QGIS group to publish. It will also be used as the GeoServer layergroup name
-
-        workspace: The workspace to add the group to
-
-        overwrite: if True, it will overwrite a previous group with the specified name, if it exists
-
-        overwriteLayers: if False, in case a layer in the group is not found in the specified workspace, the corresponding layer
-        from the current QGIS project will be published, but all layers of the group that can be found in the GeoServer
-        workspace will not be published. If True, all layers in the group are published, even if layers with the same name
-        exist in the workspace
-        '''
-        groups = layers.getGroups()
-        if name not in groups:
-            raise Exception("The specified group does not exist")
-
-        destName = destName if destName is not None else name
-        gsgroup = self.catalog.get_layergroup(destName)
-        if gsgroup is not None and not overwrite:
-            return
-
-        group = groups[name]
-        bounds = None
-
-        def addToBounds(bbox, bounds):
-            if bounds is not None:
-                bounds = [min(bounds[0], bbox.xMinimum()),
-                            max(bounds[1], bbox.xMaximum()),
-                            min(bounds[2], bbox.yMinimum()),
-                            max(bounds[3], bbox.yMaximum())]
-            else:
-                bounds = [bbox.xMinimum(), bbox.xMaximum(),
-                          bbox.yMinimum(), bbox.yMaximum()]
-            return bounds
-
-        for layer in group:
-            gslayer = self.catalog.get_layer(layer.name())
-            if gslayer is None or overwriteLayers:
-                self.publishLayer(layer, workspace, True)
-            transform = QgsCoordinateTransform(layer.crs(), QgsCoordinateReferenceSystem("EPSG:4326"))
-            bounds = addToBounds(transform.transformBoundingBox(layer.extent()), bounds)
-
-        names = [layer.name() for layer in group]
-
-        bounds = (str(bounds[0]), str(bounds[1]), str(bounds[2]), str(bounds[3]), "EPSG:4326")
-        layergroup = self.catalog.create_layergroup(destName, names, names, bounds)
-
-        self.catalog.save(layergroup)
-
 
     def publishLayer (self, layer, workspace=None, overwrite=True, name=None, style=None):
         '''
         Publishes a QGIS layer.
         It creates the corresponding store and the layer itself.
-        If a pre-upload hook is set, its runs it and publishes the resulting layer
 
         layer: the layer to publish, whether as a QgsMapLayer object or its name in the QGIS TOC.
 
@@ -500,7 +267,7 @@ class CatalogWrapper(object):
 
         '''
 
-        if isinstance(layer, basestring):
+        if isinstance(layer, str):
             layer = layers.resolveLayer(layer)
 
         addTrackedLayer(layer, self.catalog.service_url)
@@ -514,68 +281,13 @@ class CatalogWrapper(object):
 
         sld = self.publishStyle(layer, overwrite, name) if style is None else None
 
-        layer = self.preprocess(layer)
         self.upload(layer, workspace, overwrite, name)
 
         if sld is not None or style is not None:
             #assign style to created store
             publishing = self.catalog.get_layer(name)
-            publishing.default_style = style or self.catalog.get_style(name)
+            publishing.default_style = style or self.catalog.get_styles(name)[0]
             self.catalog.save(publishing)
-
-    def preprocess(self, layer):
-        '''
-        Preprocesses the layer with the corresponding preprocess hook and returns the path to the
-        resulting layer. If no preprocessing is performed, it returns the input layer itself
-        '''
-        if not processingOk:
-            return layer
-
-        if layer.type() == layer.RasterLayer:
-            try:
-                hookFile = pluginSetting("PreuploadRasterHook")
-                if hookFile:
-                    alg = self.getAlgorithmFromHookFile(hookFile)
-                    if (len(alg.parameters) == 1 and isinstance(alg.parameters[0], ParameterRaster)
-                        and len(alg.outputs) == 1 and isinstance(alg.outputs[0], OutputRaster)):
-                        alg.parameters[0].setValue(layer)
-                        if runalg(alg, SilentProgress()):
-                            return load(alg.outputs[0].value)
-                        return layer
-                else:
-                    return layer
-            except:
-                QgsMessageLog.logMessage("Could not apply hook to layer upload. Wrong Hook", level=QgsMessageLog.WARNING)
-                return layer
-        elif layer.type() == layer.VectorLayer:
-            try:
-                hookFile = pluginSetting("PreuploadVectorHook")
-                if hookFile:
-                    alg = self.getAlgorithmFromHookFile(hookFile)
-                    if (len(alg.parameters) == 1 and isinstance(alg.parameters[0], ParameterVector)
-                        and len(alg.outputs) == 1 and isinstance(alg.outputs[0], OutputVector)):
-                        alg.parameters[0].setValue(layer)
-                        if runalg(alg, SilentProgress()):
-                            return load(alg.outputs[0].value)
-                        return layer
-                else:
-                    return layer
-            except:
-                QgsMessageLog.logMessage("Could not apply hook to layer upload. Wrong Hook", level=QgsMessageLog.WARNING)
-                return layer
-
-    def getAlgorithmFromHookFile(self, hookFile):
-        if hookFile.endswith('py'):
-            script = ScriptAlgorithm(hookFile)
-            script.provider = ModelerUtils.providers['script']
-            return script
-        elif hookFile.endswith('model'):
-            model = ModelerAlgorithm()
-            model.openModel(hookFile)
-            model.provider = ModelerUtils.providers['model']
-            return model
-        else:
-            raise Exception ("Wrong hook file")
 
     def addLayerToProject(self, name, destName = None):
         '''
@@ -598,15 +310,16 @@ class CatalogWrapper(object):
                 raise Exception ("Layer at %s is not a valid layer" % uri)
             ok = True
             try:
-                sld = layer.default_style.sld_body
-                sld = adaptGsToQgs(sld)
+                sld = layer.default_style.sld_body.decode()
+                sld = adaptGsToQgs(str(sld))
                 sldfile = tempFilename("sld")
                 with open(sldfile, 'w') as f:
                     f.write(sld)
                 msg, ok = qgslayer.loadSldStyle(sldfile)
-            except Exception, e:
+            except Exception as e:
                 ok = False
-            QgsMapLayerRegistry.instance().addMapLayers([qgslayer])
+            QgsProject.instance().addMapLayers([qgslayer])
+            setUnits(qgslayer)
             addTrackedLayer(qgslayer, self.catalog.service_url)
             if not ok:
                 raise Exception ("Layer was added, but style could not be set (maybe GeoServer layer is missing default style)")
@@ -614,35 +327,35 @@ class CatalogWrapper(object):
             qgslayer = QgsRasterLayer(uri, destName or resource.title, "wcs" )
             if not qgslayer.isValid():
                 raise Exception ("Layer at %s is not a valid layer" % uri)
-            QgsMapLayerRegistry.instance().addMapLayers([qgslayer])
+            QgsProject.instance().addMapLayers([qgslayer])
             addTrackedLayer(qgslayer, self.catalog.service_url)
         elif resource.resource_type == "wmsLayer":
             qgslayer = QgsRasterLayer(uri, destName or resource.title, "wms")
             if not qgslayer.isValid():
                 raise Exception ("Layer at %s is not a valid layer" % uri)
-            QgsMapLayerRegistry.instance().addMapLayers([qgslayer])
+            QgsProject.instance().addMapLayers([qgslayer])
             addTrackedLayer(qgslayer, self.catalog.service_url)
         else:
             raise Exception("Cannot add layer. Unsupported layer type.")
 
     def addGroupToProject(self, name):
-        group = self.catalog.get_layergroup(name)
+        group = self.catalog.get_layergroups(name)[0]
         if group is None:
-            raise Exception ("A layer with the name '" + name + "' was not found in the catalog")
+            raise Exception ("A group with the name '" + name + "' was not found in the catalog")
 
         uri = uri_utils.groupUri(group)
 
         qgslayer = QgsRasterLayer(uri, name, "wms")
         if not qgslayer.isValid():
             raise Exception ("Layer at %s is not a valid layer" % uri)
-        QgsMapLayerRegistry.instance().addMapLayers([qgslayer])
+        QgsProject.instance().addMapLayers([qgslayer])
 
 
 def createPGFeatureStore(catalog, name, workspace=None, overwrite=False,
-    host="localhost", port=5432, database="db", schema="public", user="postgres", passwd=""):
+                        host="localhost", port=5432, database="db", schema="public", user="postgres", passwd=""):
     try:
-        store = catalog.get_store(name, workspace)
-    except FailedRequestError:
+        store = catalog.get_stores(name, workspace)[0]
+    except:
         store = None
 
     if store is None:

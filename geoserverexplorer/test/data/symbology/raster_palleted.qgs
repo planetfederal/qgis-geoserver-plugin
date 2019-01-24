@@ -1,0 +1,268 @@
+<!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
+<qgis projectname="" version="3.4.1-Madeira">
+  <homePath path=""/>
+  <title></title>
+  <autotransaction active="0"/>
+  <evaluateDefaultValues active="0"/>
+  <trust active="0"/>
+  <projectCrs>
+    <spatialrefsys>
+      <proj4>+proj=utm +zone=30 +ellps=intl +towgs84=-87,-98,-121,0,0,0,0 +units=m +no_defs</proj4>
+      <srsid>1976</srsid>
+      <srid>23030</srid>
+      <authid>EPSG:23030</authid>
+      <description>ED50 / UTM zone 30N</description>
+      <projectionacronym>utm</projectionacronym>
+      <ellipsoidacronym>intl</ellipsoidacronym>
+      <geographicflag>false</geographicflag>
+    </spatialrefsys>
+  </projectCrs>
+  <layer-tree-group>
+    <customproperties/>
+    <layer-tree-layer providerKey="gdal" expanded="1" id="qgis_plugin_test_dem_exact_e9943101_9067_494a_a0d8_b1f12712181b" checked="Qt::Unchecked" source="../qgis_plugin_test_dem_exact.tif" name="reference_layer">
+      <customproperties/>
+    </layer-tree-layer>
+    <custom-order enabled="0">
+      <item>qgis_plugin_test_dem_exact_e9943101_9067_494a_a0d8_b1f12712181b</item>
+    </custom-order>
+  </layer-tree-group>
+  <snapping-settings intersection-snapping="0" mode="2" enabled="0" tolerance="12" type="1" unit="1">
+    <individual-layer-settings/>
+  </snapping-settings>
+  <relations/>
+  <mapcanvas annotationsVisible="1" name="theMapCanvas">
+    <units>meters</units>
+    <extent>
+      <xmin>262614.98587788455188274</xmin>
+      <ymin>4459750.99393869191408157</ymin>
+      <xmax>267925.93171139992773533</xmax>
+      <ymax>4463749.61247987113893032</ymax>
+    </extent>
+    <rotation>0</rotation>
+    <destinationsrs>
+      <spatialrefsys>
+        <proj4>+proj=utm +zone=30 +ellps=intl +towgs84=-87,-98,-121,0,0,0,0 +units=m +no_defs</proj4>
+        <srsid>1976</srsid>
+        <srid>23030</srid>
+        <authid>EPSG:23030</authid>
+        <description>ED50 / UTM zone 30N</description>
+        <projectionacronym>utm</projectionacronym>
+        <ellipsoidacronym>intl</ellipsoidacronym>
+        <geographicflag>false</geographicflag>
+      </spatialrefsys>
+    </destinationsrs>
+    <rendermaptile>0</rendermaptile>
+  </mapcanvas>
+  <projectModels/>
+  <legend updateDrawingOrder="true">
+    <legendlayer checked="Qt::Unchecked" drawingOrder="-1" showFeatureCount="0" open="true" name="reference_layer">
+      <filegroup hidden="false" open="true">
+        <legendlayerfile isInOverview="0" layerid="qgis_plugin_test_dem_exact_e9943101_9067_494a_a0d8_b1f12712181b" visible="0"/>
+      </filegroup>
+    </legendlayer>
+  </legend>
+  <mapViewDocks>
+    <view y="523" showExtent="0" scaleFactor="1" zoomSelected="0" floating="0" x="394" area="8" width="745" scaleSynced="1" height="466" synced="1" showCursor="1" showLabels="1" name="Reference layer"/>
+  </mapViewDocks>
+  <mapViewDocks3D/>
+  <mapcanvas theme="original" annotationsVisible="1" name="Reference layer">
+    <units>meters</units>
+    <extent>
+      <xmin>262877.08276926976395771</xmin>
+      <ymin>4459665.16500535886734724</ymin>
+      <xmax>267663.83482001471566036</xmax>
+      <ymax>4463835.44141320418566465</ymax>
+    </extent>
+    <rotation>0</rotation>
+    <destinationsrs>
+      <spatialrefsys>
+        <proj4>+proj=utm +zone=30 +ellps=intl +towgs84=-87,-98,-121,0,0,0,0 +units=m +no_defs</proj4>
+        <srsid>1976</srsid>
+        <srid>23030</srid>
+        <authid>EPSG:23030</authid>
+        <description>ED50 / UTM zone 30N</description>
+        <projectionacronym>utm</projectionacronym>
+        <ellipsoidacronym>intl</ellipsoidacronym>
+        <geographicflag>false</geographicflag>
+      </spatialrefsys>
+    </destinationsrs>
+    <rendermaptile>0</rendermaptile>
+  </mapcanvas>
+  <projectlayers>
+    <maplayer autoRefreshTime="0" refreshOnNotifyEnabled="0" autoRefreshEnabled="0" refreshOnNotifyMessage="" hasScaleBasedVisibilityFlag="0" maxScale="0" styleCategories="AllStyleCategories" minScale="1e+8" type="raster">
+      <extent>
+        <xmin>263546.52569999999832362</xmin>
+        <ymin>4459975</ymin>
+        <xmax>266996.52569999999832362</xmax>
+        <ymax>4463525</ymax>
+      </extent>
+      <id>qgis_plugin_test_dem_exact_e9943101_9067_494a_a0d8_b1f12712181b</id>
+      <datasource>../qgis_plugin_test_dem_exact.tif</datasource>
+      <keywordList>
+        <value></value>
+      </keywordList>
+      <layername>reference_layer</layername>
+      <srs>
+        <spatialrefsys>
+          <proj4>+proj=utm +zone=30 +ellps=intl +towgs84=-87,-98,-121,0,0,0,0 +units=m +no_defs</proj4>
+          <srsid>1976</srsid>
+          <srid>23030</srid>
+          <authid>EPSG:23030</authid>
+          <description>ED50 / UTM zone 30N</description>
+          <projectionacronym>utm</projectionacronym>
+          <ellipsoidacronym>intl</ellipsoidacronym>
+          <geographicflag>false</geographicflag>
+        </spatialrefsys>
+      </srs>
+      <resourceMetadata>
+        <identifier></identifier>
+        <parentidentifier></parentidentifier>
+        <language></language>
+        <type></type>
+        <title></title>
+        <abstract></abstract>
+        <contact>
+          <name></name>
+          <organization></organization>
+          <position></position>
+          <voice></voice>
+          <fax></fax>
+          <email></email>
+          <role></role>
+        </contact>
+        <links/>
+        <fees></fees>
+        <encoding></encoding>
+        <crs>
+          <spatialrefsys>
+            <proj4></proj4>
+            <srsid>0</srsid>
+            <srid>0</srid>
+            <authid></authid>
+            <description></description>
+            <projectionacronym></projectionacronym>
+            <ellipsoidacronym></ellipsoidacronym>
+            <geographicflag>false</geographicflag>
+          </spatialrefsys>
+        </crs>
+        <extent>
+          <spatial maxx="0" minx="0" minz="0" dimensions="2" miny="0" maxz="0" maxy="0" crs=""/>
+          <temporal>
+            <period>
+              <start></start>
+              <end></end>
+            </period>
+          </temporal>
+        </extent>
+      </resourceMetadata>
+      <provider>gdal</provider>
+      <noData>
+        <noDataList useSrcNoData="1" bandNo="1"/>
+      </noData>
+      <map-layer-style-manager current="default">
+        <map-layer-style name="default"/>
+      </map-layer-style-manager>
+      <flags>
+        <Identifiable>1</Identifiable>
+        <Removable>1</Removable>
+        <Searchable>1</Searchable>
+      </flags>
+      <customproperties>
+        <property value="false" key="WMSBackgroundLayer"/>
+        <property value="false" key="WMSPublishDataSourceUrl"/>
+        <property value="0" key="embeddedWidgets/count"/>
+        <property value="Value" key="identify/format"/>
+      </customproperties>
+      <pipe>
+        <rasterrenderer alphaBand="-1" opacity="1" type="paletted" band="1">
+          <rasterTransparency/>
+          <minMaxOrigin>
+            <limits>None</limits>
+            <extent>WholeRaster</extent>
+            <statAccuracy>Estimated</statAccuracy>
+            <cumulativeCutLower>0.02</cumulativeCutLower>
+            <cumulativeCutUpper>0.98</cumulativeCutUpper>
+            <stdDevFactor>2</stdDevFactor>
+          </minMaxOrigin>
+          <colorPalette>
+            <paletteEntry value="1" alpha="255" label="value 1" color="#cd0fde"/>
+            <paletteEntry value="2" alpha="255" label="value 2" color="#a6d93e"/>
+            <paletteEntry value="3" alpha="255" label="value 3" color="#db5442"/>
+            <paletteEntry value="4" alpha="255" label="value 4" color="#28cb7f"/>
+            <paletteEntry value="5" alpha="255" label="value 5" color="#4270ec"/>
+          </colorPalette>
+        </rasterrenderer>
+        <brightnesscontrast brightness="0" contrast="0"/>
+        <huesaturation colorizeOn="0" colorizeStrength="100" colorizeBlue="128" saturation="0" colorizeRed="255" colorizeGreen="128" grayscaleMode="0"/>
+        <rasterresampler maxOversampling="2"/>
+      </pipe>
+      <blendMode>0</blendMode>
+    </maplayer>
+  </projectlayers>
+  <layerorder>
+    <layer id="qgis_plugin_test_dem_exact_e9943101_9067_494a_a0d8_b1f12712181b"/>
+  </layerorder>
+  <properties>
+    <Measurement>
+      <DistanceUnits type="QString">meters</DistanceUnits>
+      <AreaUnits type="QString">m2</AreaUnits>
+    </Measurement>
+    <Legend>
+      <filterByMap type="bool">false</filterByMap>
+    </Legend>
+    <PositionPrecision>
+      <DecimalPlaces type="int">2</DecimalPlaces>
+      <Automatic type="bool">true</Automatic>
+    </PositionPrecision>
+    <Gui>
+      <CanvasColorGreenPart type="int">255</CanvasColorGreenPart>
+      <SelectionColorRedPart type="int">255</SelectionColorRedPart>
+      <SelectionColorAlphaPart type="int">255</SelectionColorAlphaPart>
+      <CanvasColorRedPart type="int">255</CanvasColorRedPart>
+      <SelectionColorGreenPart type="int">255</SelectionColorGreenPart>
+      <CanvasColorBluePart type="int">255</CanvasColorBluePart>
+      <SelectionColorBluePart type="int">0</SelectionColorBluePart>
+    </Gui>
+    <Paths>
+      <Absolute type="bool">false</Absolute>
+    </Paths>
+    <Measure>
+      <Ellipsoid type="QString">WGS84</Ellipsoid>
+    </Measure>
+    <PAL>
+      <ShowingAllLabels type="bool">false</ShowingAllLabels>
+      <DrawOutlineLabels type="bool">true</DrawOutlineLabels>
+      <CandidatesPolygon type="int">30</CandidatesPolygon>
+      <DrawRectOnly type="bool">false</DrawRectOnly>
+      <SearchMethod type="int">0</SearchMethod>
+      <CandidatesPoint type="int">16</CandidatesPoint>
+      <ShowingCandidates type="bool">false</ShowingCandidates>
+      <CandidatesLine type="int">50</CandidatesLine>
+      <ShowingPartialsLabels type="bool">true</ShowingPartialsLabels>
+    </PAL>
+    <SpatialRefSys>
+      <ProjectionsEnabled type="int">1</ProjectionsEnabled>
+    </SpatialRefSys>
+  </properties>
+  <visibility-presets>
+    <visibility-preset has-expanded-info="1" name="original">
+      <layer expanded="1" id="qgis_plugin_test_dem_exact_e9943101_9067_494a_a0d8_b1f12712181b" style="default"/>
+      <expanded-legend-nodes id="qgis_plugin_test_dem_exact_e9943101_9067_494a_a0d8_b1f12712181b"/>
+      <expanded-group-nodes/>
+    </visibility-preset>
+  </visibility-presets>
+  <transformContext/>
+  <projectMetadata>
+    <identifier></identifier>
+    <parentidentifier></parentidentifier>
+    <language></language>
+    <type></type>
+    <title></title>
+    <abstract></abstract>
+    <links/>
+    <author>Alexandre Neto</author>
+    <creation>2018-09-19T15:32:53</creation>
+  </projectMetadata>
+  <Annotations/>
+  <Layouts/>
+</qgis>

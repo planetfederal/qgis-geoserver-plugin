@@ -4,9 +4,12 @@
 # This code is licensed under the GPL 2.0 license.
 #
 import unittest
+import os
 import sys
+from functools import partial
 from geoserverexplorer.test import utils
-from geoserverexplorer.test.catalogtests import suite as catalogSuite
+from geoserverexplorer.test.catalogtests import suiteAuth as catalogSuiteAuth
+from geoserverexplorer.test.catalogtests import suiteNoAuth as catalogSuiteNoAuth
 from geoserverexplorer.test.deletetests import suite as deleteSuite
 from geoserverexplorer.test.dragdroptests import suite as dragdropSuite
 from geoserverexplorer.test.guitests import suite as guiSuite
@@ -24,6 +27,7 @@ def functionalTests():
     except:
         return []
 
+    allTests = []
     dragdropTest = Test("Verify dragging browser element into workspace")
     dragdropTest.addStep("Setting up catalog and explorer", utils.setUpCatalogAndExplorer)
     dragdropTest.addStep("Setting up test data project", utils.loadTestData)
@@ -31,16 +35,21 @@ def functionalTests():
     dragdropTest.addStep("Checking new layer", utils.checkNewLayer)
     dragdropTest.setCleanup(utils.clean)
 
-    vectorRenderingTest = Test("Verify rendering of uploaded style")
-    vectorRenderingTest.addStep("Preparing data", utils.openAndUpload)
-    vectorRenderingTest.addStep("Check that WMS layer is correctly rendered")
-    vectorRenderingTest.setCleanup(utils.clean)
+    allTests.append(dragdropTest)
 
-    return [dragdropTest, vectorRenderingTest]
+    for testProject in utils.testProjects():
+        renderingTest = Test("Verify rendering of uploaded style (%s)" % os.path.basename(testProject))
+        renderingTest.addStep("Preparing data", partial(utils.openAndUpload, testProject))
+        renderingTest.addStep("Check that WMS layer is correctly rendered")
+        renderingTest.setCleanup(utils.clean)
+        allTests.append(renderingTest)
+
+    return allTests
 
 def unitTests():
-    _tests = []
-    _tests.extend(catalogSuite())
+    _tests = []    
+    _tests.extend(catalogSuiteNoAuth())
+    _tests.extend(catalogSuiteAuth())   
     _tests.extend(deleteSuite())
     _tests.extend(dragdropSuite())
     _tests.extend(guiSuite())

@@ -3,53 +3,32 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
+from builtins import str
+from builtins import object
 import httplib2
 from xml.etree.ElementTree import XML
 import xml.etree.ElementTree as ET
-from urlparse import urlparse
+from urllib.parse import urlparse
 from geoserver.catalog import FailedRequestError
 import json
-from geoserverexplorer.geoserver.pki import PKICatalog
 from geoserverexplorer.geoserver.auth import AuthCatalog
 
 class Gwc(object):
 
     def __init__(self, catalog):
         self.catalog = catalog
-        self.url = catalog.gs_base_url + 'gwc/rest/'
-        if  isinstance(catalog, AuthCatalog):
-            # For QGIS >= 2.12
-            http = catalog.http
-        elif isinstance(catalog, PKICatalog):
-            http = httplib2.Http(ca_certs=catalog.ca_cert, disable_ssl_certificate_validation = False)
-            http.add_certificate(catalog.key, catalog.cert, '')
-        else:
-            http = httplib2.Http()
-            http.add_credentials(catalog.username, catalog.password)
-            netloc = urlparse(self.url).netloc
-            http.authorizations.append(
-                httplib2.BasicAuthentication(
-                    (catalog.username, catalog.password),
-                    netloc,
-                    self.url,
-                    {},
-                    None,
-                    None,
-                    http
-                )
-            )
-        self.http = http
+        self.url = catalog.layersEndpointUrl() + '/gwc/rest/'
 
     def layers(self):
         '''get a dict of layer->href'''
 
         url = self.url + 'layers.xml'
-        headers, response = self.http.request(url, 'GET')
-        if headers.status != 200: raise Exception('listing failed - %s, %s' %
-                                                  (headers,response))
+        resp = self.catalog.http_request(url, 'GET')
+        if resp.status_code != 200: 
+            raise Exception('GWC Layers listing failed: ' + resp.text)
 
         # try to resolve layer if already configured
-        dom = XML(response)
+        dom = XML(resp.text)
         layers = []
         for layer in list(dom):
             els = list(layer)
@@ -63,18 +42,15 @@ class Gwc(object):
         layer.fetch()
         return layer
 
-
-
     def addLayer(self, layer):
         headers = {
             "Content-type": "text/xml"
         }
         message = layer.xml()
-        response = self.http.request(layer.href, "PUT", message, headers)
-        headers, body = response
-        if 400 <= int(headers['status']) < 600:
-            raise FailedRequestError(body)
-        return response
+        resp = self.catalog.http_request(layer.href, message, "PUT", headers)
+        if 400 <= int(resp.status_code) < 600:
+            raise FailedRequestError(resp.text)
+        return resp.text
 
 
 class GwcLayer(object):
@@ -91,9 +67,9 @@ class GwcLayer(object):
         self.metaHeight = metaHeight
 
     def fetch(self):
-        response, content = self.gwc.http.request(self.href)
-        if response.status == 200:
-            xml = XML(content)
+        resp = self.gwc.catalog.http_request(self.href)
+        if resp.status_code == 200:
+            xml = XML(resp.text)
             self.mimetypes = [mimetype.text for mimetype in xml.iter('string')]
             self.gridsets = [gridset.text for gridset in xml.iter('gridSetName')]
             wh = xml.iter('metaWidthHeight')
@@ -104,7 +80,7 @@ class GwcLayer(object):
                 #in case this parameters are not in the layer description
                 self.metaWidth, self.metaHeight = 1, 1
         else:
-            raise FailedRequestError(str(response) + content)
+            raise FailedRequestError(resp.text)
 
     def xml(self):
         root = ET.Element('GeoServerLayer')
@@ -139,31 +115,27 @@ class GwcLayer(object):
         self.metaHeight = metaHeight
 
         message = self.xml()
-        response = self.gwc.http.request(self.href, "POST", message, self.headers)
-        headers, body = response
-        if 400 <= int(headers['status']) < 600:
-            raise FailedRequestError(body)
+        resp = self.gwc.catalog.http_request(self.href, mesage, "POST", self.headers)
+        if 400 <= int(resp.status_code) < 600:
+            raise FailedRequestError(resp.text)
         return response
 
     def delete(self):
-
-        response, content = self.gwc.http.request(self.href, "DELETE", headers=self.headers)
-
-        if response.status == 200:
-            return (response, content)
+        resp = self.gwc.catalog.http_request(self.href, "", "DELETE", headers=self.headers)
+        if resp.status_code == 200:
+            return resp.text
         else:
-            raise FailedRequestError(str(response) + content)
+            raise FailedRequestError(resp.text)
 
     def truncate(self):
         url = self.gwc.url + "masstruncate"
-
         message = "<truncateLayer><layerName>"  + self.name + "</layerName></truncateLayer>"
-        response, content = self.gwc.http.request(url, "POST", message, headers=self.headers)
+        resp = self.gwc.catalog.http_request(url, message, "POST", headers=self.headers)
 
-        if response.status == 200:
-            return (response, content)
+        if resp.status_code == 200:
+            return resp.text
         else:
-            raise FailedRequestError(str(response) + content)
+            raise FailedRequestError(resp.text)
 
 
     def seed(self, operation, mimetype, gridset, minzoom, maxzoom, bbox):
@@ -190,37 +162,37 @@ class GwcLayer(object):
         threads = ET.SubElement(root, 'threadCount')
         threads.text = "1"
         message = ET.tostring(root)
-        response, content = self.gwc.http.request(url, "POST", message, headers=self.headers)
+        resp = self.gwc.catalog.http_request(url, message, "POST", headers=self.headers)
 
-        if response.status != 200:
-            raise FailedRequestError(str(response) + content)
+        if resp.status_code != 200:
+            raise FailedRequestError(resp.text)
 
 
     def getSeedingState(self):
         url = self.gwc.url + 'seed/' + self.name + '.xml'
         headers = {'Content-type': 'text/json'}
-        response, content = self.gwc.http.request(url, 'GET', headers=headers)
+        resp = self.gwc.catalog.http_request(url, "", 'GET', headers=headers)
 
-        if response.status != 200:
-            raise FailedRequestError(str(response) + content)
+        if resp.status_code != 200:
+            raise FailedRequestError(resp.text)
         else:
             try:
-                array = json.loads(content)['long-array-array']
+                array = json.loads(resp.text)['long-array-array']
                 if array:
                     return array[0][0], array[0][1]
                 else:
                     return None
-            except Exception, e:
+            except Exception as e:
                 raise SeedingStatusParsingError()
-            return content
+            return resp.text
 
     def killSeedingTasks(self):
         url = self.gwc.url + 'seed/' + self.name
         headers = {'Content-type': 'application/text'}
-        response, content = self.gwc.http.request(url, 'POST', "kill_all=all", headers=headers)
+        resp = self.gwc.catalog.http_request(url, "kill_all=all", 'POST', headers=headers)
 
-        if response.status != 200:
-            raise FailedRequestError(str(response) + content)
+        if resp.status_code != 200:
+            raise FailedRequestError(resp.text)
 
 
 

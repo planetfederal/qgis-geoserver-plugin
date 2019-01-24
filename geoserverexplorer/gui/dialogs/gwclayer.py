@@ -3,13 +3,17 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
+from builtins import str
+from builtins import range
 from geoserverexplorer.gui.extentpanel import ExtentSelectionPanel
-from PyQt4 import QtGui, QtCore
+from qgis.PyQt.QtGui import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtWidgets import *
 
-class EditGwcLayerDialog(QtGui.QDialog):
+class EditGwcLayerDialog(QDialog):
 
     def __init__(self, layers, gwclayer = None):
-        QtGui.QDialog.__init__(self)
+        QDialog.__init__(self)
         self.setupUi()
         self.setWindowTitle('Define cache layer')
         self.layers = layers
@@ -37,61 +41,61 @@ class EditGwcLayerDialog(QtGui.QDialog):
 
     def setupUi(self):
         self.resize(528, 276)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Minimum)
+        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.sizePolicy().hasHeightForWidth())
         self.setSizePolicy(sizePolicy)
-        self.verticalLayout = QtGui.QVBoxLayout(self)
+        self.verticalLayout = QVBoxLayout(self)
 
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        self.layerLabel = QtGui.QLabel("Layer")
+        self.horizontalLayout = QHBoxLayout()
+        self.layerLabel = QLabel("Layer")
         self.horizontalLayout.addWidget(self.layerLabel)
-        self.layerBox = QtGui.QComboBox()
+        self.layerBox = QComboBox()
         self.horizontalLayout.addWidget(self.layerBox)
         self.verticalLayout.addLayout(self.horizontalLayout)
-        self.groupBox = QtGui.QGroupBox(self)
-        self.verticalLayout_4 = QtGui.QVBoxLayout(self.groupBox)
-        self.horizontalLayout_3 = QtGui.QHBoxLayout()
-        self.labelWidth = QtGui.QLabel(self.groupBox)
+        self.groupBox = QGroupBox(self)
+        self.verticalLayout_4 = QVBoxLayout(self.groupBox)
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.labelWidth = QLabel(self.groupBox)
         self.horizontalLayout_3.addWidget(self.labelWidth)
-        self.spinBoxWidth = QtGui.QSpinBox(self.groupBox)
+        self.spinBoxWidth = QSpinBox(self.groupBox)
         self.horizontalLayout_3.addWidget(self.spinBoxWidth)
-        self.labelHeight = QtGui.QLabel(self.groupBox)
+        self.labelHeight = QLabel(self.groupBox)
         self.horizontalLayout_3.addWidget(self.labelHeight)
-        self.spinBoxHeight = QtGui.QSpinBox(self.groupBox)
+        self.spinBoxHeight = QSpinBox(self.groupBox)
         self.horizontalLayout_3.addWidget(self.spinBoxHeight)
         self.verticalLayout_4.addLayout(self.horizontalLayout_3)
         self.verticalLayout.addWidget(self.groupBox)
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        self.groupBoxFormats = QtGui.QGroupBox(self)
-        self.verticalLayout_2 = QtGui.QVBoxLayout(self.groupBoxFormats)
-        self.checkBoxPng = QtGui.QCheckBox(self.groupBoxFormats)
+        self.horizontalLayout = QHBoxLayout()
+        self.groupBoxFormats = QGroupBox(self)
+        self.verticalLayout_2 = QVBoxLayout(self.groupBoxFormats)
+        self.checkBoxPng = QCheckBox(self.groupBoxFormats)
         self.verticalLayout_2.addWidget(self.checkBoxPng)
-        self.checkBoxPng8 = QtGui.QCheckBox(self.groupBoxFormats)
+        self.checkBoxPng8 = QCheckBox(self.groupBoxFormats)
         self.verticalLayout_2.addWidget(self.checkBoxPng8)
-        self.checkBoxJpg = QtGui.QCheckBox(self.groupBoxFormats)
+        self.checkBoxJpg = QCheckBox(self.groupBoxFormats)
         self.verticalLayout_2.addWidget(self.checkBoxJpg)
-        self.checkBoxGif = QtGui.QCheckBox(self.groupBoxFormats)
+        self.checkBoxGif = QCheckBox(self.groupBoxFormats)
         self.verticalLayout_2.addWidget(self.checkBoxGif)
         self.horizontalLayout.addWidget(self.groupBoxFormats)
-        self.groupBoxGridsets = QtGui.QGroupBox(self)
-        self.verticalLayout_3 = QtGui.QVBoxLayout(self.groupBoxGridsets)
-        self.checkBox4326 = QtGui.QCheckBox(self.groupBoxGridsets)
+        self.groupBoxGridsets = QGroupBox(self)
+        self.verticalLayout_3 = QVBoxLayout(self.groupBoxGridsets)
+        self.checkBox4326 = QCheckBox(self.groupBoxGridsets)
         self.verticalLayout_3.addWidget(self.checkBox4326)
-        self.checkBox900913 = QtGui.QCheckBox(self.groupBoxGridsets)
+        self.checkBox900913 = QCheckBox(self.groupBoxGridsets)
         self.verticalLayout_3.addWidget(self.checkBox900913)
-        self.checkBoxGoogle = QtGui.QCheckBox(self.groupBoxGridsets)
+        self.checkBoxGoogle = QCheckBox(self.groupBoxGridsets)
         self.verticalLayout_3.addWidget(self.checkBoxGoogle)
-        self.checkBoxGlobalScale = QtGui.QCheckBox(self.groupBoxGridsets)
+        self.checkBoxGlobalScale = QCheckBox(self.groupBoxGridsets)
         self.verticalLayout_3.addWidget(self.checkBoxGlobalScale)
-        self.checkBoxGlobalPixel = QtGui.QCheckBox(self.groupBoxGridsets)
+        self.checkBoxGlobalPixel = QCheckBox(self.groupBoxGridsets)
         self.verticalLayout_3.addWidget(self.checkBoxGlobalPixel)
         self.horizontalLayout.addWidget(self.groupBoxGridsets)
         self.verticalLayout.addLayout(self.horizontalLayout)
-        self.buttonBox = QtGui.QDialogButtonBox(self)
-        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
+        self.buttonBox = QDialogButtonBox(self)
+        self.buttonBox.setOrientation(Qt.Horizontal)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.Cancel|QDialogButtonBox.Ok)
         self.verticalLayout.addWidget(self.buttonBox)
 
         self.groupBox.setTitle("Metatiling factors")
@@ -120,7 +124,7 @@ class EditGwcLayerDialog(QtGui.QDialog):
         self.gridsets = [checkbox.text() for checkbox in checkboxes if checkbox.isChecked()]
         checkboxes = [self.checkBoxGif, self.checkBoxJpg, self.checkBoxPng, self.checkBoxPng8]
         self.formats = ['image/' + checkbox.text() for checkbox in checkboxes if checkbox.isChecked()]
-        QtGui.QDialog.accept(self)
+        QDialog.accept(self)
 
     def reject(self):
         self.layername = None
@@ -128,10 +132,10 @@ class EditGwcLayerDialog(QtGui.QDialog):
         self.gridsets = None
         self.metaWidth = None
         self.metaHeight = None
-        QtGui.QDialog.reject(self)
+        QDialog.reject(self)
 
 
-class SeedGwcLayerDialog(QtGui.QDialog):
+class SeedGwcLayerDialog(QDialog):
 
     SEED = 0
     RESEED = 1
@@ -151,56 +155,56 @@ class SeedGwcLayerDialog(QtGui.QDialog):
 
     def initGui(self):
         self.setWindowTitle('Seed cache layer')
-        layout = QtGui.QVBoxLayout()
-        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Close)
+        layout = QVBoxLayout()
+        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Close)
 
-        horizontalLayout = QtGui.QHBoxLayout()
+        horizontalLayout = QHBoxLayout()
         horizontalLayout.setSpacing(30)
         horizontalLayout.setMargin(0)
-        operationLabel = QtGui.QLabel('Operation')
-        self.operationBox = QtGui.QComboBox()
+        operationLabel = QLabel('Operation')
+        self.operationBox = QComboBox()
         operations = ['Seed', 'Reseed', 'Truncate']
         self.operationBox.addItems(operations)
         horizontalLayout.addWidget(operationLabel)
         horizontalLayout.addWidget(self.operationBox)
         layout.addLayout(horizontalLayout)
 
-        horizontalLayout = QtGui.QHBoxLayout()
+        horizontalLayout = QHBoxLayout()
         horizontalLayout.setSpacing(30)
         horizontalLayout.setMargin(0)
-        grisetLabel = QtGui.QLabel('Gridset')
-        self.gridsetBox = QtGui.QComboBox()
+        grisetLabel = QLabel('Gridset')
+        self.gridsetBox = QComboBox()
         self.gridsetBox.addItems(self.layer.gridsets)
         horizontalLayout.addWidget(grisetLabel)
         horizontalLayout.addWidget(self.gridsetBox)
         layout.addLayout(horizontalLayout)
 
-        horizontalLayout = QtGui.QHBoxLayout()
+        horizontalLayout = QHBoxLayout()
         horizontalLayout.setSpacing(30)
         horizontalLayout.setMargin(0)
-        formatLabel = QtGui.QLabel('Format')
-        self.formatBox = QtGui.QComboBox()
+        formatLabel = QLabel('Format')
+        self.formatBox = QComboBox()
         self.formatBox.addItems(self.layer.mimetypes)
         horizontalLayout.addWidget(formatLabel)
         horizontalLayout.addWidget(self.formatBox)
         layout.addLayout(horizontalLayout)
 
-        horizontalLayout = QtGui.QHBoxLayout()
+        horizontalLayout = QHBoxLayout()
         horizontalLayout.setSpacing(30)
         horizontalLayout.setMargin(0)
-        minZoomLabel = QtGui.QLabel('Min zoom')
-        self.minZoomBox = QtGui.QComboBox()
+        minZoomLabel = QLabel('Min zoom')
+        self.minZoomBox = QComboBox()
         levels = [str(i) for i in range(31)]
         self.minZoomBox.addItems(levels)
         horizontalLayout.addWidget(minZoomLabel)
         horizontalLayout.addWidget(self.minZoomBox)
         layout.addLayout(horizontalLayout)
 
-        horizontalLayout = QtGui.QHBoxLayout()
+        horizontalLayout = QHBoxLayout()
         horizontalLayout.setSpacing(30)
         horizontalLayout.setMargin(0)
-        maxZoomLabel = QtGui.QLabel('Max zoom')
-        self.maxZoomBox = QtGui.QComboBox()
+        maxZoomLabel = QLabel('Max zoom')
+        self.maxZoomBox = QComboBox()
         levels = [str(i) for i in range(31)]
         self.maxZoomBox.addItems(levels)
         self.maxZoomBox.setCurrentIndex(15)
@@ -208,10 +212,10 @@ class SeedGwcLayerDialog(QtGui.QDialog):
         horizontalLayout.addWidget(self.maxZoomBox)
         layout.addLayout(horizontalLayout)
 
-        horizontalLayout = QtGui.QHBoxLayout()
+        horizontalLayout = QHBoxLayout()
         horizontalLayout.setSpacing(30)
         horizontalLayout.setMargin(0)
-        extentLabel = QtGui.QLabel('Bounding box')
+        extentLabel = QLabel('Bounding box')
         self.extentPanel = ExtentSelectionPanel(self)
         horizontalLayout.addWidget(extentLabel)
         horizontalLayout.addWidget(self.extentPanel)

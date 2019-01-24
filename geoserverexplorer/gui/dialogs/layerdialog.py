@@ -3,16 +3,19 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
-from PyQt4 import QtGui, QtCore
 
+from builtins import range
+from qgis.PyQt.QtGui import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtWidgets import *
 from geoserverexplorer.qgis import layers as qgislayers
 from geoserverexplorer.gui.gsnameutils import GSNameWidget, xmlNameFixUp, \
     xmlNameRegexMsg, xmlNameRegex
 
-class PublishLayersDialog(QtGui.QDialog):
+class PublishLayersDialog(QDialog):
 
     def __init__(self, catalog, parent = None):
-        super(QtGui.QDialog, self).__init__(parent)
+        super(QDialog, self).__init__(parent)
         self.catalog = catalog
         self.layers = qgislayers.getAllLayers()
         self.columns = []
@@ -28,17 +31,17 @@ class PublishLayersDialog(QtGui.QDialog):
 
     def initGui(self):
         self.resize(900, 500)
-        layout = QtGui.QVBoxLayout()
+        layout = QVBoxLayout()
         self.setWindowTitle('Publish layers')
-        self.table = QtGui.QTableWidget(None)
+        self.table = QTableWidget(None)
 
         self.columns = [self.lyr, self.wrksp, self.style, self.ow, self.name]
 
-        hlayout = QtGui.QHBoxLayout()
-        self.selectAllLabel = QtGui.QLabel()
+        hlayout = QHBoxLayout()
+        self.selectAllLabel = QLabel()
         self.selectAllLabel.setText("<a href='#'>Select all</a>")
         self.selectAllLabel.linkActivated.connect(lambda: self.checkLayers(True))
-        self.unselectAllLabel = QtGui.QLabel()
+        self.unselectAllLabel = QLabel()
         self.unselectAllLabel.setText("<a href='#'>Unselect all</a>")
         self.unselectAllLabel.linkActivated.connect(lambda: self.checkLayers(False))
         hlayout.addWidget(self.selectAllLabel)
@@ -50,20 +53,20 @@ class PublishLayersDialog(QtGui.QDialog):
         self.table.verticalHeader().setVisible(False)
         self.table.horizontalHeader().setVisible(True)
         self.table.setHorizontalHeaderLabels(self.columns)
-        self.table.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        self.table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.setTableContent()
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.horizontalHeader().setDefaultSectionSize(150)
         self.table.horizontalHeader().setMinimumSectionSize(100)
         self.table.setColumnWidth(self.getColumn(self.name), 140)
         self.table.setColumnWidth(self.getColumn(self.ow), 100)
-        self.table.verticalHeader().setResizeMode(QtGui.QHeaderView.ResizeToContents)
-        self.table.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
+        self.table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+        self.table.setSelectionMode(QAbstractItemView.NoSelection)
         layout.addWidget(self.table)
 
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
-        self.okButton = self.buttonBox.button(QtGui.QDialogButtonBox.Ok)
-        self.cancelButton = self.buttonBox.button(QtGui.QDialogButtonBox.Cancel)
+        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.okButton = self.buttonBox.button(QDialogButtonBox.Ok)
+        self.cancelButton = self.buttonBox.button(QDialogButtonBox.Cancel)
         layout.addWidget(self.buttonBox)
         self.setLayout(layout)
 
@@ -73,8 +76,8 @@ class PublishLayersDialog(QtGui.QDialog):
         self.validateNames()  # so OK button is initially updated
 
     def checkLayers(self, b):
-        state = QtCore.Qt.Checked if b else QtCore.Qt.Unchecked
-        for idx in xrange(len(self.layers)):
+        state = Qt.Checked if b else Qt.Unchecked
+        for idx in range(len(self.layers)):
             lyrItem = self.table.item(idx, self.getColumn(self.lyr))
             lyrItem.setCheckState(state)
 
@@ -90,10 +93,10 @@ class PublishLayersDialog(QtGui.QDialog):
         catlayers = [lyr.name for lyr in self.catalog.get_layers()]
         for idx, layer in enumerate(self.layers):
 
-            lyritem = QtGui.QTableWidgetItem(layer.name())
+            lyritem = QTableWidgetItem(layer.name())
             lyritem.setToolTip(layer.name())
-            lyritem.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsUserCheckable)
-            lyritem.setCheckState(QtCore.Qt.Unchecked)
+            lyritem.setFlags(Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
+            lyritem.setCheckState(Qt.Unchecked)
             self.table.setItem(idx, self.getColumn(self.lyr), lyritem)
 
             nameBox = GSNameWidget(
@@ -104,12 +107,12 @@ class PublishLayersDialog(QtGui.QDialog):
                 unique=False)
             self.table.setCellWidget(idx, self.getColumn(self.name), nameBox)
             nameBox.setSizePolicy(
-                QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum,
-                                  QtGui.QSizePolicy.Fixed))
+                QSizePolicy(QSizePolicy.Maximum,
+                                  QSizePolicy.Fixed))
             styleNames = ["[Use QGIS Style]"]
             self.nameBoxes.append(nameBox)
 
-            overwriteBox = QtGui.QCheckBox()
+            overwriteBox = QCheckBox()
             overwriteBox.setEnabled(False)
             overwriteBox.setToolTip("Overwrite existing layer")
             self.table.setCellWidget(idx, self.getColumn(self.ow), overwriteBox)
@@ -118,10 +121,10 @@ class PublishLayersDialog(QtGui.QDialog):
             nameBox.overwritingChanged[bool].connect(overwriteBox.setChecked)
             overwriteBox.setChecked(nameBox.overwritingName())  # initial update
 
-            workspaceBox = QtGui.QComboBox()
+            workspaceBox = QComboBox()
             workspaceBox.setSizePolicy(
-                QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum,
-                                  QtGui.QSizePolicy.Fixed))
+                QSizePolicy(QSizePolicy.Maximum,
+                                  QSizePolicy.Fixed))
             try:
                 defaultWorkspace = self.catalog.get_default_workspace()
                 defaultWorkspace.fetch()
@@ -134,7 +137,7 @@ class PublishLayersDialog(QtGui.QDialog):
                 workspaceBox.setCurrentIndex(workspaceNames.index(defaultName))
             self.table.setCellWidget(idx, self.getColumn(self.wrksp), workspaceBox)
 
-            stylesBox = QtGui.QComboBox()
+            stylesBox = QComboBox()
             styleNames += [s.name for s in styles]
             stylesBox.addItems(styleNames)
             self.table.setCellWidget(idx, self.getColumn(self.style), stylesBox)
@@ -150,9 +153,8 @@ class PublishLayersDialog(QtGui.QDialog):
     def okPressed(self):
         self.topublish = []
         for idx, layer in enumerate(self.layers):
-            print idx, self.getColumn(self.lyr)
             lyrItem = self.table.item(idx, self.getColumn(self.lyr))
-            if lyrItem.checkState() == QtCore.Qt.Checked:
+            if lyrItem.checkState() == Qt.Checked:
                 nameBox = self.table.cellWidget(idx, self.getColumn(self.name))
                 layername = nameBox.definedName()
                 workspaceBox = self.table.cellWidget(idx, self.getColumn(self.wrksp))
@@ -163,9 +165,9 @@ class PublishLayersDialog(QtGui.QDialog):
                 style = None if stylesBox.currentIndex() == 0 else styles[stylesBox.currentIndex() - 1]
                 self.topublish.append((layer, workspace, layername, style))
         if not bool(self.topublish):
-            ret = QtGui.QMessageBox.warning(self, "No layers selected", "You haven't selected any layer to be published\n"
-                                      "Are you sure you want to proceed?", QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
-            if ret == QtGui.QMessageBox.No:
+            ret = QMessageBox.warning(self, "No layers selected", "You haven't selected any layer to be published\n"
+                                      "Are you sure you want to proceed?", QMessageBox.Yes | QMessageBox.No)
+            if ret == QMessageBox.No:
                 return
         self.close()
 

@@ -3,18 +3,20 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
-from PyQt4 import QtGui
+from builtins import str
+from qgis.PyQt.QtGui import *
+from qgis.PyQt.QtWidgets import *
 
 APP = None
 if __name__ == '__main__':
     import sys
     # instantiate QApplication before importing QtGui subclasses
-    APP = QtGui.QApplication(sys.argv)
+    APP = QApplication(sys.argv)
 
 from geoserverexplorer.gui.gsnameutils import GSNameWidget, xmlNameRegexMsg, xmlNameRegex
 
 
-class DefineWorkspaceDialog(QtGui.QDialog):
+class DefineWorkspaceDialog(QDialog):
 
     def __init__(self, workspaces=None, parent=None):
         super(DefineWorkspaceDialog, self).__init__(parent)
@@ -26,12 +28,12 @@ class DefineWorkspaceDialog(QtGui.QDialog):
 
     def initGui(self):
         self.setWindowTitle('New workspace')
-        verticalLayout = QtGui.QVBoxLayout()
+        verticalLayout = QVBoxLayout()
 
-        horizontalLayout = QtGui.QHBoxLayout()
+        horizontalLayout = QHBoxLayout()
         horizontalLayout.setSpacing(30)
         horizontalLayout.setMargin(0)
-        nameLabel = QtGui.QLabel('Workspace name')
+        nameLabel = QLabel('Workspace name')
         nameLabel.setMinimumWidth(150)
         self.nameBox = GSNameWidget(
             namemsg='',
@@ -46,12 +48,12 @@ class DefineWorkspaceDialog(QtGui.QDialog):
         horizontalLayout.addWidget(self.nameBox)
         verticalLayout.addLayout(horizontalLayout)
 
-        horizontalLayout = QtGui.QHBoxLayout()
+        horizontalLayout = QHBoxLayout()
         horizontalLayout.setSpacing(30)
         horizontalLayout.setMargin(0)
-        uriLabel = QtGui.QLabel('URI')
+        uriLabel = QLabel('URI')
         uriLabel.setMinimumWidth(150)
-        self.uriBox = QtGui.QLineEdit()
+        self.uriBox = QLineEdit()
         self.uriBox.setText('')
         self.uriBox.setPlaceholderText('Required')
         self.uriBox.setMinimumWidth(250)
@@ -59,16 +61,16 @@ class DefineWorkspaceDialog(QtGui.QDialog):
         horizontalLayout.addWidget(self.uriBox)
         verticalLayout.addLayout(horizontalLayout)
 
-        self.groupBox = QtGui.QGroupBox()
+        self.groupBox = QGroupBox()
         self.groupBox.setLayout(verticalLayout)
 
-        layout = QtGui.QVBoxLayout()
+        layout = QVBoxLayout()
         layout.addWidget(self.groupBox)
-        self.spacer = QtGui.QSpacerItem(20,20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.spacer = QSpacerItem(20,20, QSizePolicy.Minimum, QSizePolicy.Expanding)
         layout.addItem(self.spacer)
 
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
-        self.okButton = self.buttonBox.button(QtGui.QDialogButtonBox.Ok)
+        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.okButton = self.buttonBox.button(QDialogButtonBox.Ok)
         layout.addWidget(self.buttonBox)
         self.setLayout(layout)
 
@@ -87,8 +89,8 @@ class DefineWorkspaceDialog(QtGui.QDialog):
         self.okButton.setEnabled(ok)
 
     def okPressed(self):
-        self.uri = unicode(self.uriBox.text())
-        self.name = unicode(self.nameBox.definedName())
+        self.uri = str(self.uriBox.text())
+        self.name = str(self.nameBox.definedName())
         self.close()
 
     def cancelPressed(self):

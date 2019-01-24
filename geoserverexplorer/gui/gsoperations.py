@@ -3,7 +3,8 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
-from PyQt4 import QtCore
+import traceback
+from qgis.PyQt import QtCore
 from qgis.core import *
 from geoserverexplorer.qgis import layers as qgislayers
 from geoserverexplorer.qgis.catalog import CatalogWrapper
@@ -11,16 +12,46 @@ from geoserverexplorer.gui.confirm import publishLayer
 from geoserverexplorer.gui.dialogs.projectdialog import PublishProjectDialog
 from geoserver.catalog import ConflictingDataError
 from geoserverexplorer.gui.dialogs.layerdialog import PublishLayersDialog
+from geoserverexplorer.gui import setInfo, setWarning, setError
+from geoserverexplorer.geoserver import GeoserverException
 
+def _publishLayers(catalog, layers, layersUploaded):
+    task = PublishLayersTask(catalog, layers) 
+    task.taskCompleted.connect(layersUploaded)
+    QgsApplication.taskManager().addTask(task)
+    QtCore.QCoreApplication.processEvents()
 
-def publishDraggedLayer(explorer, layer, workspace):
-    cat = workspace.catalog
-    cat = CatalogWrapper(cat)
-    ret = explorer.run(publishLayer,
-             "Publish layer from layer '" + layer.name() + "'",
-             [],
-             cat, layer, workspace)
-    return ret
+class PublishLayersTask(QgsTask):
+
+    def __init__(self, catalog, layers):
+        QgsTask.__init__(self, "Publish layers")
+        self.layers = layers
+        self.catalog = catalog
+        self.exception = None
+        self.errortrace = None
+
+    def canCancel(self):
+        return False
+
+    def run(self):
+        try:
+            for layerAndParams in self.layers:
+                catalog = CatalogWrapper(self.catalog)
+                catalog.publishLayer(*layerAndParams)
+            return True
+        except Exception as e:            
+            self.exception = e
+            if isinstance(e, GeoserverException):
+                self.errortrace = e.details
+            else:
+                self.errortrace = traceback.format_exc()
+            return False
+
+    def finished(self, ok):
+        if ok:
+            setInfo("%i layers correctly published" % len(self.layers))
+        else:
+            setError(str(self.exception), self.errortrace)
 
 def addDraggedLayerToGroup(explorer, layer, groupItem):
     group = groupItem.element
@@ -37,40 +68,47 @@ def addDraggedLayerToGroup(explorer, layer, groupItem):
 
 def addDraggedUrisToWorkspace(uris, catalog, workspace, explorer, tree):
     if uris and workspace:
+        toPublish = []
         allLayers = qgislayers.getAllLayersAsDict()
         publishableLayers = qgislayers.getPublishableLayersAsDict()
-        if len(uris) > 1:
-            explorer.setProgressMaximum(len(uris))
-        for i, uri in enumerate(uris):
-            source = uri if isinstance(uri, basestring) else uri.uri
-            if source in allLayers:
-                layer = publishableLayers.get(source, None)
-            else:
-                if isinstance(uri, basestring):
-                    layerName = QtCore.QFileInfo(uri).completeBaseName()
-                    layer = QgsRasterLayer(uri, layerName)
-                else:
-                    layer = QgsRasterLayer(uri.uri, uri.name)
-                if not layer.isValid() or layer.type() != QgsMapLayer.RasterLayer:
-                    if isinstance(uri, basestring):
-                        layerName = QtCore.QFileInfo(uri).completeBaseName()
-                        layer = QgsVectorLayer(uri, layerName, "ogr")
-                    else:
-                        layer = QgsVectorLayer(uri.uri, uri.name, uri.providerKey)
-                    if not layer.isValid() or layer.type() != QgsMapLayer.VectorLayer:
-                        layer.deleteLater()
-                        layer = None
+        for i, uri in enumerate(uris): 
+            layer = None          
+            if isinstance(uri, QgsMimeDataUtils.Uri):
+                layer = qgislayers.layerFromUri(uri)                
+            source = uri if isinstance(uri, str) else uri.uri
+            source = source.split("|")[0]
             if layer is None:
-                name = "'%s'" % allLayers[source] if source in allLayers else "with source '%s'" % source
-                explorer.setWarning("Layer %s is not valid for publication" % name)
+                if source in allLayers:
+                    layer = publishableLayers.get(source, None)
+                else:
+                    if isinstance(uri, str):
+                        layerName = QtCore.QFileInfo(uri).completeBaseName()
+                        layer = QgsRasterLayer(uri, layerName)
+                    else:
+                        layer = QgsRasterLayer(uri.uri, uri.name)
+                    if not layer.isValid() or layer.type() != QgsMapLayer.RasterLayer:
+                        if isinstance(uri, str):
+                            layerName = QtCore.QFileInfo(uri).completeBaseName()
+                            layer = QgsVectorLayer(uri, layerName, "ogr")
+                        else:
+                            layer = QgsVectorLayer(uri.uri, uri.name, uri.providerKey)
+                        if not layer.isValid() or layer.type() != QgsMapLayer.VectorLayer:
+                            layer.deleteLater()
+                            layer = None
+                if layer is None:
+                    name = "'%s'" % allLayers[source] if source in allLayers else "with source '%s'" % source
+                    msg = "Could not resolve layer " + name
+                    QgsMessageLog.logMessage(msg, level=Qgis.Critical)
+                else:
+                    toPublish.append([layer, workspace])
             else:
-                if not publishDraggedLayer(explorer, layer, workspace):
-                    break
-            explorer.setProgress(i + 1)
-        explorer.resetActivity()
-        return [tree.findAllItems(catalog)[0]]
-    else:
-        return []
+                toPublish.append([layer, workspace])
+
+        if toPublish:
+            def layersUploaded():
+                explorer.resetActivity()
+                tree.findAllItems(catalog)[0].refreshContent(explorer)
+            _publishLayers(catalog, toPublish, layersUploaded)
 
 def addDraggedStyleToLayer(tree, explorer, styleItem, layerItem):
     catalog = layerItem.element.catalog
@@ -100,40 +138,33 @@ def publishProject(tree, explorer, catalog):
     workspace = dlg.workspace
     groupName = dlg.groupName
     overwrite = dlg.overwrite
-    explorer.setProgressMaximum(len(layers), "Publish layers")
-    progress = 0
-    cat = CatalogWrapper(catalog)
-    for layer in layers:
-        explorer.setProgress(progress)
-        explorer.run(publishLayer,
-                     None,
-                     [],
-                     cat, layer, workspace, overwrite)
-        progress += 1
-        explorer.setProgress(progress)
-    explorer.resetActivity()
-    groups = qgislayers.getGroups()
-    for group in groups:
-        names = [layer.name() for layer in groups[group][::-1]]
-        try:
-            layergroup = catalog.create_layergroup(group, names, names, getGroupBounds(groups[group]))
-        except ConflictingDataError:
-            layergroup = catalog.get_layergroup(group)
-            layergroup.dirty.update(layers = names, styles = names)
-        explorer.run(catalog.save, "Create layer group '" + group + "'",
-                 [], layergroup)
+    layersAndParams = [(layer, workspace, overwrite) for layer in layers]
 
-    if groupName is not None:
-        names = [layer.name() for layer in layers[::-1]]
-        try:
-            layergroup = catalog.create_layergroup(groupName, names, names, getGroupBounds(layers))
-        except ConflictingDataError:
-            layergroup = catalog.get_layergroup(groupName)
-            layergroup.dirty.update(layers = names, styles = names)
-        explorer.run(catalog.save, "Create global layer group",
-                 [], layergroup)
-    tree.findAllItems(catalog)[0].refreshContent(explorer)
-    explorer.resetActivity()
+    def layersUploaded():
+        groups = qgislayers.getGroups()
+        for group in groups:
+            names = [layer.name() for layer in groups[group][::-1]]
+            try:
+                layergroup = catalog.create_layergroup(group, names, names, getGroupBounds(groups[group]))
+            except ConflictingDataError:
+                layergroup = catalog.get_layergroups(group)[0]
+                layergroup.dirty.update(layers = names, styles = names)
+            explorer.run(catalog.save, "Create layer group '" + group + "'",
+                     [], layergroup)
+
+        if groupName is not None:
+            names = [layer.name() for layer in layers[::-1]]
+            try:
+                layergroup = catalog.create_layergroup(groupName, names, names, getGroupBounds(layers))
+            except ConflictingDataError:
+                layergroup = catalog.get_layergroups(groupName)[0]
+                layergroup.dirty.update(layers = names, styles = names)
+            explorer.run(catalog.save, "Create global layer group",
+                     [], layergroup)
+        tree.findAllItems(catalog)[0].refreshContent(explorer)
+        explorer.resetActivity()
+
+    _publishLayers(catalog, layersAndParams, layersUploaded)
 
 def getGroupBounds(layers):
     bounds = None
@@ -149,7 +180,7 @@ def getGroupBounds(layers):
         return bounds
 
     for layer in layers:
-        transform = QgsCoordinateTransform(layer.crs(), QgsCoordinateReferenceSystem("EPSG:4326"))
+        transform = QgsCoordinateTransform(layer.crs(), QgsCoordinateReferenceSystem("EPSG:4326"), QgsProject.instance())
         bounds = addToBounds(transform.transformBoundingBox(layer.extent()), bounds)
 
     return (str(bounds[0]), str(bounds[1]), str(bounds[2]), str(bounds[3]), "EPSG:4326")
@@ -159,16 +190,11 @@ def publishLayers(tree, explorer, catalog):
     dlg.exec_()
     if dlg.topublish is None:
         return
-    cat = CatalogWrapper(catalog)
-    progress = 0
-    explorer.setProgressMaximum(len(dlg.topublish), "Publish layers")
-    for layer, workspace, name, style in dlg.topublish:
-        explorer.run(cat.publishLayer,
-             None,
-             [],
-             layer, workspace, True, name, style)
-        progress += 1
-        explorer.setProgress(progress)
-    catItem = tree.findAllItems(catalog)[0]
-    catItem.refreshContent(explorer)
-    explorer.resetActivity()
+    layers = [(lay, ws, True, name, style) for lay, ws, name, style in dlg.topublish]
+    def layersUploaded():
+        catItem = tree.findAllItems(catalog)[0]
+        catItem.refreshContent(explorer)
+        explorer.resetActivity()
+    _publishLayers(catalog, layers, layersUploaded)
+
+

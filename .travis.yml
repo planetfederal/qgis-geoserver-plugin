@@ -1,4 +1,7 @@
 sudo: required
+addons:
+  hosts:
+    - suite410.boundless.test
 services:
 - docker
 env:
@@ -6,33 +9,23 @@ env:
   - PLUGIN_NAME=geoserverexplorer
   - secure: "oy82iDfs5KWE2nmMgwqX/uNZs9frXzb212VpPy8wpz5q3pERQiFLuttXinIZbi9KJq92R2hpmEPCLrpnH4de5s1c8N0pJtBc17Sx28DqJcZIcogpO/zXnQfj/w3s6Gw5p+N0KW4LMruGe+wlu3zJadg0i+Bck2haSkO9C2fO62lnas9Hp86wjKAqxbvYIf3XnFHLyB1ICQEQjbXNyrwdP1dXTeoUbFn8UaKhinxRV6OtutDgRDua3ZkFuPGBDqKX3//9xoGze6r2Xo/Y99C7hJkjRHOz0RkJu0khXsw3TlZlKVo1OfkWh1NsdcuZsm7gKpNqAp77BRLWorSxRxCSjyVhqDlqguwSN7MrT/5xQjn0mj/XDnuzhNzTntxOPpeWmXSNskpxKhwcpRd2jni6Wd5W1/UpoBC2Ueo8YBpE/0wVNMUd1q5XVZjBvBc715OnrvI3Z6i002yWUaj6uQHBWG9IP6lGBTfl/271648KCpVdtj4mCQTsv9aTVgFZbc4cQQfSw6kH1IxdRi+7+ulK/O2eoZcnaihzlyfdoHv1pbuKNQCqkqeUYAQG+RXwez0ckch8cRuOcPxF0Y/5DyVmExjgK7O1DPPDWDFvsmThML+wY3lY/ZAH46Sebhch34TLyopjUoTaumhwcm84T3goxUUJTPbg+iEJkOF0EkdCRTQ="
   - secure: "g1apYRlEgftoThS0apF09OuPICw9pIp6OQKsED/ObyuqA+htP+AX6pprqG517BakJW2WMbTCaG0a3S4d+EnyQ3E/NIRtEivdR6/aVNiLHaOJXlSBKw4gWHX0F3ZyiVRMqRSJ2xVSHlNWqmSmUaUkSUJr9FUNYr/zGHVAg3DjUC7Z8wVVQIwBHrNtcfwsDM3cQOpB4tUAQkxOxF5Nb+jVx/7Cw6QGhsEy66XRWhK8d4R56XaC5uf5pmYZcGZaS69Y3O89dnMmY7A63HliXQpTtYjhZ4FF7WAGzuNFENNYVYo30gRUi1cv7CoWd+RE/3qGMGpcxs/lAU3lD5OLu5O7P/apmfFwKKJ0cS+fXKuI+gYMzpWIM/gBulTnNMzVHzWisy+1dVzsAZxzX4XRCb0rD/W89c770k85F/WNYGpUdSE8J7XDSFHV95FfmKIeAjSo1NSt8xijarz6YmxoktDjIWiogtpiLkOp6vhijbo6GiER+6kQ3JjUXWPbl+EOmsqFHUKMq0osclNqS+NWoqFZ7onQvK3L/uvza72eqM2OSqIXy2ilau4nlVNUl4P6IQmmZWlJmAqtmBO/O1f6NV6FO8czliEW6vQJbu2kojvqrFglYnUXNcJzKf/oH9g1ZY4Cw7qsf8s/NkYTN1wBFr9mTJ4B3ZfUgeQohNNZE1Xo8Ws="
-
   matrix:
-  - QGIS_VERSION_TAG=release
-  - QGIS_VERSION_TAG=master_2
-  - QGIS_VERSION_TAG=master
-matrix:
-  allow_failures:
-  - env: QGIS_VERSION_TAG=master
+  - QGIS_VERSION_TAG=master PYTHON_EXECUTABLE=python3 PIP_EXECUTABLE=pip3
 before_install:
+- echo "$DOCKER_PWD" | docker login -u "$DOCKER_USER" --password-stdin
 - docker-compose up -d
 - docker-compose ps
 - sleep 10
 - docker-compose exec qgis-testing-environment sh -c "qgis_setup.sh ${PLUGIN_NAME}"
-- docker-compose exec qgis-testing-environment sh -c "pip install paver"
+- docker-compose exec qgis-testing-environment sh -c "pip3 install paver"
 script:
 - docker-compose exec qgis-testing-environment sh -c "cd /tests_directory && paver setup && paver package --tests"
 - docker version
 - docker-compose version
-- docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.catalogtests"
-- docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.deletetests"
-- docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.dragdroptests"
-- docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.guitests"
-- docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.pkicatalogtests"
-- docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.pkideletetests"
-- docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.pkidragdroptests"
-- docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.pkiguitests"
-- docker-compose exec qgis-testing-environment sh -c "GSHOSTNAME=boundless-test qgis_testrunner.sh geoserverexplorer.test.pkiowstests"
+- docker-compose exec qgis-testing-environment sh -c "GSPORT=8082 GSHOSTNAME=suite410.boundless.test qgis_testrunner.sh geoserverexplorer.test.catalogtests"
+- docker-compose exec qgis-testing-environment sh -c "GSPORT=8082 GSHOSTNAME=suite410.boundless.test qgis_testrunner.sh geoserverexplorer.test.deletetests"
+- docker-compose exec qgis-testing-environment sh -c "GSPORT=8082 GSHOSTNAME=suite410.boundless.test qgis_testrunner.sh geoserverexplorer.test.dragdroptests"
+- docker-compose exec qgis-testing-environment sh -c "GSPORT=8082 GSHOSTNAME=suite410.boundless.test qgis_testrunner.sh geoserverexplorer.test.guitests"
 notifications:
   slack:
     secure: "BGVhes7seUF5U0T7PNGUxEu0MFmFVSeuF6FL+nOgtDfibX2IqWb+L7lWddJ+ZePvVYBzORTZs2vYJNQkIBPK2zDoX95rT56J+7ej6aVdxWE9dpd5BKf6IC9WBKyvSBv2gRm7J/zfSAIyKDHorY2MvemfuufDCfNoFEO0YNEKZxx3gc5A3xc3F1SCs1N8vp2DKQ0AA+Afg6G5QfEDLpW7xEYLZG/WEtS2zQIw4l/SqyszpvQEoCXblpLe1T/o6jlsuUPzZTMdaPpay2w2IyTs/IQaGUAIKThcL869Tu0TDkfFC209tRaCr2H2Fru9HCLutyX3oPgP4rwT7wI4Yg0TX47no8mBUNE3EHsh6hoKNhi8fXAzNnAZe/qDh0pFs/1yX9UTbMiq9UDa6CqHjH8dSnX8LRcs77dJlolNi9Na875y4L4VOuAqa2dScdHfjsX0WApO/t5e+RarduPfFgHZw1AkpuoW++fPmYt6geBDYyP3sX/f0z//LzIGDtrjNiIgvIlyPWnIBd++mMqLyLkjl2zr7l35JqjGDYKjzJuOPZXCHfvkmcIV7GO17HCs7P9VuyA56sycVp8iJSfYI4X26LW1l5BPVPy2muprSHyj+PnTG96vrcGM/mV2Gb1VcFaZ6RxC5jqgqnCXQ33PC7XpiKVCW80L5di0wYqH8drisnA="

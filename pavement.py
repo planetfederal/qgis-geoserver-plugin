@@ -4,11 +4,11 @@
 # This code is licensed under the GPL 2.0 license.
 #
 import os
-import xmlrpclib
 import zipfile
 import requests
-import StringIO
+import io
 import shutil
+import sys
 
 from paver.easy import *
 from paver.doctools import html
@@ -20,21 +20,20 @@ options(
     plugin = Bunch(
         name = 'geoserverexplorer',
         ext_libs = path('geoserverexplorer/extlibs'),
-        ext_src = path('geoserverexplorer/ext-src'),
         source_dir = path('geoserverexplorer'),
         package_dir = path('.'),
         tests = ['test'],
         excludes = [
             '.DS_Store',  # on Mac
             'test-output',
-            'ext-src',
             'coverage*',
             'nose*',
             '*.pyc',
             'gisdata'
         ],
         # skip certain files inadvertently found by exclude pattern globbing
-        skip_exclude = ['coverage.xsd']
+        skip_exclude = ['coverage.xsd'],
+        path_to_settings = 'Web --> GeoServer --> Plugin Settings',
     ),
 
     sphinx = Bunch(
@@ -44,6 +43,31 @@ options(
     )
 )
 
+@task
+def install(options):
+    '''install plugin to qgis'''
+    builddocs(options)
+    plugin_name = options.plugin.name
+    src = path(__file__).dirname() / plugin_name
+    if os.name == 'nt':
+        dst = path('~/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins').expanduser() / plugin_name
+    else:
+        dst = path('~/.local/share/QGIS/QGIS3/profiles/default/python/plugins').expanduser() / plugin_name
+    src = src.abspath()
+    dst = dst.abspath()
+    if os.name == 'nt':
+        dst.rmtree()
+        src.copytree(dst)
+    elif not dst.exists():
+        src.symlink(dst)
+        # Symlink the build folder to the parent
+        docs = path('..') / '..' / "docs" / 'build' / 'html'
+        docs_dest = path(__file__).dirname() / plugin_name / "docs"
+        docs_link = docs_dest / 'html'
+        if not docs_dest.exists():
+            docs_dest.mkdir()
+        if not docs_link.islink():
+            docs.symlink(docs_link)
 
 @task
 @cmdopts([
@@ -55,40 +79,29 @@ def setup(options):
     clean = getattr(options, 'clean', False)
     develop = getattr(options, 'develop', False)
     ext_libs = options.plugin.ext_libs
-    ext_src = options.plugin.ext_src
     if clean:
-        ext_libs.rmtree()
+        subfolders =  [f for f in os.listdir(ext_libs.abspath()) if os.path.isdir(os.path.join(ext_libs.abspath(), f))]
+        for subfolder in subfolders:
+            if subfolder != "geoserver":
+                fullPath = os.path.join(ext_libs.abspath(), subfolder)
+                shutil.rmtree(fullPath)
     ext_libs.makedirs()
     runtime, test = read_requirements()
     os.environ['PYTHONPATH']=ext_libs.abspath()
     for req in runtime + test:
-        if '#egg' in req:
-            urlspec, req = req.split('#egg=')
-            localpath = ext_src / req
-            if not develop:
-                if localpath.exists():
-                    cwd = os.getcwd()
-                    os.chdir(localpath)
-                    print(localpath)
-                    sh('git pull')
-                    os.chdir(cwd)
-                else:
-                    sh('git clone  %s %s' % (urlspec, localpath))
-            req = localpath
-
-        sh('easy_install -a -d %(ext_libs)s %(dep)s' % {
+        sh('pip3 install -U -t %(ext_libs)s %(dep)s' % {
             'ext_libs' : ext_libs.abspath(),
             'dep' : req
         })
     get_certs()
 
 def get_certs():
-    print "Downloading and installing test certificates..."
+    print("Downloading and installing test certificates...")
     certsPath = os.path.abspath("./_certs")
     if os.path.exists(certsPath):
         shutil.rmtree(certsPath)
     r = requests.get("https://github.com/boundlessgeo/boundless-test-certs/archive/master.zip", stream=True)
-    z = zipfile.ZipFile(StringIO.StringIO(r.content))
+    z = zipfile.ZipFile(io.BytesIO(r.content))
     z.extractall(path=certsPath)
     dstPath = "./geoserverexplorer/test/resources/auth_system/certs-keys"
     if os.path.exists(dstPath):
@@ -112,40 +125,6 @@ def read_requirements():
     not_comments = lambda s,e: [ l for l in lines[s:e] if l[0] != '#']
     return not_comments(0, idx), not_comments(idx+1, None)
 
-
-def _install(folder, options):
-    '''install plugin to qgis'''
-    builddocs(options)
-    plugin_name = options.plugin.name
-    src = path(__file__).dirname() / plugin_name
-    dst = path('~').expanduser() / folder / 'python' / 'plugins' / plugin_name
-    src = src.abspath()
-    dst = dst.abspath()
-    if not hasattr(os, 'symlink'):
-        dst.rmtree()
-        src.copytree(dst)
-    elif not dst.exists():
-        src.symlink(dst)
-    # Symlink the build folder to the parent
-    docs = path('..') / '..' / "docs" / 'build' / 'html'
-    docs_dest = path(__file__).dirname() / plugin_name / "docs"
-    docs_link = docs_dest / 'html'
-    if not docs_dest.exists():
-        docs_dest.mkdir()
-    if not docs_link.islink():
-        docs.symlink(docs_link)
-
-@task
-def install(options):
-    _install(".qgis2", options)
-
-@task
-def installdev(options):
-    _install(".qgis-dev", options)
-
-@task
-def install3(options):
-    _install(".qgis3", options)
 
 @task
 @cmdopts([
@@ -282,10 +261,11 @@ def create_settings_docs(options):
     for setting in settings:
         grouped[setting["group"]].append(setting)
     with open (doc_file, "w") as f:
-        f.write(".. _plugin_settings:\n\n"
+        f.write(".. _{}_plugin_settings:\n\n"
                 "Plugin settings\n===============\n\n"
                 "The plugin can be adjusted using the following settings, "
-                "to be found in its settings dialog (|path_to_settings|).\n")
+                "to be found in its settings dialog "
+                "(:menuselection:`{}`).\n".format(options.plugin.name, options.plugin.path_to_settings))
         for groupName, group in grouped.items():
             section_marks = "-" * len(groupName)
             f.write("\n%s\n%s\n\n"

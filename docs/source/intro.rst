@@ -17,7 +17,7 @@ GeoServer catalogs are defined using the *New catalog...* option in the *Catalog
 .. image:: img/intro/add_catalog.png
   :align: center
 
-Basic authentication is supported, as well as certificate-based authentication, if your version of QGIS is recent enough. Select the corresponding tab (in case both basic and certificates authentication are available) and enter the required parameters. The active tab in the window will define the type of authentication to use, even if the other tab has data in its text boxes.
+Basic authentication is supported, as well as certificate-based authentication. Select the corresponding tab and enter the required parameters. The active tab in the window will define the type of authentication to use, even if the other tab has data in its text boxes.
 
 In the lower part of the GeoServer Explorer window you will see a panel which shows the description of the currently selected item. When the explorer window is docked, the description panel is found on its lower the lower part. If you undock the window, it will be placed on the right--hand side of it, to make better use of the available space. The image below shows the undocked configuration.
 
@@ -37,7 +37,7 @@ The description panel can also show tables where parameters can be edited. The o
   :align: center
 
 
-Most of the functionality of the explorer is accessed through context menus, right--clicking on the elements that for the Explorer tree. Also, when you select an element in the tree, buttons in the toolbar in the upper part of the explorer window are updated to show the available actions for that element. These actions correspond to the ones shown in the context menu when you right--click on the element, so you have different ways of accesing the same funcionality. As it was explained before, the *Description* panel is also interactive.
+Most of the functionality of the explorer is accessed through context menus, right--clicking on the elements that form the Explorer tree. Also, when you select an element in the tree, buttons in the toolbar in the upper part of the explorer window are updated to show the available actions for that element. These actions correspond to the ones shown in the context menu when you right--click on the element, so you have different ways of accesing the same funcionality. As it was explained before, the *Description* panel is also interactive.
 
 For a more complete reference, a detailed description of all the available actions for each type of element in the Explorer tree is available at the :ref:`actions` section.
 
@@ -83,20 +83,6 @@ Select *Update* to upload the new style. Click on *Stop tracking this layer* to 
 The style update works as well if the GeoServer Explorer is not open, or if the corresponding catalog is not active or not even listed in the Explorer tree.
 
 Layer tracking is based on the source property of the layer (the filepath in the case of file-based layers), so renaming or moving the layer will deactivate the tracking mechanism for that layer. Layer tracking persist between QGIS sessions and is not linked to the QGIS project the layer might belong to.
-
-Using the GeoServer Importer API
---------------------------------
-
-By default, layers are uploaded to a GeoServer catalog using the GeoServer REST API. As an alternative, the importer API can be used to provide a better and more responsive upload, especially in the case of large uploads with multiple layers or when large layers are being uploaded. MAke sure that you have manually installed the importer API on your GeoServer before setting this configuration parameter. 
-
-Pre-upload Processing hooks
----------------------------
-
-If you need to preprocess you data before it is uploaded, you can set up a pre-upload hook that will be run on any layer before it is sent to GeoServer. Instead of the original layer, the result of that hook will be uploaded.
-
-Pre-upload hooks are defined separately for raster and vector layers. In both cases, they are defined as the path to a Processing model (.model) or script (.py) file. The algorithm defined by that hook file will be loaded and executed to obtain the final layer to upload. Creation of Processing models and scripts is not covered in this text. Please refer to the `Processing chapter in the QGIS manual <http://qgis.org/es/docs/user_manual/processing/index.html>`_  to know more about it.
-
-In the case of raster layers, the hook algorithm must have a single input of type raster layer and a single output, also of type raster layer. In the case of vector layers, both input and output must be of type vector layer. If the selected model does not exist or does not have the required characteristics, it will just be ignored, and the original layer will be uploaded without any preprocessing.
 
 
 Other parameters

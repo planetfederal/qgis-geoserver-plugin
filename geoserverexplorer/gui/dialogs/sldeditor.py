@@ -3,12 +3,14 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
-from PyQt4.Qsci import QsciScintilla, QsciLexerXML
-from PyQt4 import QtGui, QtCore
+from qgis.PyQt.Qsci import QsciScintilla
+from qgis.PyQt.QtGui import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtWidgets import *
 import xml.dom.minidom
 
 
-class SldEditorDialog(QtGui.QDialog):
+class SldEditorDialog(QDialog):
 
     def __init__(self, style, explorer, parent = None):
         super(SldEditorDialog, self).__init__(parent)
@@ -19,12 +21,12 @@ class SldEditorDialog(QtGui.QDialog):
 
     def initGui(self):
         self.resize(600, 350)
-        self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowSystemMenuHint |
-                                                QtCore.Qt.WindowMinMaxButtonsHint)
+        self.setWindowFlags(self.windowFlags() | Qt.WindowSystemMenuHint |
+                                                Qt.WindowMinMaxButtonsHint)
         self.setWindowTitle('Edit SLD style')
         
-        layout = QtGui.QVBoxLayout()                                
-        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)         
+        layout = QVBoxLayout()                                
+        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)         
         sld = "\n".join([line for line in 
             xml.dom.minidom.parseString(self.style.sld_body).toprettyxml().splitlines() if line.strip()])      
         self.editor = SldEditorWidget(sld)        
@@ -50,28 +52,28 @@ class SldEditorWidget(QsciScintilla):
     def __init__(self, text, parent=None):
         super(SldEditorWidget, self).__init__(parent)
 
-        font = QtGui.QFont()
+        font = QFont()
         font.setFamily('Courier')
         font.setFixedPitch(True)
         font.setPointSize(10)
         self.setFont(font)
         self.setMarginsFont(font)
 
-        fontmetrics = QtGui.QFontMetrics(font)
+        fontmetrics = QFontMetrics(font)
         self.setMarginsFont(font)
         self.setMarginWidth(0, fontmetrics.width("00000") + 6)
         self.setMarginLineNumbers(0, True)
-        self.setMarginsBackgroundColor(QtGui.QColor("#cccccc"))
+        self.setMarginsBackgroundColor(QColor("#cccccc"))
 
         self.setBraceMatching(QsciScintilla.SloppyBraceMatch)
 
         self.setCaretLineVisible(True)
-        self.setCaretLineBackgroundColor(QtGui.QColor("#ffe4e4"))
+        self.setCaretLineBackgroundColor(QColor("#ffe4e4"))
 
-        lexer = QsciLexerXML()
-        lexer.setDefaultFont(font)
-        self.setLexer(lexer)
-        self.SendScintilla(QsciScintilla.SCI_STYLESETFONT, 1, 'Courier')
+        #lexer = QsciLexerXML()
+        #lexer.setDefaultFont(font)
+        #self.setLexer(lexer)
+        self.SendScintilla(QsciScintilla.SCI_STYLESETFONT, 1, 'Courier'.encode())
 
         self.setText(text)
 

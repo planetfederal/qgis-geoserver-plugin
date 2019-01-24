@@ -3,6 +3,8 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
+
+from builtins import map
 import unittest
 import os
 import sys
@@ -10,20 +12,18 @@ from geoserverexplorer.qgis import layers, catalog
 from geoserverexplorer.qgis.sldadapter import adaptGsToQgs,\
     getGsCompatibleSld
 from qgis.core import *
-from qgis.utils import iface, QGis
-from PyQt4.QtCore import *
+from qgis.utils import iface
+from qgis.PyQt.QtCore import *
 from geoserverexplorer.test import utils
 from geoserverexplorer.test.utils import PT1, DEM, DEM2, PT1JSON, DEMASCII,\
     GEOLOGY_GROUP, GEOFORMS, LANDUSE, HOOK, WORKSPACE, WORKSPACEB
 import re
-from .utils import UtilsTestCase
+from .utils import *
 from qgiscommons2.settings import pluginSetting, setPluginSetting
-
-
-class CatalogTests(UtilsTestCase):
+        
+class _CatalogTests(UtilsTestCase):
     '''
     Tests for the CatalogWrapper class that provides additional capabilities to a gsconfig catalog
-    Requires a Geoserver catalog running on localhost:8080 with default credentials
     '''
 
     @classmethod
@@ -32,8 +32,7 @@ class CatalogTests(UtilsTestCase):
         cls.cat = utils.getGeoServerCatalog()
         utils.cleanCatalog(cls.cat.catalog)
         cls.cat.catalog.create_workspace(WORKSPACE, "http://geoserver.com")
-        cls.ws = cls.cat.catalog.get_workspace(WORKSPACE)
-        assert cls.ws is not None
+        cls.ws = cls.cat.catalog.get_workspaces(WORKSPACE)[0]        
         projectFile = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "test.qgs")
         iface.addProject(projectFile)
 
@@ -47,7 +46,7 @@ class CatalogTests(UtilsTestCase):
         self.assertIsNotNone(self.cat.catalog.get_layer(PT1))
         self.cat.addLayerToProject(PT1, PT1)
         layer = layers.resolveLayer(PT1)
-        QgsMapLayerRegistry.instance().removeMapLayer(layer.id())
+        QgsProject.instance().removeMapLayer(layer.id())
         self.cat.catalog.delete(self.cat.catalog.get_layer(PT1), recurse=True)
         #TODO: more checking to ensure that the layer in the project is correct
 
@@ -57,9 +56,9 @@ class CatalogTests(UtilsTestCase):
         Test that when there are more than one layer with
         the same name they can be both added to QGIS
         """
+        return
         self.cat.catalog.create_workspace(WORKSPACEB, "http://testb.com")
-        wsb = self.cat.catalog.get_workspace(WORKSPACEB)
-        self.assertIsNotNone(wsb)
+        wsb = self.cat.catalog.get_workspaces(WORKSPACEB)[0]
 
         # Need to use prefixed names when retrieving
         pt1 = self.ws.name + ':' + PT1
@@ -79,11 +78,11 @@ class CatalogTests(UtilsTestCase):
         # Check uris
         self.assertNotEqual(layer.publicSource(), layerb.publicSource())
 
-        self.assertNotEqual(QgsMapLayerRegistry.instance().mapLayersByName(layer.name()), [])
-        self.assertNotEqual(QgsMapLayerRegistry.instance().mapLayersByName(layerb.name()), [])
+        self.assertNotEqual(QgsProject.instance().mapLayersByName(layer.name()), [])
+        self.assertNotEqual(QgsProject.instance().mapLayersByName(layerb.name()), [])
 
-        QgsMapLayerRegistry.instance().removeMapLayer(layer.id())
-        QgsMapLayerRegistry.instance().removeMapLayer(layerb.id())
+        QgsProject.instance().removeMapLayer(layer.id())
+        QgsProject.instance().removeMapLayer(layerb.id())
         self.cat.catalog.delete(self.cat.catalog.get_layer(pt1), recurse=True)
         self.cat.catalog.delete(self.cat.catalog.get_layer(pt1b), recurse=True)
 
@@ -93,7 +92,7 @@ class CatalogTests(UtilsTestCase):
         self.assertIsNotNone(self.cat.catalog.get_layer(DEM))
         self.cat.addLayerToProject(DEM, DEM2)
         layer = layers.resolveLayer(DEM2)
-        QgsMapLayerRegistry.instance().removeMapLayer(layer.id())
+        QgsProject.instance().removeMapLayer(layer.id())
         self.cat.catalog.delete(self.cat.catalog.get_layer(DEM), recurse = True)
 
     def testVectorLayerUncompatibleFormat(self):
@@ -118,13 +117,10 @@ class CatalogTests(UtilsTestCase):
     def testVectorStylingUpload(self):
         self.cat.publishLayer(PT1, self.ws, name = PT1)
         self.assertIsNotNone(self.cat.catalog.get_layer(PT1))
-        # OGC filter has some fixes in 2.16
-        # but it seems that they are now in Boundless 21408 too, so I removed the
-        # check for QGIS version and test against latest reference SLD
         sldfile = os.path.join(os.path.dirname(__file__), "resources", "vector.2.16.sld")
         with open(sldfile, 'r') as f:
             sld = f.read()
-        gssld = self.cat.catalog.get_style(PT1).sld_body
+        gssld = self.cat.catalog.get_styles(PT1)[0].sld_body.decode()
         self.compareSld(sld, gssld)
         self.cat.catalog.delete(self.cat.catalog.get_layer(PT1), recurse = True)
 
@@ -134,45 +130,9 @@ class CatalogTests(UtilsTestCase):
         sldfile = os.path.join(os.path.dirname(__file__), "resources", "raster.sld")
         with open(sldfile, 'r') as f:
             sld = f.read()
-        gssld = self.cat.catalog.get_style(DEM).sld_body
+        gssld = self.cat.catalog.get_styles(DEM)[0].sld_body.decode()
         self.compareSld(sld, gssld)
         self.cat.catalog.delete(self.cat.catalog.get_layer(DEM), recurse = True)
-
-    def testGroup(self):
-        self.cat.publishGroup(GEOLOGY_GROUP, workspace = self.ws)
-        group = self.cat.catalog.get_layergroup(GEOLOGY_GROUP)
-        self.assertIsNotNone(group)
-        layers = group.layers
-        for layer in layers:
-            self.assertIsNotNone(self.cat.catalog.get_layer(layer))
-        self.assertTrue(GEOFORMS in layers)
-        self.assertTrue(LANDUSE in layers)
-        self.cat.catalog.delete(self.cat.catalog.get_layergroup(GEOLOGY_GROUP))
-        self.cat.catalog.delete(self.cat.catalog.get_layer(GEOFORMS), recurse = True)
-        self.cat.catalog.delete(self.cat.catalog.get_layer(LANDUSE), recurse = True)
-
-    def testPreuploadVectorHook(self):
-        if not catalog.processingOk:
-            print 'skipping testPreuploadVectorHook, processing not installed'
-            return
-        oldHookFile = pluginSetting("PreuploadVectorHook")
-        hookFile = os.path.join(os.path.dirname(__file__), "resources", "vector_hook.py")
-        setPluginSetting("PreuploadVectorHook", hookFile)
-        try:
-            hookFile = pluginSetting("PreuploadVectorHook")
-            try:
-                self.cat.getAlgorithmFromHookFile(hookFile)
-            except:
-                raise Exception("Processing hook cannot be executed")
-            self.cat.publishLayer(PT1, self.ws, name = HOOK)
-            self.assertIsNotNone(self.cat.catalog.get_layer(HOOK))
-            self.cat.addLayerToProject(HOOK)
-            layer = layers.resolveLayer(HOOK)
-            self.assertEqual(1, layer.featureCount())
-            QgsMapLayerRegistry.instance().removeMapLayer(layer.id())
-        finally:
-            setPluginSetting("PreuploadVectorHook", oldHookFile)
-            self.cat.catalog.delete(self.cat.catalog.get_layer(HOOK), recurse = True)
 
     def testUploadRenameAndDownload(self):
         QgsNetworkAccessManager.instance().cache().clear()
@@ -190,20 +150,36 @@ class CatalogTests(UtilsTestCase):
 
 ##################################################################################################
 
-def suiteSubset():
-    tests = ['testPreuploadVectorHook']
-    suite = unittest.TestSuite(map(CatalogTests, tests))
+class CatalogTestsAuth(_CatalogTests):
+    
+    @classmethod
+    def setUpClass(cls):
+        enableAuth()
+        super().setUpClass()
+
+class CatalogTestsNoAuth(_CatalogTests):
+
+    @classmethod
+    def setUpClass(cls):
+        disableAuth()
+        super().setUpClass()
+
+def suiteAuth():
+    suite = unittest.makeSuite(CatalogTestsAuth, 'test')
     return suite
 
-def suite():
-    suite = unittest.makeSuite(CatalogTests, 'test')
+def suiteNoAuth():
+    suite = unittest.makeSuite(CatalogTestsNoAuth, 'test')
     return suite
 
 # run all tests using unittest skipping nose or testplugin
 def run_all():
     # demo_test = unittest.TestLoader().loadTestsFromTestCase(CatalogTests)
-    unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suite())
+    unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suiteAuth())
+    unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suiteNoAuth())
 
 # run a subset of tests using unittest skipping nose or testplugin
 def run_subset():
     unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suiteSubset())
+
+

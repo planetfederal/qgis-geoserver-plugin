@@ -1,6 +1,8 @@
 .. (c) 2016 Boundless, http://boundlessgeo.com
    This code is licensed under the GPL 2.0 license.
 
+.. _geoserver_explorer_docs:
+
 GeoServer Explorer Documentation
 ================================
 
@@ -10,6 +12,7 @@ The GeoServer Explorer plugin is used to configure GeoServer through QGIS. It al
    :glob:
    :maxdepth: 2
 
+   installation
    intro
    actions
-   *
+   settingsconf

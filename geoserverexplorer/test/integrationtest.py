@@ -3,8 +3,9 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
+from builtins import range
 import unittest
-from PyQt4.QtCore import QSettings
+from qgis.PyQt.QtCore import QSettings
 from geoserverexplorer.gui.explorer import GeoServerExplorer
 from geoserverexplorer.test import utils
 from geoserverexplorer.gui.gsexploreritems import GsCatalogItem
@@ -14,29 +15,20 @@ from qgis.core import *
 from qgiscommons2.settings import pluginSetting, setPluginSetting
 
 class ExplorerIntegrationTest(unittest.TestCase):
-
+        
     @classmethod
     def setUpClass(cls):
         cls.explorer = GeoServerExplorer()
         # Disable cache
         cls.cache_time = pluginSetting("AuthCatalogXMLCacheTime")
         setPluginSetting("AuthCatalogXMLCacheTime", 1)
-        # check if context is a PKI auth context
-        # import is doen here to avoid to have the effect to loose module
-        # this fixes https://github.com/boundlessgeo/qgis-geoserver-plugin/issues/85
-        from geoserverexplorer.test.utils import AUTHCFGID, AUTHTYPE, AUTHM
-        if AUTHM:
-            cls.catWrapper = utils.getGeoServerCatalog(authcfgid=AUTHCFGID, authtype=AUTHTYPE)
-        else:
-            cls.catWrapper = utils.getGeoServerCatalog()
+        cls.catWrapper = utils.getGeoServerCatalog()
         cls.cat = cls.catWrapper.catalog
         utils.populateCatalog(cls.cat)
         cls.catalogItem = GsCatalogItem(cls.cat, "catalog")
         cls.explorer.explorerTree.gsItem.addChild(cls.catalogItem)
         cls.catalogItem.populate()
         cls.tree = cls.explorer.tree
-        # @TODO - make tests pass using importer
-        cls.useRestApi = setPluginSetting("UseRestApi", True)
         projectFile = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "test.qgs")
         iface.addProject(projectFile)
 

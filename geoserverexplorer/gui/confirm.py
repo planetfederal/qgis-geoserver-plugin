@@ -6,7 +6,10 @@
 '''
 Routines to ask for confirmation when performing certain operations
 '''
-from PyQt4 import QtGui, QtCore
+from builtins import str
+from qgis.PyQt.QtGui import *
+from qgis.PyQt.QtCore import *
+from qgis.PyQt.QtWidgets import *
 from geoserverexplorer.gui.dialogs.gsnamedialog import getGSLayerName
 from geoserverexplorer.gui.gsnameutils import isNameValid, xmlNameRegex
 from qgiscommons2.settings import pluginSetting
@@ -26,13 +29,13 @@ def confirmDelete():
     if not askConfirmation:
         return True
     msg = "You confirm that you want to delete the selected elements?"
-    reply = QtGui.QMessageBox.question(None, "Delete confirmation",
-                                               msg, QtGui.QMessageBox.Yes |
-                                               QtGui.QMessageBox.No, QtGui.QMessageBox.No)
-    return reply != QtGui.QMessageBox.No
+    reply = QMessageBox.question(None, "Delete confirmation",
+                                               msg, QMessageBox.Yes |
+                                               QMessageBox.No, QMessageBox.No)
+    return reply != QMessageBox.No
 
 # noinspection PyPep8Naming
-class DeleteDependentsDialog(QtGui.QDialog):
+class DeleteDependentsDialog(QDialog):
 
     def __init__(self, dependent, parent=None):
         super(DeleteDependentsDialog, self).__init__(parent)
@@ -74,25 +77,25 @@ class DeleteDependentsDialog(QtGui.QDialog):
 
     def initGui(self):
         self.setWindowTitle(self.title)
-        layout = QtGui.QVBoxLayout()
+        layout = QVBoxLayout()
 
-        msgLabel = QtGui.QLabel(self.msg)
+        msgLabel = QLabel(self.msg)
         msgLabel.setWordWrap(True)
         layout.addWidget(msgLabel)
 
-        deletesView = QtGui.QTextEdit()
-        deletesView.setText(unicode(self.deletes))
+        deletesView = QTextEdit()
+        deletesView.setText(str(self.deletes))
         deletesView.setReadOnly(True)
-        deletesView.setLineWrapMode(QtGui.QTextEdit.NoWrap)
+        deletesView.setLineWrapMode(QTextEdit.NoWrap)
         layout.addWidget(deletesView)
 
-        questLabel = QtGui.QLabel(self.question)
+        questLabel = QLabel(self.question)
         questLabel.setWordWrap(True)
-        questLabel.setAlignment(QtCore.Qt.AlignHCenter)
+        questLabel.setAlignment(Qt.AlignHCenter)
         layout.addWidget(questLabel)
 
-        self.buttonBox = QtGui.QDialogButtonBox(
-            QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        self.buttonBox = QDialogButtonBox(
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         layout.addWidget(self.buttonBox)
 
         self.setLayout(layout)

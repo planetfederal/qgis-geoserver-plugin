@@ -3,10 +3,11 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
+from builtins import map
 import unittest
 import os
 import sys
-from PyQt4.QtCore import *
+from qgis.PyQt.QtCore import *
 from qgis.core import *
 from qgis.utils import iface
 from geoserverexplorer.test.utils import PT1, safeName, PT2, WORKSPACE, WORKSPACEB, shapefile_and_friends
@@ -21,8 +22,7 @@ class DeleteTests(ExplorerIntegrationTest):
         # do workspace popuplation
         super(DeleteTests, cls).setUpClass()
 
-        cls.ws = cls.cat.get_workspace(WORKSPACE)
-        assert cls.ws is not None
+        cls.ws = cls.cat.get_workspaces(WORKSPACE)[0]        
 
         # load project
         projectFile = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "test.qgs")
@@ -42,7 +42,7 @@ class DeleteTests(ExplorerIntegrationTest):
         self.catWrapper.publishLayer(PT1, self.ws, name=PT1)
         layer = self.cat.get_layer(PT1)
         self.assertIsNotNone(layer)
-        style = self.cat.get_style(PT1)
+        style = self.cat.get_styles(PT1)[0]
         self.assertIsNotNone(style)
         self.getLayersItem().refreshContent(self.explorer)
         self.getStylesItem().refreshContent(self.explorer)
@@ -61,7 +61,7 @@ class DeleteTests(ExplorerIntegrationTest):
         self.catWrapper.publishLayer(PT1)
         layer = self.cat.get_layer(PT1)
         self.assertIsNotNone(layer)
-        style = self.cat.get_style(PT1)
+        style = self.cat.get_styles(PT1)[0]
         self.assertIsNotNone(style)
         self.getLayersItem().refreshContent(self.explorer)
         self.getStylesItem().refreshContent(self.explorer)
@@ -86,8 +86,7 @@ class DeleteTests(ExplorerIntegrationTest):
         Test that when there are more than one layer with
         the same name they can be deleted
         """
-        wsb = self.catWrapper.catalog.get_workspace(WORKSPACEB)
-        self.assertIsNotNone(wsb)
+        wsb = self.catWrapper.catalog.get_workspaces(WORKSPACEB)[0]        
 
         # Need to use prefixed names when retrieving
         pt1 = self.ws.name + ':' + PT1
@@ -124,8 +123,8 @@ class DeleteTests(ExplorerIntegrationTest):
         self.getWorkspacesItem().refreshContent(self.explorer)
         wsItem = self.getWorkspaceItem(wsname)
         self.assertIsNone(wsItem)
-        ws = self.cat.get_workspace(wsname)
-        self.assertIsNone(ws)
+        ws = self.cat.get_workspaces(wsname)
+        self.assertTrue(len(ws) == 0 )
 
 
     def testDeleteGWCLayer(self):
@@ -137,11 +136,6 @@ class DeleteTests(ExplorerIntegrationTest):
 
 
 ##################################################################################################
-
-def suiteSubset():
-    tests = ['testDeleteLayerAndStyle']
-    suite = unittest.TestSuite(map(DeleteTests, tests))
-    return suite
 
 def suite():
     suite = unittest.makeSuite(DeleteTests, 'test')

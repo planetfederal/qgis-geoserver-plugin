@@ -4,11 +4,11 @@
 # This code is licensed under the GPL 2.0 license.
 #
 from geoserverexplorer.geoserver import util
-from PyQt4 import QtGui, QtCore
+from qgis.PyQt import QtGui, QtCore, QtWidgets
 
-class TreeItem(QtGui.QTreeWidgetItem):
+class TreeItem(QtWidgets.QTreeWidgetItem):
     def __init__(self, element, icon = None, text = None):
-        QtGui.QTreeWidgetItem.__init__(self)
+        QtWidgets.QTreeWidgetItem.__init__(self)
         self.element = element
         self.setData(0, QtCore.Qt.UserRole, element)
         self._text = text
@@ -30,14 +30,14 @@ class TreeItem(QtGui.QTreeWidgetItem):
 
     def descriptionWidget(self, tree, explorer):
         text = self.getDescriptionHtml(tree, explorer)
-        class MyBrowser(QtGui.QTextBrowser):
+        class MyBrowser(QtWidgets.QTextBrowser):
             def loadResource(self, type, name):
                 return None
         self.description = MyBrowser()
         self.description.setOpenLinks(False)
         def linkClicked(url):
             self.linkClicked(tree, explorer, url)
-        self.description.connect(self.description, QtCore.SIGNAL("anchorClicked(const QUrl&)"), linkClicked)
+        self.description.anchorClicked.connect(linkClicked)
         self.description.setHtml(text)
         return self.description
 

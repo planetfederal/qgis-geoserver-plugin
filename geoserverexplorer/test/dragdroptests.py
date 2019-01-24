@@ -3,6 +3,7 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
+from builtins import map
 import unittest
 import os
 import sys
@@ -22,9 +23,9 @@ class DragDropTests(ExplorerIntegrationTest):
         self.catalogItem.acceptDroppedUris(self.tree, self.explorer, [uri])
         layer = self.cat.get_layer(PT1)
         self.assertIsNotNone(layer)
-        self.cat.get_store(PT1, WORKSPACE)
+        self.cat.get_stores(PT1, WORKSPACE)[0]
         self.cat.delete(self.cat.get_layer(PT1), recurse = True)
-        self.cat.delete(self.cat.get_style(PT1), purge = True)
+        self.cat.delete(self.cat.get_styles(PT1)[0], purge = True)
 
     def testDropVectorLayerUriInWorkspaceItem(self):
         uri = os.path.join(os.path.dirname(__file__), "data", PT1 + ".shp")
@@ -33,9 +34,9 @@ class DragDropTests(ExplorerIntegrationTest):
         item.acceptDroppedUris(self.tree, self.explorer, [uri])
         layer = self.cat.get_layer(PT1)
         self.assertIsNotNone(layer)
-        self.cat.get_store(PT1, WORKSPACEB)
+        self.cat.get_stores(PT1, WORKSPACEB)[0]
         self.cat.delete(self.cat.get_layer(PT1), recurse = True)
-        self.cat.delete(self.cat.get_style(PT1), purge = True)
+        self.cat.delete(self.cat.get_styles(PT1)[0], purge = True)
 
     def testDropVectorLayerUriInLayersItem(self):
         uri = os.path.join(os.path.dirname(__file__), "data", PT1 + ".shp")
@@ -43,9 +44,9 @@ class DragDropTests(ExplorerIntegrationTest):
         item.acceptDroppedUris(self.tree, self.explorer, [uri])
         layer = self.cat.get_layer(PT1)
         self.assertIsNotNone(layer)
-        self.cat.get_store(PT1, WORKSPACE)
+        self.cat.get_stores(PT1, WORKSPACE)[0]
         self.cat.delete(self.cat.get_layer(PT1), recurse = True)
-        self.cat.delete(self.cat.get_style(PT1), purge = True)
+        self.cat.delete(self.cat.get_styles(PT1)[0], purge = True)
 
     #===========================================================================
     # Drag & drop explorer tree element(s) into another explorer tree element
@@ -73,7 +74,7 @@ class DragDropTests(ExplorerIntegrationTest):
 def suiteSubset():
     # set tests you want to execute adding in the following list
     tests = ['testDropVectorLayerUriInCatalogItem']
-    suite = unittest.TestSuite(map(DragDropTests, tests))
+    suite = unittest.TestSuite(list(map(DragDropTests, tests)))
     return suite
 
 def suite():
