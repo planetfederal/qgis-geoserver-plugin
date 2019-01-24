@@ -134,8 +134,9 @@ class CatalogWrapper(object):
             layer = layers.resolveLayer(layer)
         sld, icons = getGsCompatibleSld(layer)
         if sld is not None:
-            name = name if name is not None else layer.name()
-            name = name.replace(" ", "_")
+            name = name if name is not None else xmlNameFixUp(layer.name())
+            if layer.name() != name:
+                sld =  sld.replace(layer.name(), name)
             self.uploadIcons(icons)
             self.catalog.create_style(name, sld, overwrite)
         return sld

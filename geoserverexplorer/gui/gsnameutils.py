@@ -24,8 +24,10 @@ from geoserverexplorer.gui.contextualhelp import InfoIcon
 
 # noinspection PyPep8Naming
 def xmlNameFixUp(name):
-    # TODO: handle bad unicode characters, too
-    n = name.replace(u' ', u'_')  # doesn't hurt to always do this
+    if not isinstance(name, unicode):
+        name = name.decode('utf-8', errors='ignore')
+    n = unicode(unicodedata.normalize('NFKD', name).encode('ascii','ignore'))
+    n = re.sub('[ /\\\\]', '_', n)
     if not xmlNameIsValid(n) and not n.startswith(u'_'):
         rx = QRegExp(r'^(?=XML|\d|\W).*', Qt.CaseInsensitive)
         if rx.exactMatch(n):
