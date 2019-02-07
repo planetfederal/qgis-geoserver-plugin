@@ -12,8 +12,6 @@ from builtins import str
 from qgis.PyQt.QtCore import *
 from qgis.PyQt.QtGui import *
 from qgis.PyQt.QtWidgets import *
-import unicodedata
-import re
 
 APP = None
 if __name__ == '__main__':
@@ -26,10 +24,8 @@ from geoserverexplorer.gui.contextualhelp import InfoIcon
 
 # noinspection PyPep8Naming
 def xmlNameFixUp(name):
-    if not isinstance(name, unicode):
-        name = name.decode('utf-8', errors='ignore')
-    n = unicode(unicodedata.normalize('NFKD', name).encode('ascii','ignore'))
-    n = re.sub('[ /\\\\]', '_', n)
+    # TODO: handle bad unicode characters, too
+    n = name.replace(u' ', u'_')  # doesn't hurt to always do this
     if not xmlNameIsValid(n) and not n.startswith(u'_'):
         rx = QRegExp(r'^(?=XML|\d|\W).*', Qt.CaseInsensitive)
         if rx.exactMatch(n):
