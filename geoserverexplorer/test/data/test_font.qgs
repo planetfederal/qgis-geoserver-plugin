@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis projectname="" version="3.2.2-Bonn">
+<qgis version="3.4.4-Madeira" projectname="">
   <homePath path=""/>
   <title></title>
   <autotransaction active="0"/>
@@ -19,9 +19,9 @@
   </projectCrs>
   <layer-tree-group>
     <customproperties/>
-    <layer-tree-group expanded="1" name="qgis_plugin_test_elevation" checked="Qt::Checked">
+    <layer-tree-group expanded="1" checked="Qt::Checked" name="qgis_plugin_test_elevation">
       <customproperties/>
-      <layer-tree-layer expanded="1" providerKey="ogr" source="./qgis_plugin_test_pt1.shp" name="qgis_plugin_test_pt1" id="pt120130827095302041" checked="Qt::Checked">
+      <layer-tree-layer checked="Qt::Checked" expanded="1" id="pt120130827095302041" name="qgis_plugin_test_pt1" source="./qgis_plugin_test_pt1.shp" providerKey="ogr">
         <customproperties/>
       </layer-tree-layer>
     </layer-tree-group>
@@ -29,9 +29,9 @@
       <item>pt120130827095302041</item>
     </custom-order>
   </layer-tree-group>
-  <snapping-settings enabled="1" tolerance="2" intersection-snapping="0" type="2" unit="2" mode="3">
+  <snapping-settings unit="2" mode="3" tolerance="2" type="2" intersection-snapping="0" enabled="1">
     <individual-layer-settings>
-      <layer-setting enabled="0" units="0" tolerance="0" id="pt120130827095302041" type="2"/>
+      <layer-setting units="0" id="pt120130827095302041" tolerance="0" type="2" enabled="0"/>
     </individual-layer-settings>
   </snapping-settings>
   <relations/>
@@ -58,11 +58,12 @@
     </destinationsrs>
     <rendermaptile>0</rendermaptile>
   </mapcanvas>
+  <projectModels/>
   <legend updateDrawingOrder="true">
-    <legendgroup name="qgis_plugin_test_elevation" checked="Qt::Checked" open="true">
-      <legendlayer showFeatureCount="0" name="qgis_plugin_test_pt1" checked="Qt::Checked" drawingOrder="-1" open="true">
-        <filegroup hidden="false" open="true">
-          <legendlayerfile visible="1" isInOverview="0" layerid="pt120130827095302041"/>
+    <legendgroup checked="Qt::Checked" open="true" name="qgis_plugin_test_elevation">
+      <legendlayer drawingOrder="-1" checked="Qt::Checked" open="true" name="qgis_plugin_test_pt1" showFeatureCount="0">
+        <filegroup open="true" hidden="false">
+          <legendlayerfile isInOverview="0" visible="1" layerid="pt120130827095302041"/>
         </filegroup>
       </legendlayer>
     </legendgroup>
@@ -70,7 +71,7 @@
   <mapViewDocks/>
   <mapViewDocks3D/>
   <projectlayers>
-    <maplayer autoRefreshEnabled="0" refreshOnNotifyMessage="" labelsEnabled="1" autoRefreshTime="0" simplifyAlgorithm="0" refreshOnNotifyEnabled="0" readOnly="0" maxScale="100000" minScale="1e+8" type="vector" simplifyDrawingHints="0" simplifyDrawingTol="1" geometry="Point" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="1">
+    <maplayer readOnly="0" simplifyDrawingHints="0" autoRefreshEnabled="0" simplifyDrawingTol="1" maxScale="100000" simplifyLocal="1" autoRefreshTime="0" styleCategories="AllStyleCategories" simplifyAlgorithm="0" refreshOnNotifyEnabled="0" hasScaleBasedVisibilityFlag="0" labelsEnabled="1" type="vector" simplifyMaxScale="1" minScale="1e+8" refreshOnNotifyMessage="" geometry="Point">
       <extent>
         <xmin>18.6909382814415963</xmin>
         <ymin>45.77670143756554921</ymin>
@@ -114,7 +115,7 @@
             <description></description>
             <projectionacronym></projectionacronym>
             <ellipsoidacronym></ellipsoidacronym>
-            <geographicflag>false</geographicflag>
+            <geographicflag>true</geographicflag>
           </spatialrefsys>
         </crs>
         <extent/>
@@ -129,32 +130,37 @@
         <map-layer-style name="default"/>
       </map-layer-style-manager>
       <auxiliaryLayer/>
-      <renderer-v2 forceraster="0" symbollevels="0" enableorderby="0" type="singleSymbol">
+      <flags>
+        <Identifiable>1</Identifiable>
+        <Removable>1</Removable>
+        <Searchable>1</Searchable>
+      </flags>
+      <renderer-v2 forceraster="0" symbollevels="0" type="singleSymbol" enableorderby="0">
         <symbols>
-          <symbol name="0" clip_to_extent="1" type="marker" alpha="1">
-            <layer enabled="1" pass="0" class="FontMarker" locked="0">
-              <prop k="angle" v="0"/>
-              <prop k="chr" v="F"/>
-              <prop k="color" v="87,12,215,255"/>
-              <prop k="font" v="DejaVu Sans"/>
-              <prop k="horizontal_anchor_point" v="1"/>
-              <prop k="joinstyle" v="bevel"/>
-              <prop k="offset" v="0,0"/>
-              <prop k="offset_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-              <prop k="offset_unit" v="MM"/>
-              <prop k="outline_color" v="0,0,0,255"/>
-              <prop k="outline_width" v="0"/>
-              <prop k="outline_width_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-              <prop k="outline_width_unit" v="MM"/>
-              <prop k="size" v="2"/>
-              <prop k="size_map_unit_scale" v="3x:0,0,0,0,0,0"/>
-              <prop k="size_unit" v="MM"/>
-              <prop k="vertical_anchor_point" v="1"/>
+          <symbol force_rhr="0" type="marker" alpha="1" clip_to_extent="1" name="0">
+            <layer pass="0" class="FontMarker" enabled="1" locked="0">
+              <prop v="0" k="angle"/>
+              <prop v="F" k="chr"/>
+              <prop v="87,12,215,255" k="color"/>
+              <prop v="DejaVu Sans" k="font"/>
+              <prop v="1" k="horizontal_anchor_point"/>
+              <prop v="bevel" k="joinstyle"/>
+              <prop v="0,0" k="offset"/>
+              <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
+              <prop v="MM" k="offset_unit"/>
+              <prop v="0,0,0,255" k="outline_color"/>
+              <prop v="0" k="outline_width"/>
+              <prop v="3x:0,0,0,0,0,0" k="outline_width_map_unit_scale"/>
+              <prop v="MM" k="outline_width_unit"/>
+              <prop v="2" k="size"/>
+              <prop v="3x:0,0,0,0,0,0" k="size_map_unit_scale"/>
+              <prop v="MM" k="size_unit"/>
+              <prop v="1" k="vertical_anchor_point"/>
               <data_defined_properties>
                 <Option type="Map">
-                  <Option name="name" type="QString" value=""/>
+                  <Option type="QString" value="" name="name"/>
                   <Option name="properties"/>
-                  <Option name="type" type="QString" value="collection"/>
+                  <Option type="QString" value="collection" name="type"/>
                 </Option>
               </data_defined_properties>
             </layer>
@@ -164,35 +170,39 @@
         <sizescale/>
       </renderer-v2>
       <customproperties>
-        <property key="embeddedWidgets/count" value="0"/>
-        <property key="variableNames" value="_fields_"/>
-        <property key="variableValues" value=""/>
+        <property value="0" key="embeddedWidgets/count"/>
+        <property value="_fields_" key="variableNames"/>
+        <property value="" key="variableValues"/>
       </customproperties>
       <blendMode>0</blendMode>
       <featureBlendMode>0</featureBlendMode>
       <layerOpacity>1</layerOpacity>
-      <SingleCategoryDiagramRenderer diagramType="Histogram" attributeLegend="1">
-        <DiagramCategory backgroundAlpha="255" penAlpha="255" height="15" scaleBasedVisibility="0" opacity="1" penColor="#000000" width="15" scaleDependency="Area" backgroundColor="#ffffff" sizeScale="3x:0,0,0,0,0,0" minimumSize="0" enabled="0" labelPlacementMethod="XHeight" barWidth="5" rotationOffset="270" penWidth="0" minScaleDenominator="100000" lineSizeType="MM" sizeType="MM" diagramOrientation="Up" lineSizeScale="3x:0,0,0,0,0,0" maxScaleDenominator="1e+8">
-          <fontProperties description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" style=""/>
-          <attribute color="#000000" label="" field=""/>
+      <SingleCategoryDiagramRenderer attributeLegend="1" diagramType="Histogram">
+        <DiagramCategory height="15" maxScaleDenominator="1e+8" penWidth="0" backgroundColor="#ffffff" lineSizeScale="3x:0,0,0,0,0,0" lineSizeType="MM" penColor="#000000" labelPlacementMethod="XHeight" diagramOrientation="Up" barWidth="5" opacity="1" backgroundAlpha="255" minimumSize="0" minScaleDenominator="100000" rotationOffset="270" width="15" sizeScale="3x:0,0,0,0,0,0" enabled="0" scaleBasedVisibility="0" scaleDependency="Area" sizeType="MM" penAlpha="255">
+          <fontProperties style="" description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0"/>
+          <attribute label="" color="#000000" field=""/>
         </DiagramCategory>
       </SingleCategoryDiagramRenderer>
-      <DiagramLayerSettings showAll="1" linePlacementFlags="10" priority="0" placement="0" zIndex="0" obstacle="0" dist="0">
+      <DiagramLayerSettings zIndex="0" linePlacementFlags="10" priority="0" dist="0" obstacle="0" showAll="1" placement="0">
         <properties>
           <Option type="Map">
-            <Option name="name" type="QString" value=""/>
+            <Option type="QString" value="" name="name"/>
             <Option name="properties"/>
-            <Option name="type" type="QString" value="collection"/>
+            <Option type="QString" value="collection" name="type"/>
           </Option>
         </properties>
       </DiagramLayerSettings>
+      <geometryOptions removeDuplicateNodes="0" geometryPrecision="0">
+        <activeChecks/>
+        <checkConfiguration/>
+      </geometryOptions>
       <fieldConfiguration>
         <field name="VALUE">
           <editWidget type="TextEdit">
             <config>
               <Option type="Map">
-                <Option name="IsMultiline" type="QString" value="0"/>
-                <Option name="UseHtml" type="QString" value="0"/>
+                <Option type="QString" value="0" name="IsMultiline"/>
+                <Option type="QString" value="0" name="UseHtml"/>
               </Option>
             </config>
           </editWidget>
@@ -201,41 +211,46 @@
           <editWidget type="TextEdit">
             <config>
               <Option type="Map">
-                <Option name="IsMultiline" type="QString" value="0"/>
-                <Option name="UseHtml" type="QString" value="0"/>
+                <Option type="QString" value="0" name="IsMultiline"/>
+                <Option type="QString" value="0" name="UseHtml"/>
               </Option>
             </config>
           </editWidget>
         </field>
       </fieldConfiguration>
       <aliases>
-        <alias field="VALUE" name="" index="0"/>
-        <alias field="latitude" name="" index="1"/>
+        <alias name="" field="VALUE" index="0"/>
+        <alias name="" field="latitude" index="1"/>
       </aliases>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
       <defaults>
-        <default expression="" field="VALUE" applyOnUpdate="0"/>
-        <default expression="" field="latitude" applyOnUpdate="0"/>
+        <default applyOnUpdate="0" expression="" field="VALUE"/>
+        <default applyOnUpdate="0" expression="" field="latitude"/>
       </defaults>
       <constraints>
-        <constraint constraints="0" notnull_strength="0" field="VALUE" unique_strength="0" exp_strength="0"/>
-        <constraint constraints="0" notnull_strength="0" field="latitude" unique_strength="0" exp_strength="0"/>
+        <constraint notnull_strength="0" unique_strength="0" exp_strength="0" field="VALUE" constraints="0"/>
+        <constraint notnull_strength="0" unique_strength="0" exp_strength="0" field="latitude" constraints="0"/>
       </constraints>
       <constraintExpressions>
-        <constraint field="VALUE" exp="" desc=""/>
-        <constraint field="latitude" exp="" desc=""/>
+        <constraint exp="" desc="" field="VALUE"/>
+        <constraint exp="" desc="" field="latitude"/>
       </constraintExpressions>
+      <expressionfields/>
       <attributeactions>
-        <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
+        <defaultAction value="{00000000-0000-0000-0000-000000000000}" key="Canvas"/>
       </attributeactions>
       <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
         <columns>
-          <column width="-1" name="VALUE" hidden="0" type="field"/>
-          <column width="-1" name="latitude" hidden="0" type="field"/>
-          <column width="-1" hidden="1" type="actions"/>
+          <column hidden="0" type="field" name="VALUE" width="-1"/>
+          <column hidden="0" type="field" name="latitude" width="-1"/>
+          <column hidden="1" type="actions" width="-1"/>
         </columns>
       </attributetableconfig>
+      <conditionalstyles>
+        <rowstyles/>
+        <fieldstyles/>
+      </conditionalstyles>
       <editform tolerant="1">.</editform>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
@@ -261,11 +276,6 @@ def my_form_open(dialog, layer, feature):
       <editable/>
       <labelOnTop/>
       <widgets/>
-      <conditionalstyles>
-        <rowstyles/>
-        <fieldstyles/>
-      </conditionalstyles>
-      <expressionfields/>
       <previewExpression>"VALUE"</previewExpression>
       <mapTip></mapTip>
     </maplayer>
@@ -274,68 +284,69 @@ def my_form_open(dialog, layer, feature):
     <layer id="pt120130827095302041"/>
   </layerorder>
   <properties>
-    <PAL>
-      <CandidatesLine type="int">50</CandidatesLine>
-      <SearchMethod type="int">0</SearchMethod>
-      <DrawRectOnly type="bool">false</DrawRectOnly>
-      <ShowingPartialsLabels type="bool">true</ShowingPartialsLabels>
-      <CandidatesPoint type="int">16</CandidatesPoint>
-      <CandidatesPolygon type="int">30</CandidatesPolygon>
-      <ShowingAllLabels type="bool">false</ShowingAllLabels>
-      <DrawOutlineLabels type="bool">true</DrawOutlineLabels>
-      <ShowingCandidates type="bool">false</ShowingCandidates>
-    </PAL>
+    <Paths>
+      <Absolute type="bool">false</Absolute>
+    </Paths>
+    <PositionPrecision>
+      <DecimalPlaces type="int">2</DecimalPlaces>
+      <Automatic type="bool">true</Automatic>
+    </PositionPrecision>
     <SpatialRefSys>
       <ProjectionsEnabled type="int">1</ProjectionsEnabled>
       <ProjectCRSProj4String type="QString">+proj=longlat +datum=WGS84 +no_defs</ProjectCRSProj4String>
       <ProjectCrs type="QString">EPSG:4326</ProjectCrs>
       <ProjectCRSID type="int">3452</ProjectCRSID>
     </SpatialRefSys>
-    <PositionPrecision>
-      <Automatic type="bool">true</Automatic>
-      <DecimalPlaces type="int">2</DecimalPlaces>
-    </PositionPrecision>
-    <Digitizing>
-      <AvoidIntersectionsList type="QStringList"/>
-      <LayerSnappingToleranceList type="QStringList">
-        <value>0.000000</value>
-      </LayerSnappingToleranceList>
-      <LayerSnappingToleranceUnitList type="QStringList">
-        <value>0</value>
-      </LayerSnappingToleranceUnitList>
-      <LayerSnapToList type="QStringList">
-        <value>to_vertex_and_segment</value>
-      </LayerSnapToList>
-      <DefaultSnapToleranceUnit type="int">2</DefaultSnapToleranceUnit>
-      <SnappingMode type="QString">advanced</SnappingMode>
-      <DefaultSnapTolerance type="double">2</DefaultSnapTolerance>
-      <LayerSnappingEnabledList type="QStringList">
-        <value>disabled</value>
-      </LayerSnappingEnabledList>
-      <DefaultSnapType type="QString">to vertex and segment</DefaultSnapType>
-      <LayerSnappingList type="QStringList">
-        <value>pt120130827095302041</value>
-      </LayerSnappingList>
-    </Digitizing>
-    <Gui>
-      <SelectionColorAlphaPart type="int">255</SelectionColorAlphaPart>
-      <SelectionColorBluePart type="int">0</SelectionColorBluePart>
-      <SelectionColorGreenPart type="int">255</SelectionColorGreenPart>
-      <CanvasColorGreenPart type="int">255</CanvasColorGreenPart>
-      <CanvasColorRedPart type="int">255</CanvasColorRedPart>
-      <CanvasColorBluePart type="int">255</CanvasColorBluePart>
-      <SelectionColorRedPart type="int">255</SelectionColorRedPart>
-    </Gui>
-    <Paths>
-      <Absolute type="bool">false</Absolute>
-    </Paths>
+    <Measurement>
+      <AreaUnits type="QString">m2</AreaUnits>
+      <DistanceUnits type="QString">meters</DistanceUnits>
+    </Measurement>
     <Legend>
       <filterByMap type="bool">false</filterByMap>
     </Legend>
-    <Measurement>
-      <DistanceUnits type="QString">meters</DistanceUnits>
-      <AreaUnits type="QString">m2</AreaUnits>
-    </Measurement>
+    <Digitizing>
+      <LayerSnappingList type="QStringList">
+        <value>pt120130827095302041</value>
+      </LayerSnappingList>
+      <DefaultSnapType type="QString">to vertex and segment</DefaultSnapType>
+      <LayerSnappingEnabledList type="QStringList">
+        <value>disabled</value>
+      </LayerSnappingEnabledList>
+      <AvoidIntersectionsList type="QStringList"/>
+      <LayerSnapToList type="QStringList">
+        <value>to_vertex_and_segment</value>
+      </LayerSnapToList>
+      <DefaultSnapTolerance type="double">2</DefaultSnapTolerance>
+      <LayerSnappingToleranceUnitList type="QStringList">
+        <value>0</value>
+      </LayerSnappingToleranceUnitList>
+      <LayerSnappingToleranceList type="QStringList">
+        <value>0.000000</value>
+      </LayerSnappingToleranceList>
+      <SnappingMode type="QString">advanced</SnappingMode>
+      <DefaultSnapToleranceUnit type="int">2</DefaultSnapToleranceUnit>
+    </Digitizing>
+    <PAL>
+      <DrawOutlineLabels type="bool">true</DrawOutlineLabels>
+      <SearchMethod type="int">0</SearchMethod>
+      <DrawRectOnly type="bool">false</DrawRectOnly>
+      <ShowingPartialsLabels type="bool">true</ShowingPartialsLabels>
+      <ShowingCandidates type="bool">false</ShowingCandidates>
+      <CandidatesPolygon type="int">30</CandidatesPolygon>
+      <CandidatesLine type="int">50</CandidatesLine>
+      <CandidatesPoint type="int">16</CandidatesPoint>
+      <ShowingAllLabels type="bool">false</ShowingAllLabels>
+      <TextFormat type="int">0</TextFormat>
+    </PAL>
+    <Gui>
+      <SelectionColorRedPart type="int">255</SelectionColorRedPart>
+      <SelectionColorAlphaPart type="int">255</SelectionColorAlphaPart>
+      <CanvasColorGreenPart type="int">255</CanvasColorGreenPart>
+      <SelectionColorGreenPart type="int">255</SelectionColorGreenPart>
+      <CanvasColorRedPart type="int">255</CanvasColorRedPart>
+      <CanvasColorBluePart type="int">255</CanvasColorBluePart>
+      <SelectionColorBluePart type="int">0</SelectionColorBluePart>
+    </Gui>
   </properties>
   <visibility-presets/>
   <transformContext/>
