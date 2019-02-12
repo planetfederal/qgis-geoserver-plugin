@@ -156,8 +156,8 @@ def geoserverLocationSsh():
 
 
 def serverLocationBasicAuth():
-    url = geoserverLocation()+"/geoserver"
-    if not geoserverLocation.startswith("http"):
+    url = geoserverLocation() + "/geoserver"
+    if not geoserverLocation().startswith("http"):
         url = "http://" + url
     return url
 
